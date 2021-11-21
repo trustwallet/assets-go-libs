@@ -3,9 +3,9 @@ package processor
 import (
 	log "github.com/sirupsen/logrus"
 
-	"github.com/trustwallet/assets-go-libs/internal/validator"
 	"github.com/trustwallet/assets-go-libs/pkg/file"
 	"github.com/trustwallet/assets-go-libs/pkg/validation"
+	"github.com/trustwallet/assets-go-libs/src/validator"
 )
 
 type Service struct {

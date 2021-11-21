@@ -8,12 +8,12 @@ import (
 	"io/ioutil"
 	"time"
 
-	"github.com/trustwallet/assets-go-libs/internal/binancedex"
-	"github.com/trustwallet/assets-go-libs/internal/config"
 	"github.com/trustwallet/assets-go-libs/pkg/file"
 	"github.com/trustwallet/assets-go-libs/pkg/validation"
 	"github.com/trustwallet/assets-go-libs/pkg/validation/info"
 	"github.com/trustwallet/assets-go-libs/pkg/validation/list"
+	"github.com/trustwallet/assets-go-libs/src/binancedex"
+	"github.com/trustwallet/assets-go-libs/src/config"
 	"github.com/trustwallet/go-primitives/coin"
 )
 
