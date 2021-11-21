@@ -230,7 +230,7 @@ linters:
     # - godot
     # - godox
     # - goerr113
-    - nestif
+    # - nestif
     # - prealloc
     - testpackage
     # - revive

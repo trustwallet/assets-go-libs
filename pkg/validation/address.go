@@ -106,7 +106,7 @@ func ValidateAddress(address string, prefix string, length int) error {
 	}
 
 	if len(address) != length {
-		return fmt.Errorf("%w, %s should be %d lenght", ErrInvalidFileNameLength, address, length)
+		return fmt.Errorf("%w, %s should be %d length", ErrInvalidFileNameLength, address, length)
 	}
 
 	if !pkg.IsLowerCase(address) {

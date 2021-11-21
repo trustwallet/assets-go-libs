@@ -215,8 +215,9 @@ func (s *Service) ValidateAssetFolder(file *file.AssetFile) error {
 
 	errInfo := validation.ValidateHasFiles(dirFiles, []string{"info.json"})
 	errLogo := validation.ValidateHasFiles(dirFiles, []string{"logo.png"})
+
 	if errLogo != nil || errInfo != nil {
-		infoFile, err := s.fileProvider.GetAssetFile(fmt.Sprintf(fmt.Sprintf("%s/info.json", assetInfo.Path())))
+		infoFile, err := s.fileProvider.GetAssetFile(fmt.Sprintf("%s/info.json", assetInfo.Path()))
 		if err != nil {
 			return err
 		}

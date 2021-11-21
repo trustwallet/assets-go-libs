@@ -36,7 +36,9 @@ func explorerUrlAlternatives(chain string, name string) []string {
 	var altUrls []string
 
 	if name != "" {
-		NameNorm := strings.Replace(strings.Replace(strings.Replace(strings.ToLower(name), " ", "", -1), ")", "", -1), "(", "", -1)
+		NameNorm := strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(
+			strings.ToLower(name), " ", ""), ")", ""), "(", "")
+
 		if strings.ToLower(chain) == coin.Coins[coin.ETHEREUM].Name {
 			altUrls = append(altUrls, fmt.Sprintf("https://etherscan.io/token/%s", NameNorm))
 		}
@@ -58,7 +60,7 @@ func linkNameAllowed(str string) bool {
 
 func supportedLinkNames() []string {
 	var names []string
-	for k, _ := range allowedLinkKeys {
+	for k := range allowedLinkKeys {
 		names = append(names, k)
 	}
 

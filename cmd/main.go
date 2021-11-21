@@ -5,6 +5,7 @@ import (
 	"os"
 
 	log "github.com/sirupsen/logrus"
+
 	"github.com/trustwallet/assets-go-libs/internal/config"
 	"github.com/trustwallet/assets-go-libs/internal/processor"
 	"github.com/trustwallet/assets-go-libs/internal/validator"
@@ -31,7 +32,7 @@ func main() {
 	}
 
 	// TODO
-	//reporterService := reporter.NewReportService()
+	// reporterService := reporter.NewReportService()
 
 	assetfsProcessor := processor.NewService(fileStorage, validatorsService)
 	err = assetfsProcessor.RunSanityCheck(paths)
