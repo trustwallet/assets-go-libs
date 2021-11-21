@@ -1,12 +1,11 @@
-package assetfs
+package file
 
 import (
 	"sync"
 )
 
 type FileProvider struct {
-	mu *sync.RWMutex
-
+	mu    *sync.RWMutex
 	cache map[string]*AssetFile
 }
 

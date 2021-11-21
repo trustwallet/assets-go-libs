@@ -1,5 +1,4 @@
 app:
-  mode: dev
   log_level: debug
 
 client_urls:
@@ -7,7 +6,7 @@ client_urls:
 
 validators_settings:
   image_file:
-    size: 100 #file size in kb
+    size: 100 # file size in KB
     max_w: 512
     max_h: 512
     min_w: 50
@@ -38,6 +37,11 @@ validators_settings:
       - ".git"
       - ".eslintignore"
       - ".eslintrc.js"
+      - "go.mod"
+      - "go.sum"
+      - "cmd"
+    skip_files:
+      - "node_modules"
 
   chain_folder:
     allowed_files:

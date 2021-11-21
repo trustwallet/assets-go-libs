@@ -1,36 +1,28 @@
-.PHONY: default clean build
+#! /usr/bin/make -f
 
-PWD := $(shell pwd)
+# Go related variables.
+GOBASE := $(shell pwd)
+GOBIN := $(GOBASE)/bin
 
-APPS    := sanitychecker
-BILDDIR ?= bin
+# Go files.
+GOFMT_FILES?=$$(find . -name '*.go' | grep -v vendor)
 
-default: clean build
+all: fmt lint test
 
-build: $(APPS)
-
-$(BILDDIR)/%:
-	go build -o $@ ./cmd/$*
-
-$(APPS): %: $(BILDDIR)/%
-
-clean:
-	@rm -f ${BILDDIR}/*
-
-## test: Run unit tests
 test:
 	@echo "  >  Running unit tests"
-	GOBIN=$(GOBIN) go test -cover -v ./...
+	GOBIN=$(GOBIN) go test -cover -race -coverprofile=coverage.txt -covermode=atomic -v ./...
 
-## lint: Install and run linter
-lint: go-lint-install go-lint
+fmt:
+	@echo "  >  Format all go files"
+	GOBIN=$(GOBIN) gofmt -w ${GOFMT_FILES}
 
-go-lint-install:
+lint-install:
 ifeq (,$(wildcard test -f bin/golangci-lint))
 	@echo "  >  Installing golint"
 	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s
 endif
 
-go-lint:
+lint: lint-install
 	@echo "  >  Running golint"
 	bin/golangci-lint run --timeout=2m

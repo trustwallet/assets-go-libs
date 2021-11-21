@@ -5,13 +5,14 @@ import (
 	"strings"
 
 	log "github.com/sirupsen/logrus"
-	"github.com/trustwallet/assets-backend/pkg/assetfs"
-	"github.com/trustwallet/assets-backend/pkg/assetfs/validation"
+
+	"github.com/trustwallet/assets-go-libs/pkg"
+	"github.com/trustwallet/assets-go-libs/pkg/validation"
 	"github.com/trustwallet/go-primitives/coin"
 	"github.com/trustwallet/go-primitives/types"
 )
 
-//TODO new err field
+// TODO: new err field
 
 // Here is list of function for validate info.CoinModel and info.AssetModel structs
 
@@ -74,7 +75,8 @@ func ValidateAssetType(type_ string, chain coin.Coin) error {
 func ValidateAssetID(id string, address string) error {
 	if id != address {
 		log.Debugf("id - %s, addr - %s", id, address)
-		if strings.ToUpper(id) != strings.ToUpper(address) {
+
+		if !strings.EqualFold(id, address) {
 			return fmt.Errorf("invalid value for id field")
 		}
 
@@ -173,7 +175,7 @@ func ValidateCoinType(type_ string) error {
 
 func ValidateCoinTags(tags []string, allowedTags []string) error {
 	for _, t := range tags {
-		if !assetfs.Contains(t, allowedTags) {
+		if !pkg.Contains(t, allowedTags) {
 			return fmt.Errorf("invalid value for tags field, tag %s - not allowed", t)
 		}
 	}
@@ -186,7 +188,6 @@ func ValidateCoinTags(tags []string, allowedTags []string) error {
 func ValidateDecimals(decimals int) error {
 	if decimals > 30 || decimals < 0 {
 		return fmt.Errorf("invalid value for decimals field")
-
 	}
 
 	return nil
@@ -229,12 +230,12 @@ func ValidateExplorer(explorer, name string, chain coin.Coin, addr string) error
 	}
 	explorerActual := explorer
 
-	if strings.ToLower(explorerActual) != strings.ToLower(explorerExpected) {
+	if !strings.EqualFold(explorerActual, explorerExpected) {
 		explorerAlt := explorerUrlAlternatives(chain.Handle, name)
 		if len(explorerAlt) > 0 {
 			var matchCount = 0
 			for _, e := range explorerAlt {
-				if strings.ToLower(e) == strings.ToLower(explorerActual) {
+				if strings.EqualFold(e, explorerActual) {
 					matchCount++
 				}
 			}
@@ -242,8 +243,9 @@ func ValidateExplorer(explorer, name string, chain coin.Coin, addr string) error
 			if matchCount == 0 {
 				err := fmt.Errorf("invalid value for explorer field, %s insted of %s", explorerActual, explorerExpected)
 
-				if chain.ID != coin.ETHEREUM || chain.ID != coin.SMARTCHAIN {
+				if chain.ID == coin.ETHEREUM || chain.ID == coin.SMARTCHAIN {
 					err = validation.NewWarning(err)
+					return validation.NewWarning(err)
 				}
 
 				return err

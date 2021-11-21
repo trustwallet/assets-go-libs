@@ -2,73 +2,57 @@ package processor
 
 import (
 	log "github.com/sirupsen/logrus"
-	"github.com/trustwallet/assets-backend/internal/config"
-	"github.com/trustwallet/assets-backend/internal/validators"
-	"github.com/trustwallet/assets-backend/pkg/assetfs"
-	"github.com/trustwallet/assets-backend/pkg/assetfs/validation"
+
+	"github.com/trustwallet/assets-go-libs/internal/validator"
+	"github.com/trustwallet/assets-go-libs/pkg/file"
+	"github.com/trustwallet/assets-go-libs/pkg/validation"
 )
 
 type Service struct {
-	conf              config.ValidatorsSettings
-	fileStorage       *assetfs.FileProvider
-	validatorsService *validators.Service
+	fileStorage       *file.FileProvider
+	validatorsService *validator.Service
 }
 
-func NewService(
-	conf config.ValidatorsSettings,
-	fileStorage *assetfs.FileProvider,
-	validatorsService *validators.Service,
-) *Service {
-	return &Service{conf: conf, fileStorage: fileStorage, validatorsService: validatorsService}
+func NewService(storage *file.FileProvider, service *validator.Service) *Service {
+	return &Service{
+		fileStorage:       storage,
+		validatorsService: service,
+	}
 }
 
 func (s *Service) RunSanityCheck(paths []string) error {
-	//wg := &sync.WaitGroup{}
-
 	for _, path := range paths {
-		//wg.Add(1)
-
-		//go func(path string) {
-		//defer wg.Done()
-
-		file, err := s.fileStorage.GetAssetFile(path)
+		f, err := s.fileStorage.GetAssetFile(path)
 		if err != nil {
 			log.WithError(err).Error()
 			return err
 		}
 
-		validator := s.validatorsService.GetValidatorForFile(file)
-
+		validator := s.validatorsService.GetValidatorForFile(f)
 		if validator != nil {
-			err = validator.Run(file)
+			err = validator.Run(f)
 			if err != nil {
-				HandleError(err, file.Info, validator.ValidationName)
+				HandleError(err, f.Info, validator.ValidationName)
 			}
 		}
 
-		err = file.Close()
+		err = f.Close()
 		if err != nil {
 			log.WithError(err).Error()
 
 			return err
 		}
 	}
-	//(path)
-	//}
-	//wg.Wait()
 
 	return nil
 }
 
-func HandleError(err error, info *assetfs.AssetInfo, valName string) {
+func HandleError(err error, info *file.AssetInfo, valName string) {
 	errors := UnwrapComposite(err)
 
 	for _, err := range errors {
 		if warn, ok := err.(*validation.Warning); ok {
-			//log.WithField("path", info.Path()).Warning(warn)
-
-			HandleWarning(warn)
-
+			HandleWarning(warn, info)
 			continue
 		} else {
 			log.WithField("file_type", info.Type()).
@@ -80,7 +64,7 @@ func HandleError(err error, info *assetfs.AssetInfo, valName string) {
 		}
 
 		switch err {
-		//TODO errors handling call fixers
+		// TODO: errors handling call fixers
 		}
 	}
 }
@@ -99,6 +83,6 @@ func UnwrapComposite(err error) []error {
 	return errors
 }
 
-func HandleWarning(warning *validation.Warning) {
-
+func HandleWarning(warning *validation.Warning, info *file.AssetInfo) {
+	log.WithField("path", info.Path()).Warning(warning)
 }

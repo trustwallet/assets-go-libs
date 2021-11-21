@@ -1,4 +1,4 @@
-package assetfs
+package file
 
 const (
 	TypeAssetInfoFile      = "asset_info"
