@@ -7,7 +7,7 @@ client_urls:
 
 validators_settings:
   image_file:
-    size: 100 #file size in kb
+    size: 100 #file size in KB
     max_w: 512
     max_h: 512
     min_w: 50

@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/trustwallet/assets-backend/pkg/assetfs"
+	"github.com/trustwallet/assets-go-libs/pkg/assetfs"
 	"github.com/trustwallet/go-primitives/address"
 	"github.com/trustwallet/go-primitives/coin"
 )

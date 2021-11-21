@@ -5,7 +5,7 @@ import (
 	"io/fs"
 
 	log "github.com/sirupsen/logrus"
-	"github.com/trustwallet/assets-backend/pkg/assetfs"
+	"github.com/trustwallet/assets-go-libs/pkg/assetfs"
 )
 
 func ValidateHasFiles(files []fs.DirEntry, fileNames []string) error {

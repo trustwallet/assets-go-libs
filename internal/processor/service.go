@@ -2,10 +2,11 @@ package processor
 
 import (
 	log "github.com/sirupsen/logrus"
-	"github.com/trustwallet/assets-backend/internal/config"
-	"github.com/trustwallet/assets-backend/internal/validators"
-	"github.com/trustwallet/assets-backend/pkg/assetfs"
-	"github.com/trustwallet/assets-backend/pkg/assetfs/validation"
+
+	"github.com/trustwallet/assets-go-libs/internal/config"
+	"github.com/trustwallet/assets-go-libs/internal/validators"
+	"github.com/trustwallet/assets-go-libs/pkg/assetfs"
+	"github.com/trustwallet/assets-go-libs/pkg/assetfs/validation"
 )
 
 type Service struct {

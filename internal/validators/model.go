@@ -1,6 +1,6 @@
 package validators
 
-import "github.com/trustwallet/assets-backend/pkg/assetfs"
+import "github.com/trustwallet/assets-go-libs/pkg/assetfs"
 
 type Validator struct {
 	ValidationName string

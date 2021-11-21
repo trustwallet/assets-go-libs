@@ -1,36 +1,46 @@
-.PHONY: default clean build
+#! /usr/bin/make -f
 
-PWD := $(shell pwd)
+# Project variables.
+PROJECT_NAME := $(shell basename "$(PWD)")
+PACKAGE := "github.com/trustwallet/$(PROJECT_NAME)"
+VERSION := $(shell git describe --tags 2>/dev/null || git describe --all)
+BUILD := $(shell git rev-parse --short HEAD)
+DATETIME := $(shell date +"%Y.%m.%d-%H:%M:%S")
 
-APPS    := sanitychecker
-BILDDIR ?= bin
+# Use linker flags to provide version/build settings.
+LDFLAGS=-ldflags "-X=$(PACKAGE)/build.Version=$(VERSION) -X=$(PACKAGE)/build.Build=$(BUILD) -X=$(PACKAGE)/build.Date=$(DATETIME)"
 
-default: clean build
+# Go related variables.
+GOBASE := $(shell pwd)
+GOBIN := $(GOBASE)/bin
 
-build: $(APPS)
+# Go files.
+GOFMT_FILES?=$$(find . -name '*.go' | grep -v vendor)
 
-$(BILDDIR)/%:
-	go build -o $@ ./cmd/$*
+all: build start
 
-$(APPS): %: $(BILDDIR)/%
+start:
+	@echo "  >  Starting $(PROJECT_NAME)"
+	@-$(GOBIN)/$(PROJECT_NAME)
 
-clean:
-	@rm -f ${BILDDIR}/*
+build:
+	@echo "  >  Building app binary..."
+	GOBIN=$(GOBIN) go build $(LDFLAGS) -o $(GOBIN)/$(PROJECT_NAME) ./cmd
 
-## test: Run unit tests
 test:
 	@echo "  >  Running unit tests"
-	GOBIN=$(GOBIN) go test -cover -v ./...
+	GOBIN=$(GOBIN) go test -cover -race -coverprofile=coverage.txt -covermode=atomic -v ./...
 
-## lint: Install and run linter
-lint: go-lint-install go-lint
+fmt:
+	@echo "  >  Format all go files"
+	GOBIN=$(GOBIN) gofmt -w ${GOFMT_FILES}
 
-go-lint-install:
+lint-install:
 ifeq (,$(wildcard test -f bin/golangci-lint))
 	@echo "  >  Installing golint"
 	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s
 endif
 
-go-lint:
+lint: lint-install
 	@echo "  >  Running golint"
 	bin/golangci-lint run --timeout=2m

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/trustwallet/assets-backend/pkg/assetfs"
+	"github.com/trustwallet/assets-go-libs/pkg/assetfs"
 )
 
 func ValidateLowercase(name string) error {

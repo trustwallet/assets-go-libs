@@ -9,15 +9,15 @@ import (
 	"time"
 
 	log "github.com/sirupsen/logrus"
-	"github.com/trustwallet/assets-backend/internal/binancedex"
-	"github.com/trustwallet/assets-backend/internal/config"
-	"github.com/trustwallet/assets-backend/internal/processor"
-	"github.com/trustwallet/assets-backend/internal/validators"
-	"github.com/trustwallet/assets-backend/pkg/assetfs"
+	"github.com/trustwallet/assets-go-libs/internal/binancedex"
+	"github.com/trustwallet/assets-go-libs/internal/config"
+	"github.com/trustwallet/assets-go-libs/internal/processor"
+	"github.com/trustwallet/assets-go-libs/internal/validators"
+	"github.com/trustwallet/assets-go-libs/pkg/assetfs"
 )
 
 func main() {
-	const defaultConfigPath = "../../example.config.yaml"
+	const defaultConfigPath = "configs/example.config.yaml"
 
 	var confPath string
 	flag.StringVar(&confPath, "c", defaultConfigPath, "config file")

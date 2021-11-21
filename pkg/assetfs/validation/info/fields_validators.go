@@ -5,8 +5,8 @@ import (
 	"strings"
 
 	log "github.com/sirupsen/logrus"
-	"github.com/trustwallet/assets-backend/pkg/assetfs"
-	"github.com/trustwallet/assets-backend/pkg/assetfs/validation"
+	"github.com/trustwallet/assets-go-libs/pkg/assetfs"
+	"github.com/trustwallet/assets-go-libs/pkg/assetfs/validation"
 	"github.com/trustwallet/go-primitives/coin"
 	"github.com/trustwallet/go-primitives/types"
 )

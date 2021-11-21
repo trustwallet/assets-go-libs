@@ -7,11 +7,11 @@ import (
 	"io"
 	"io/ioutil"
 
-	"github.com/trustwallet/assets-backend/internal/config"
-	"github.com/trustwallet/assets-backend/pkg/assetfs"
-	"github.com/trustwallet/assets-backend/pkg/assetfs/validation"
-	"github.com/trustwallet/assets-backend/pkg/assetfs/validation/info"
-	"github.com/trustwallet/assets-backend/pkg/assetfs/validation/list"
+	"github.com/trustwallet/assets-go-libs/internal/config"
+	"github.com/trustwallet/assets-go-libs/pkg/assetfs"
+	"github.com/trustwallet/assets-go-libs/pkg/assetfs/validation"
+	"github.com/trustwallet/assets-go-libs/pkg/assetfs/validation/info"
+	"github.com/trustwallet/assets-go-libs/pkg/assetfs/validation/list"
 	"github.com/trustwallet/go-primitives/coin"
 )
 
@@ -121,22 +121,22 @@ func (s *Service) GetValidatorForFile(file *assetfs.AssetFile) *Validator {
 			Run:            s.ValidateRootFolder,
 			FileType:       fileType,
 		}
-	//case assetfs.TypeChainInfoFolder:
-	//	return &Validator{
-	//		ValidationName: "Chain Info Folder (has files)",
-	//		Run:            s.ValidateInfoFolder,
-	//		FileType:       fileType,
-	//	}
-	//case assetfs.TypeValidatorsFolder:
-	//	return nil
-	//case assetfs.TypeValidatorsAssetsFolder:
-	//	return nil
-	//case assetfs.TypeValidatorsAssetFolder:
-	//	return &Validator{
-	//		ValidationName: "Validators asset folder (has logo, valid asset address)",
-	//		Run:            s.ValidateValidatorsAssetFolder,
-	//		FileType:       fileType,
-	//	}
+		//case assetfs.TypeChainInfoFolder:
+		//	return &Validator{
+		//		ValidationName: "Chain Info Folder (has files)",
+		//		Run:            s.ValidateInfoFolder,
+		//		FileType:       fileType,
+		//	}
+		//case assetfs.TypeValidatorsFolder:
+		//	return nil
+		//case assetfs.TypeValidatorsAssetsFolder:
+		//	return nil
+		//case assetfs.TypeValidatorsAssetFolder:
+		//	return &Validator{
+		//		ValidationName: "Validators asset folder (has logo, valid asset address)",
+		//		Run:            s.ValidateValidatorsAssetFolder,
+		//		FileType:       fileType,
+		//	}
 	}
 
 	return nil
