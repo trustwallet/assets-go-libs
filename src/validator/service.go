@@ -487,7 +487,7 @@ func (s *Service) ValidateImage(file *file.AssetFile) error {
 
 // TODO: figure out how to do it other way...
 func getValidatorsAssetsPath(chain coin.Coin) string {
-	return fmt.Sprintf("../assets_ts/blockchains/%s/validators/assets", chain.Handle)
+	return fmt.Sprintf("blockchains/%s/validators/assets", chain.Handle)
 }
 
 func isStackingChain(c coin.Coin) bool {

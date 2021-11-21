@@ -56,7 +56,7 @@ func HandleError(err error, info *file.AssetInfo, valName string) {
 			continue
 		} else {
 			log.WithField("file_type", info.Type()).
-				WithField("file_chain", info.Chain()).
+				WithField("file_chain", info.Chain().Handle).
 				WithField("file_asset", info.Asset()).
 				WithField("file_path", info.Path()).
 				WithField("validation_name", valName).
