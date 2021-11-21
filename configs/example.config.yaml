@@ -39,7 +39,6 @@ validators_settings:
       - ".eslintrc.js"
       - "go.mod"
       - "go.sum"
-      - "cmd"
     skip_files:
       - "node_modules"
 
