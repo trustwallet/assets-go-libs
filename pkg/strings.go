@@ -1,4 +1,4 @@
-package assetfs
+package pkg
 
 import (
 	"strings"
@@ -32,7 +32,6 @@ func ReverseCase(str string) string {
 	}
 	runes = runes[0:n]
 
-	// Reverse
 	for i := 0; i < n; i++ {
 		if unicode.IsLower(runes[i]) {
 			runes[i] = unicode.ToUpper(runes[i])

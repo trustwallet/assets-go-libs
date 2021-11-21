@@ -1,8 +1,12 @@
-package assetfs
+package file
 
 import (
+	"fmt"
+	"os"
+	"path/filepath"
 	"regexp"
 
+	"github.com/trustwallet/assets-go-libs/pkg"
 	"github.com/trustwallet/go-primitives/coin"
 )
 
@@ -130,4 +134,28 @@ func defineFileType(p string) (string, *regexp.Regexp) {
 	}
 
 	return TypeUnknown, nil
+}
+
+func ReadLocalFileStructure(root string, filesToSkip []string) ([]string, error) {
+	var paths = []string{"./"}
+	err := filepath.Walk(root,
+		func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
+
+			if pkg.Contains(path, filesToSkip) {
+				return nil
+			}
+
+			paths = append(paths, fmt.Sprintf("./%s", path))
+
+			return nil
+		})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return paths, nil
 }

@@ -6,8 +6,7 @@ import (
 )
 
 type Service struct {
-	mu *sync.Mutex
-
+	mu      *sync.Mutex
 	reports ReportList
 }
 
@@ -71,10 +70,10 @@ func (rl ReportList) WithTotal() map[string]*Report {
 	var totalReport = Report{}
 
 	for _, v := range rl {
-		totalReport.TotalFiles = v.TotalFiles
-		totalReport.Errors = v.Errors
-		totalReport.Warnings = v.Warnings
-		totalReport.Fixed = v.Fixed
+		totalReport.TotalFiles += v.TotalFiles
+		totalReport.Errors += v.Errors
+		totalReport.Warnings += v.Warnings
+		totalReport.Fixed += v.Fixed
 	}
 
 	rl["Total"] = &totalReport

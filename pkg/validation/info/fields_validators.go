@@ -5,8 +5,8 @@ import (
 	"strings"
 
 	log "github.com/sirupsen/logrus"
-	"github.com/trustwallet/assets-go-libs/pkg/assetfs"
-	"github.com/trustwallet/assets-go-libs/pkg/assetfs/validation"
+	"github.com/trustwallet/assets-go-libs/pkg"
+	"github.com/trustwallet/assets-go-libs/pkg/validation"
 	"github.com/trustwallet/go-primitives/coin"
 	"github.com/trustwallet/go-primitives/types"
 )
@@ -173,7 +173,7 @@ func ValidateCoinType(type_ string) error {
 
 func ValidateCoinTags(tags []string, allowedTags []string) error {
 	for _, t := range tags {
-		if !assetfs.Contains(t, allowedTags) {
+		if !pkg.Contains(t, allowedTags) {
 			return fmt.Errorf("invalid value for tags field, tag %s - not allowed", t)
 		}
 	}

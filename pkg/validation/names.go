@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/trustwallet/assets-go-libs/pkg/assetfs"
+	"github.com/trustwallet/assets-go-libs/pkg"
 )
 
 func ValidateLowercase(name string) error {
-	if !assetfs.IsLowerCase(name) {
+	if !pkg.IsLowerCase(name) {
 		return fmt.Errorf(
 			"%w, file - %s filename should be in lowercase",
 			ErrInvalidFileCase,

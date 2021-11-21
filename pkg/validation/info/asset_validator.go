@@ -1,7 +1,7 @@
 package info
 
 import (
-	"github.com/trustwallet/assets-go-libs/pkg/assetfs/validation"
+	"github.com/trustwallet/assets-go-libs/pkg/validation"
 	"github.com/trustwallet/go-primitives/coin"
 )
 

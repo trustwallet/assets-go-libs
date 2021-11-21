@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/trustwallet/assets-go-libs/pkg/assetfs"
+	"github.com/trustwallet/assets-go-libs/pkg"
 	"github.com/trustwallet/go-primitives/address"
 	"github.com/trustwallet/go-primitives/coin"
 )
@@ -57,7 +57,7 @@ func ValidateValidatorsAddress(chain coin.Coin, address string) error {
 }
 
 func ValidateWavesAddress(addr string) error {
-	condition := strings.HasPrefix(addr, "3P") && len(addr) == 35 && !assetfs.IsLowerCase(addr) && !assetfs.IsUpperCase(addr)
+	condition := strings.HasPrefix(addr, "3P") && len(addr) == 35 && !pkg.IsLowerCase(addr) && !pkg.IsUpperCase(addr)
 	if !condition {
 		return fmt.Errorf("%w, %s - should be Waves address", ErrInvalidAddress, addr)
 	}
@@ -74,7 +74,7 @@ func ValidateTezosAddress(addr string) error {
 }
 
 func ValidateTronAddress(addr string) error {
-	trc20 := len(addr) == 34 && strings.HasPrefix(addr, "T") && !assetfs.IsLowerCase(addr) && !assetfs.IsUpperCase(addr)
+	trc20 := len(addr) == 34 && strings.HasPrefix(addr, "T") && !pkg.IsLowerCase(addr) && !pkg.IsUpperCase(addr)
 	trc10 := regexTRC10.MatchString(addr)
 	if !trc10 && !trc20 {
 		return fmt.Errorf("%w, should be valid tron address", ErrInvalidAddress)
@@ -90,7 +90,7 @@ func ValidateETHForkAddress(chain coin.Coin, addr string) error {
 	}
 
 	if chain.ID == coin.WANCHAIN {
-		checksum = strings.ReplaceAll(assetfs.ReverseCase(checksum), "X", "x")
+		checksum = strings.ReplaceAll(pkg.ReverseCase(checksum), "X", "x")
 	}
 
 	if checksum != addr {
@@ -109,7 +109,7 @@ func ValidateAddress(address string, prefix string, length int) error {
 		return fmt.Errorf("%w, %s should be %d lenght", ErrInvalidFileNameLength, address, length)
 	}
 
-	if !assetfs.IsLowerCase(address) {
+	if !pkg.IsLowerCase(address) {
 		return fmt.Errorf("%w, %s should be lowercase", ErrInvalidFileCase, address)
 	}
 

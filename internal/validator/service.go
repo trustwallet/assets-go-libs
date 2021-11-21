@@ -1,4 +1,4 @@
-package validators
+package validator
 
 import (
 	"bytes"
@@ -6,143 +6,145 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"time"
 
+	"github.com/trustwallet/assets-go-libs/internal/binancedex"
 	"github.com/trustwallet/assets-go-libs/internal/config"
-	"github.com/trustwallet/assets-go-libs/pkg/assetfs"
-	"github.com/trustwallet/assets-go-libs/pkg/assetfs/validation"
-	"github.com/trustwallet/assets-go-libs/pkg/assetfs/validation/info"
-	"github.com/trustwallet/assets-go-libs/pkg/assetfs/validation/list"
+	"github.com/trustwallet/assets-go-libs/pkg/file"
+	"github.com/trustwallet/assets-go-libs/pkg/validation"
+	"github.com/trustwallet/assets-go-libs/pkg/validation/info"
+	"github.com/trustwallet/assets-go-libs/pkg/validation/list"
 	"github.com/trustwallet/go-primitives/coin"
 )
 
 type Service struct {
-	imgConf              config.ImageFile
-	coinInfoConf         config.CoinInfoFile
-	chainFolderConf      config.ChainFolder
-	rootFolderConf       config.RootFolder
-	assetFolderConf      config.AssetFolder
-	infoFolderConf       config.ChainInfoFolder
-	dappsFolderConfig    config.DaapsFolder
 	binanceAssetsSymbols []string
-
-	fileProvider *assetfs.FileProvider
+	fileProvider         *file.FileProvider
 }
 
-func NewService(
-	settings config.ValidatorsSettings,
-	binanceAssetsSymbols []string,
-	fileProvider *assetfs.FileProvider,
-) *Service {
-	return &Service{
-		imgConf:           settings.ImageFile,
-		coinInfoConf:      settings.CoinInfoFile,
-		chainFolderConf:   settings.ChainFolder,
-		rootFolderConf:    settings.RootFolder,
-		assetFolderConf:   settings.AssetFolder,
-		infoFolderConf:    settings.ChainInfoFolder,
-		dappsFolderConfig: settings.DaapsFolder,
+func NewService(fileProvider *file.FileProvider) (*Service, error) {
+	var binanceAssetsSymbols []string
 
-		binanceAssetsSymbols: binanceAssetsSymbols,
+	binancedexClient := binancedex.InitBinanceDexClient(config.Default.ClientURLs.Binancedex, nil)
 
-		fileProvider: fileProvider,
+	bep8, err := binancedexClient.GetBep8Assets(1000)
+	if err != nil {
+		return nil, err
 	}
+	<-time.After(time.Second * 1) // TODO: binance dex blocked too often requests (request timout)
+	bep2, err := binancedexClient.GetBep2Assets(1000)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, a := range bep8 {
+		binanceAssetsSymbols = append(binanceAssetsSymbols, a.Symbol)
+	}
+	for _, a := range bep2 {
+		binanceAssetsSymbols = append(binanceAssetsSymbols, a.Symbol)
+	}
+
+	return &Service{
+		binanceAssetsSymbols: binanceAssetsSymbols,
+		fileProvider:         fileProvider,
+	}, nil
 }
 
-func (s *Service) GetValidatorForFile(file *assetfs.AssetFile) *Validator {
-	fileType := file.Info.Type()
+func (s *Service) GetValidatorForFile(f *file.AssetFile) *Validator {
+	fileType := f.Info.Type()
 	switch fileType {
-	case assetfs.TypeAssetInfoFile:
-	//	return &Validator{
-	//		ValidationName: "Asset info (is valid json, fields)",
-	//		Run:            s.ValidateAssetInfoFile,
-	//		FileType:       fileType,
-	//	}
-	//case assetfs.TypeAssetLogoFile, assetfs.TypeChainLogoFile, assetfs.TypeValidatorsLogoFile, assetfs.TypeDappsLogoFile:
-	//	return &Validator{
-	//		ValidationName: "Logos (size, dimension)",
-	//		Run:            s.ValidateImage,
-	//		FileType:       fileType,
-	//	}
-	//case assetfs.TypeChainInfoFile:
-	//	return &Validator{
-	//		ValidationName: "Chain Info (is valid json, fields)",
-	//		Run:            s.ValidateChainInfoFile,
-	//		FileType:       fileType,
-	//	}
-	//case assetfs.TypeValidatorsListFile:
-	//	if !isStackingChain(file.Info.Chain()) {
-	//		return nil
-	//	}
-	//
-	//	return &Validator{
-	//		ValidationName: "Validators list file",
-	//		Run:            s.ValidateValidatorsListFile,
-	//		FileType:       fileType,
-	//	}
-	//case assetfs.TypeTokenListFile:
-	//	return &Validator{
-	//		ValidationName: "Token list (if assets from list present in chain)",
-	//		Run:            s.ValidateTokenListFile,
-	//		FileType:       fileType,
-	//	}
-	//case assetfs.TypeAssetFolder:
-	//	return &Validator{
-	//		ValidationName: "Each asset folder (valid asset address, contains logo/info)",
-	//		Run:            s.ValidateAssetFolder,
-	//		FileType:       fileType,
-	//	}
-	//case assetfs.TypeAssetsFolder:
-	//	return &Validator{
-	//		ValidationName: "Chain assets folder (chain specific validation also here)",
-	//		Run:            s.ValidateChainAssetsFolder,
-	//		FileType:       fileType,
-	//	}
-	//case assetfs.TypeChainFolder:
-	//	return &Validator{
-	//		ValidationName: "Chains folder (is files are lower cased, chain specific validations)",
-	//		Run:            s.ValidateChainFolder,
-	//		FileType:       fileType,
-	//	}
-	//case assetfs.TypeChainsFolder:
-	//	return &Validator{
-	//		ValidationName: "Each chain folders (lower case, contains files)",
-	//		Run:            s.ValidateChainsFolder,
-	//		FileType:       fileType,
-	//	}
-	//case assetfs.TypeDaapsFolder:
-	//	return &Validator{
-	//		ValidationName: "Daaps folder (allowed only png files, lowercase)",
-	//		Run:            s.ValidateDaapsFolder,
-	//		FileType:       fileType,
-	//	}
-	case assetfs.TypeRootFolder:
+	case file.TypeAssetInfoFile:
+		return &Validator{
+			ValidationName: "Asset info (is valid json, fields)",
+			Run:            s.ValidateAssetInfoFile,
+			FileType:       fileType,
+		}
+	case file.TypeAssetLogoFile, file.TypeChainLogoFile, file.TypeValidatorsLogoFile, file.TypeDappsLogoFile:
+		return &Validator{
+			ValidationName: "Logos (size, dimension)",
+			Run:            s.ValidateImage,
+			FileType:       fileType,
+		}
+	case file.TypeChainInfoFile:
+		return &Validator{
+			ValidationName: "Chain Info (is valid json, fields)",
+			Run:            s.ValidateChainInfoFile,
+			FileType:       fileType,
+		}
+	case file.TypeValidatorsListFile:
+		if !isStackingChain(f.Info.Chain()) {
+			return nil
+		}
+
+		return &Validator{
+			ValidationName: "Validators list file",
+			Run:            s.ValidateValidatorsListFile,
+			FileType:       fileType,
+		}
+	case file.TypeTokenListFile:
+		return &Validator{
+			ValidationName: "Token list (if assets from list present in chain)",
+			Run:            s.ValidateTokenListFile,
+			FileType:       fileType,
+		}
+	case file.TypeAssetFolder:
+		return &Validator{
+			ValidationName: "Each asset folder (valid asset address, contains logo/info)",
+			Run:            s.ValidateAssetFolder,
+			FileType:       fileType,
+		}
+	case file.TypeAssetsFolder:
+		return &Validator{
+			ValidationName: "Chain assets folder (chain specific validation also here)",
+			Run:            s.ValidateChainAssetsFolder,
+			FileType:       fileType,
+		}
+	case file.TypeChainFolder:
+		return &Validator{
+			ValidationName: "Chains folder (is files are lower cased, chain specific validations)",
+			Run:            s.ValidateChainFolder,
+			FileType:       fileType,
+		}
+	case file.TypeChainsFolder:
+		return &Validator{
+			ValidationName: "Each chain folders (lower case, contains files)",
+			Run:            s.ValidateChainsFolder,
+			FileType:       fileType,
+		}
+	case file.TypeDaapsFolder:
+		return &Validator{
+			ValidationName: "Daaps folder (allowed only png files, lowercase)",
+			Run:            s.ValidateDaapsFolder,
+			FileType:       fileType,
+		}
+	case file.TypeRootFolder:
 		return &Validator{
 			ValidationName: "Root folder (contains only allowed files)",
 			Run:            s.ValidateRootFolder,
 			FileType:       fileType,
 		}
-		//case assetfs.TypeChainInfoFolder:
-		//	return &Validator{
-		//		ValidationName: "Chain Info Folder (has files)",
-		//		Run:            s.ValidateInfoFolder,
-		//		FileType:       fileType,
-		//	}
-		//case assetfs.TypeValidatorsFolder:
-		//	return nil
-		//case assetfs.TypeValidatorsAssetsFolder:
-		//	return nil
-		//case assetfs.TypeValidatorsAssetFolder:
-		//	return &Validator{
-		//		ValidationName: "Validators asset folder (has logo, valid asset address)",
-		//		Run:            s.ValidateValidatorsAssetFolder,
-		//		FileType:       fileType,
-		//	}
+	case file.TypeChainInfoFolder:
+		return &Validator{
+			ValidationName: "Chain Info Folder (has files)",
+			Run:            s.ValidateInfoFolder,
+			FileType:       fileType,
+		}
+	case file.TypeValidatorsFolder:
+		return nil
+	case file.TypeValidatorsAssetsFolder:
+		return nil
+	case file.TypeValidatorsAssetFolder:
+		return &Validator{
+			ValidationName: "Validators asset folder (has logo, valid asset address)",
+			Run:            s.ValidateValidatorsAssetFolder,
+			FileType:       fileType,
+		}
 	}
 
 	return nil
 }
 
-func (s *Service) ValidateValidatorsAssetFolder(file *assetfs.AssetFile) error {
+func (s *Service) ValidateValidatorsAssetFolder(file *file.AssetFile) error {
 	assetInfo := file.Info
 	dirFiles, err := file.ReadDir(0)
 	if err != nil {
@@ -167,7 +169,7 @@ func (s *Service) ValidateValidatorsAssetFolder(file *assetfs.AssetFile) error {
 	return nil
 }
 
-func (s *Service) ValidateDaapsFolder(file *assetfs.AssetFile) error {
+func (s *Service) ValidateDaapsFolder(file *file.AssetFile) error {
 	dirFiles, err := file.ReadDir(0)
 	if err != nil {
 		return err
@@ -175,7 +177,7 @@ func (s *Service) ValidateDaapsFolder(file *assetfs.AssetFile) error {
 
 	var compErr = validation.NewErrComposite()
 	for _, dirFile := range dirFiles {
-		err = validation.ValidateExtension(dirFile.Name(), s.dappsFolderConfig.Ext)
+		err = validation.ValidateExtension(dirFile.Name(), config.Default.ValidatorsSettings.DappsFolder.Ext)
 		if err != nil {
 			compErr.Append(err)
 		}
@@ -193,7 +195,7 @@ func (s *Service) ValidateDaapsFolder(file *assetfs.AssetFile) error {
 	return nil
 }
 
-func (s *Service) ValidateAssetFolder(file *assetfs.AssetFile) error {
+func (s *Service) ValidateAssetFolder(file *file.AssetFile) error {
 	assetInfo := file.Info
 	dirFiles, err := file.ReadDir(0)
 	if err != nil {
@@ -201,7 +203,7 @@ func (s *Service) ValidateAssetFolder(file *assetfs.AssetFile) error {
 	}
 
 	var compErr = validation.NewErrComposite()
-	err = validation.ValidateAllowedFiles(dirFiles, s.assetFolderConf.AllowedFiles)
+	err = validation.ValidateAllowedFiles(dirFiles, config.Default.ValidatorsSettings.AssetFolder.AllowedFiles)
 	if err != nil {
 		compErr.Append(err)
 	}
@@ -250,13 +252,13 @@ func (s *Service) ValidateAssetFolder(file *assetfs.AssetFile) error {
 	return nil
 }
 
-func (s *Service) ValidateInfoFolder(file *assetfs.AssetFile) error {
+func (s *Service) ValidateInfoFolder(file *file.AssetFile) error {
 	dirFiles, err := file.ReadDir(0)
 	if err != nil {
 		return err
 	}
 
-	err = validation.ValidateHasFiles(dirFiles, s.infoFolderConf.HasFiles)
+	err = validation.ValidateHasFiles(dirFiles, config.Default.ValidatorsSettings.ChainInfoFolder.HasFiles)
 	if err != nil {
 		return err
 	}
@@ -264,13 +266,13 @@ func (s *Service) ValidateInfoFolder(file *assetfs.AssetFile) error {
 	return nil
 }
 
-func (s *Service) ValidateRootFolder(file *assetfs.AssetFile) error {
+func (s *Service) ValidateRootFolder(file *file.AssetFile) error {
 	dirFiles, err := file.ReadDir(0)
 	if err != nil {
 		return err
 	}
 
-	err = validation.ValidateAllowedFiles(dirFiles, s.rootFolderConf.AllowedFiles)
+	err = validation.ValidateAllowedFiles(dirFiles, config.Default.ValidatorsSettings.RootFolder.AllowedFiles)
 	if err != nil {
 		return err
 	}
@@ -278,7 +280,7 @@ func (s *Service) ValidateRootFolder(file *assetfs.AssetFile) error {
 	return nil
 }
 
-func (s *Service) ValidateChainsFolder(file *assetfs.AssetFile) error {
+func (s *Service) ValidateChainsFolder(file *file.AssetFile) error {
 	fileInfo, err := file.Stat()
 	if err != nil {
 		return err
@@ -292,12 +294,12 @@ func (s *Service) ValidateChainsFolder(file *assetfs.AssetFile) error {
 	return nil
 }
 
-func (s *Service) ValidateChainFolder(file *assetfs.AssetFile) error {
+func (s *Service) ValidateChainFolder(file *file.AssetFile) error {
 	dirFiles, err := file.ReadDir(0)
 	if err != nil {
 		return err
 	}
-	err = validation.ValidateAllowedFiles(dirFiles, s.chainFolderConf.AllowedFiles)
+	err = validation.ValidateAllowedFiles(dirFiles, config.Default.ValidatorsSettings.ChainFolder.AllowedFiles)
 	if err != nil {
 		return err
 	}
@@ -305,7 +307,7 @@ func (s *Service) ValidateChainFolder(file *assetfs.AssetFile) error {
 	return nil
 }
 
-func (s *Service) ValidateChainAssetsFolder(file *assetfs.AssetFile) error {
+func (s *Service) ValidateChainAssetsFolder(file *file.AssetFile) error {
 	assetInfo := file.Info
 	if assetInfo.Chain().ID == coin.BINANCE {
 		dirFiles, err := file.ReadDir(0)
@@ -322,7 +324,7 @@ func (s *Service) ValidateChainAssetsFolder(file *assetfs.AssetFile) error {
 	return nil
 }
 
-func (s *Service) ValidateTokenListFile(file *assetfs.AssetFile) error {
+func (s *Service) ValidateTokenListFile(file *file.AssetFile) error {
 	buf := bytes.NewBuffer(nil)
 	_, err := buf.ReadFrom(file)
 	if err != nil {
@@ -337,7 +339,7 @@ func (s *Service) ValidateTokenListFile(file *assetfs.AssetFile) error {
 	return nil
 }
 
-func (s *Service) ValidateValidatorsListFile(file *assetfs.AssetFile) error {
+func (s *Service) ValidateValidatorsListFile(file *file.AssetFile) error {
 	buf := bytes.NewBuffer(nil)
 	_, err := buf.ReadFrom(file)
 	if err != nil {
@@ -384,7 +386,7 @@ func (s *Service) ValidateValidatorsListFile(file *assetfs.AssetFile) error {
 	return nil
 }
 
-func (s *Service) ValidateChainInfoFile(file *assetfs.AssetFile) error {
+func (s *Service) ValidateChainInfoFile(file *file.AssetFile) error {
 	fileInfo := file.Info
 	buf := bytes.NewBuffer(nil)
 	_, err := buf.ReadFrom(file)
@@ -409,7 +411,7 @@ func (s *Service) ValidateChainInfoFile(file *assetfs.AssetFile) error {
 	}
 
 	var tags []string
-	for _, t := range s.coinInfoConf.Tags {
+	for _, t := range config.Default.ValidatorsSettings.CoinInfoFile.Tags {
 		tags = append(tags, t.ID)
 	}
 
@@ -421,7 +423,7 @@ func (s *Service) ValidateChainInfoFile(file *assetfs.AssetFile) error {
 	return nil
 }
 
-func (s *Service) ValidateAssetInfoFile(file *assetfs.AssetFile) error {
+func (s *Service) ValidateAssetInfoFile(file *file.AssetFile) error {
 	fileInfo := file.Info
 	buf := bytes.NewBuffer(nil)
 	_, err := buf.ReadFrom(file)
@@ -453,13 +455,13 @@ func (s *Service) ValidateAssetInfoFile(file *assetfs.AssetFile) error {
 	return nil
 }
 
-func (s *Service) ValidateImage(file *assetfs.AssetFile) error {
+func (s *Service) ValidateImage(file *file.AssetFile) error {
 	b, err := ioutil.ReadAll(file)
 	if err != nil {
 		return err
 	}
 
-	err = validation.ValidateSize(b, s.imgConf.Size)
+	err = validation.ValidateSize(b, config.Default.ValidatorsSettings.ImageFile.Size)
 	if err != nil {
 		return err
 	}
@@ -469,7 +471,12 @@ func (s *Service) ValidateImage(file *assetfs.AssetFile) error {
 		return err
 	}
 
-	err = validation.ValidateImageDimension(file, s.imgConf.MaxW, s.imgConf.MaxH, s.imgConf.MinW, s.imgConf.MinH)
+	err = validation.ValidateImageDimension(file,
+		config.Default.ValidatorsSettings.ImageFile.MaxW,
+		config.Default.ValidatorsSettings.ImageFile.MaxH,
+		config.Default.ValidatorsSettings.ImageFile.MinW,
+		config.Default.ValidatorsSettings.ImageFile.MinH,
+	)
 	if err != nil {
 		return err
 	}
@@ -477,7 +484,7 @@ func (s *Service) ValidateImage(file *assetfs.AssetFile) error {
 	return nil
 }
 
-//TODO figure out how to do it other way...
+// TODO: figure out how to do it other way...
 func getValidatorsAssetsPath(chain coin.Coin) string {
 	return fmt.Sprintf("../assets_ts/blockchains/%s/validators/assets", chain.Handle)
 }

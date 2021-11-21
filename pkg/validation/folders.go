@@ -5,7 +5,8 @@ import (
 	"io/fs"
 
 	log "github.com/sirupsen/logrus"
-	"github.com/trustwallet/assets-go-libs/pkg/assetfs"
+
+	"github.com/trustwallet/assets-go-libs/pkg"
 )
 
 func ValidateHasFiles(files []fs.DirEntry, fileNames []string) error {
@@ -36,7 +37,7 @@ func ValidateAllowedFiles(files []fs.DirEntry, allowedFiles []string) error {
 	compErr := NewErrComposite()
 	for _, f := range files {
 		log.WithField("allowed_file", f.Name()).WithField("files", files).Debug("Allowed files validation")
-		if !assetfs.Contains(f.Name(), allowedFiles) {
+		if !pkg.Contains(f.Name(), allowedFiles) {
 			compErr.Append(fmt.Errorf("%w %s", ErrNotAllowedFile, f.Name()))
 		}
 	}
