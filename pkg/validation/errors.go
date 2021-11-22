@@ -7,7 +7,7 @@ import (
 
 var (
 	ErrMissingFile         = errors.New("missing file")
-	ErrNotAllowedFile      = errors.New("file not allowed")
+	ErrNotAllowedFile      = errors.New("file is not allowed")
 	ErrInvalidJson         = errors.New("invalid json")
 	ErrInvalidImgDimension = errors.New("invalid file dimension")
 
