@@ -1,5 +1,5 @@
 app:
-  log_level: debug
+  log_level: info
 
 client_urls:
   binancedex: "https://dex-atlantic.binance.org"
@@ -14,8 +14,8 @@ validators_settings:
 
   asset_folder:
     allowed_files:
-      - "info.json"
       - "logo.png"
+      - "info.json"
 
   root_folder:
     allowed_files:
@@ -37,6 +37,7 @@ validators_settings:
       - ".git"
       - ".eslintignore"
       - ".eslintrc.js"
+      - "cmd"
       - "go.mod"
       - "go.sum"
     skip_files:
@@ -51,9 +52,9 @@ validators_settings:
 
   chain_info_folder:
     has_files:
-      - "info.json"
       - "logo.png"
-
+      - "info.json"
+  
   chain_validators_asset_folder:
     has_files:
       - "logo.png"
