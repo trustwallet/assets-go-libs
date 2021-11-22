@@ -188,9 +188,9 @@ func (s *Service) ValidateChainInfoFile(file *file.AssetFile) error {
 		return fmt.Errorf("%w: failed to decode", err)
 	}
 
-	var tags []string
-	for _, t := range config.Default.ValidatorsSettings.CoinInfoFile.Tags {
-		tags = append(tags, t.ID)
+	tags := make([]string, len(config.Default.ValidatorsSettings.CoinInfoFile.Tags))
+	for i, t := range config.Default.ValidatorsSettings.CoinInfoFile.Tags {
+		tags[i] = t.ID
 	}
 
 	err = info.ValidateCoin(payload, file.Info.Chain(), file.Info.Asset(), tags)
@@ -259,9 +259,9 @@ func (s *Service) ValidateValidatorsListFile(file *file.AssetFile) error {
 		return err
 	}
 
-	var listIDs []string
-	for _, listItem := range model {
-		listIDs = append(listIDs, *listItem.ID)
+	listIDs := make([]string, len(model))
+	for i, listItem := range model {
+		listIDs[i] = *listItem.ID
 	}
 
 	assetsPath := fmt.Sprintf("blockchains/%s/validators/assets", file.Info.Chain().Handle)

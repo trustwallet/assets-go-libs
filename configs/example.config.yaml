@@ -14,8 +14,8 @@ validators_settings:
 
   asset_folder:
     allowed_files:
-      - "logo.png"
       - "info.json"
+      - "logo.png"
 
   root_folder:
     allowed_files:
@@ -51,8 +51,8 @@ validators_settings:
 
   chain_info_folder:
     has_files:
-      - "logo.png"
       - "info.json"
+      - "logo.png"
 
   chain_validators_asset_folder:
     has_files:

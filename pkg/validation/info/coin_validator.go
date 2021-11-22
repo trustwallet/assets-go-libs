@@ -10,8 +10,7 @@ func ValidateCoin(model CoinModel, chain coin.Coin, addr string, allowedTags []s
 		return err
 	}
 
-	// all fields validated for nil and can be safety used in func
-
+	// All fields validated for nil and can be safety used in func.
 	compErr := validation.NewErrComposite()
 	if err := ValidateCoinType(*model.Type); err != nil {
 		compErr.Append(err)

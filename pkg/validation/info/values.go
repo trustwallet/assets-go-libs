@@ -7,30 +7,38 @@ import (
 	"github.com/trustwallet/go-primitives/coin"
 )
 
-var requiredCoinFields = []string{"name", "type", "symbol", "decimals", "description", "website", "explorer", "status"}
-var requiredAssetFields = []string{"name", "type", "symbol", "decimals", "description", "website", "explorer", "status", "id"}
-var allowedStatusValues = []string{
-	"active",
-	"spam",
-	"abandoned",
-}
-var allowedLinkKeys = map[string]string{"github": "https://github.com/",
-	"whitepaper":    "",
-	"twitter":       "https://twitter.com/",
-	"telegram":      "https://t.me/",
-	"telegram_news": "https://t.me/", // read-only announcement channel
-	"medium":        "",              // url contains 'medium.com'
-	"discord":       "https://discord.com/",
-	"reddit":        "https://reddit.com/",
-	"facebook":      "https://facebook.com/",
-	"youtube":       "https://youtube.com/",
-	"coinmarketcap": "https://coinmarketcap.com/",
-	"coingecko":     "https://coingecko.com/",
-	"blog":          "", // blog, other than medium
-	"forum":         "", // community site
-	"docs":          "",
-	"source_code":   "", // other than github
-}
+var (
+	requiredCoinFields = []string{
+		"name", "type", "symbol", "decimals",
+		"description", "website", "explorer", "status",
+	}
+
+	requiredAssetFields = []string{
+		"name", "type", "symbol", "decimals",
+		"description", "website", "explorer", "status", "id",
+	}
+
+	allowedStatusValues = []string{"active", "spam", "abandoned"}
+
+	allowedLinkKeys = map[string]string{
+		"github":        "https://github.com/",
+		"whitepaper":    "",
+		"twitter":       "https://twitter.com/",
+		"telegram":      "https://t.me/",
+		"telegram_news": "https://t.me/", // Read-only announcement channel.
+		"medium":        "",              // URL contains 'medium.com'.
+		"discord":       "https://discord.com/",
+		"reddit":        "https://reddit.com/",
+		"facebook":      "https://facebook.com/",
+		"youtube":       "https://youtube.com/",
+		"coinmarketcap": "https://coinmarketcap.com/",
+		"coingecko":     "https://coingecko.com/",
+		"blog":          "", // Blog, other than medium.
+		"forum":         "", // Community site.
+		"docs":          "",
+		"source_code":   "", // Other than github.
+	}
+)
 
 func explorerUrlAlternatives(chain string, name string) []string {
 	var altUrls []string
@@ -59,7 +67,7 @@ func linkNameAllowed(str string) bool {
 }
 
 func supportedLinkNames() []string {
-	var names []string
+	names := make([]string, 0, len(allowedLinkKeys))
 	for k := range allowedLinkKeys {
 		names = append(names, k)
 	}
@@ -68,7 +76,7 @@ func supportedLinkNames() []string {
 }
 
 func supportedLinkValues() []string {
-	var values []string
+	values := make([]string, 0, len(allowedLinkKeys))
 	for _, v := range allowedLinkKeys {
 		values = append(values, v)
 	}

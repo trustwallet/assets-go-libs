@@ -17,20 +17,22 @@ var (
 	regexChainInfoFile = regexp.MustCompile(`./blockchains/(\w+[\-]\w+|\w+)/info/info.json$`)
 	regexChainLogoFile = regexp.MustCompile(`./blockchains/(\w+[\-]\w+|\w+)/info/logo.png$`)
 
-	regexValidatorsAssetLogo = regexp.MustCompile(`./blockchains/(\w+[\-]\w+|\w+)/validators/assets/(\w+[\-]\w+|\w+)/logo.png$`)
-	regexValidatorsList      = regexp.MustCompile(`./blockchains/(\w+[\-]\w+|\w+)/validators/list.json$`)
+	regexTokenListFile = regexp.MustCompile(`./blockchains/(\w+[\-]\w+|\w+)/tokenlist.json$`)
+
+	regexValidatorsAssetLogo = regexp.MustCompile(
+		`./blockchains/(\w+[\-]\w+|\w+)/validators/assets/(\w+[\-]\w+|\w+)/logo.png$`)
+	regexValidatorsList = regexp.MustCompile(`./blockchains/(\w+[\-]\w+|\w+)/validators/list.json$`)
 
 	regexDappsLogo = regexp.MustCompile(`./dapps/[a-zA-Z-.]+\.png$`)
-
-	regexTokenListFile = regexp.MustCompile(`./blockchains/(\w+[\-]\w+|\w+)/tokenlist.json$`)
 )
 
 var (
 	regexAssetFolder  = regexp.MustCompile(`./blockchains/(\w+[\-]\w+|\w+)/assets/(\w+[\-]\w+|\w+)$`)
 	regexAssetsFolder = regexp.MustCompile(`./blockchains/(\w+[\-]\w+|\w+)/assets$`)
 
-	regexValidatorsFolder       = regexp.MustCompile(`./blockchains/(\w+[\-]\w+|\w+)/validators$`)
-	regexValidatorsAssetFolder  = regexp.MustCompile(`./blockchains/(\w+[\-]\w+|\w+)/validators/assets/(\w+[\-]\w+|\w+)$`)
+	regexValidatorsFolder      = regexp.MustCompile(`./blockchains/(\w+[\-]\w+|\w+)/validators$`)
+	regexValidatorsAssetFolder = regexp.MustCompile(
+		`./blockchains/(\w+[\-]\w+|\w+)/validators/assets/(\w+[\-]\w+|\w+)$`)
 	regexValidatorsAssetsFolder = regexp.MustCompile(`./blockchains/(\w+[\-]\w+|\w+)/validators/assets$`)
 
 	regexChainFolder     = regexp.MustCompile(`./blockchains/(\w+[^/])$`)
@@ -48,12 +50,12 @@ var regexes = map[string]*regexp.Regexp{
 	TypeChainInfoFile: regexChainInfoFile,
 	TypeChainLogoFile: regexChainLogoFile,
 
+	TypeTokenListFile: regexTokenListFile,
+
 	TypeValidatorsListFile: regexValidatorsList,
 	TypeValidatorsLogoFile: regexValidatorsAssetLogo,
 
 	TypeDappsLogoFile: regexDappsLogo,
-
-	TypeTokenListFile: regexTokenListFile,
 
 	TypeAssetFolder:  regexAssetFolder,
 	TypeAssetsFolder: regexAssetsFolder,

@@ -64,7 +64,7 @@ func HandleError(err error, info *file.AssetInfo, valName string) {
 		}
 
 		switch err {
-		// TODO: errors handling call fixers
+		// TODO: Call fixers here.
 		}
 	}
 }

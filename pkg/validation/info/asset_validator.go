@@ -10,7 +10,7 @@ func ValidateAsset(a AssetModel, chain coin.Coin, addr string) error {
 		return err
 	}
 
-	// all fields validated for nil and can be safety used in func
+	// All fields validated for nil and can be safety used in func.
 	compErr := validation.NewErrComposite()
 	if err := ValidateAssetType(*a.Type, chain); err != nil {
 		compErr.Append(err)

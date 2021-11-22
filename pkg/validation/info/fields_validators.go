@@ -12,11 +12,9 @@ import (
 	"github.com/trustwallet/go-primitives/types"
 )
 
-// TODO: new err field
+// Here is list of function for validate info.CoinModel and info.AssetModel structs.
 
-// Here is list of function for validate info.CoinModel and info.AssetModel structs
-
-// AssetModel info specific validators
+// AssetModel info specific validators.
 
 func ValidateAssetRequiredKeys(a AssetModel) error {
 	var fields []string
@@ -49,7 +47,8 @@ func ValidateAssetRequiredKeys(a AssetModel) error {
 	}
 
 	if len(fields) != len(requiredAssetFields) {
-		return fmt.Errorf("missing or empty required fields \n-%s", strings.Join(difference(requiredAssetFields, fields), "\n"))
+		return fmt.Errorf("missing or empty required fields \n-%s",
+			strings.Join(difference(requiredAssetFields, fields), "\n"))
 	}
 
 	return nil
@@ -94,7 +93,7 @@ func ValidateAssetDecimalsAccordingType(type_ string, decimals int) error {
 	return nil
 }
 
-// CoinModel info specific validators
+// CoinModel info specific validators.
 
 func ValidateCoinRequiredKeys(c CoinModel) error {
 	var fields []string
@@ -124,7 +123,8 @@ func ValidateCoinRequiredKeys(c CoinModel) error {
 	}
 
 	if len(fields) != len(requiredCoinFields) {
-		return fmt.Errorf("missing or empty required fields \n-%s", strings.Join(difference(requiredCoinFields, fields), "\n"))
+		return fmt.Errorf("missing or empty required fields \n-%s",
+			strings.Join(difference(requiredCoinFields, fields), "\n"))
 	}
 
 	return nil
@@ -141,13 +141,15 @@ func ValidateCoinLinks(links []Link) error {
 		}
 
 		if !linkNameAllowed(*l.Name) {
-			return fmt.Errorf("invalid value for links.name filed, allowed only - %s", strings.Join(supportedLinkNames(), ", "))
+			return fmt.Errorf("invalid value for links.name filed, allowed only - %s",
+				strings.Join(supportedLinkNames(), ", "))
 		}
 
 		prefix := allowedLinkKeys[*l.Name]
 		if prefix != "" {
 			if !strings.HasPrefix(*l.URL, prefix) {
-				return fmt.Errorf("ivalid value for links.url field, allowed only with prefixes - %s", strings.Join(supportedLinkValues(), ", "))
+				return fmt.Errorf("ivalid value for links.url field, allowed only with prefixes - %s",
+					strings.Join(supportedLinkValues(), ", "))
 			}
 		}
 
@@ -183,7 +185,7 @@ func ValidateCoinTags(tags []string, allowedTags []string) error {
 	return nil
 }
 
-// Both infos can be validated by this validators
+// Both infos can be validated by this validators.
 
 func ValidateDecimals(decimals int) error {
 	if decimals > 30 || decimals < 0 {
@@ -228,28 +230,33 @@ func ValidateExplorer(explorer, name string, chain coin.Coin, addr string) error
 	if err != nil {
 		explorerExpected = ""
 	}
+
 	explorerActual := explorer
 
 	if !strings.EqualFold(explorerActual, explorerExpected) {
 		explorerAlt := explorerUrlAlternatives(chain.Handle, name)
-		if len(explorerAlt) > 0 {
-			var matchCount = 0
-			for _, e := range explorerAlt {
-				if strings.EqualFold(e, explorerActual) {
-					matchCount++
-				}
+		if len(explorerAlt) == 0 {
+			return nil
+		}
+
+		var matchCount = 0
+
+		for _, e := range explorerAlt {
+			if strings.EqualFold(e, explorerActual) {
+				matchCount++
+			}
+		}
+
+		if matchCount == 0 {
+			err := fmt.Errorf("invalid value for explorer field, %s insted of %s",
+				explorerActual, explorerExpected)
+
+			if chain.ID == coin.ETHEREUM || chain.ID == coin.SMARTCHAIN {
+				err = validation.NewWarning(err)
+				return validation.NewWarning(err)
 			}
 
-			if matchCount == 0 {
-				err := fmt.Errorf("invalid value for explorer field, %s insted of %s", explorerActual, explorerExpected)
-
-				if chain.ID == coin.ETHEREUM || chain.ID == coin.SMARTCHAIN {
-					err = validation.NewWarning(err)
-					return validation.NewWarning(err)
-				}
-
-				return err
-			}
+			return err
 		}
 	}
 

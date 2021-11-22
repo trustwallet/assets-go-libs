@@ -76,8 +76,9 @@ func ValidateTezosAddress(addr string) error {
 func ValidateTronAddress(addr string) error {
 	trc20 := len(addr) == 34 && strings.HasPrefix(addr, "T") && !pkg.IsLowerCase(addr) && !pkg.IsUpperCase(addr)
 	trc10 := regexTRC10.MatchString(addr)
+
 	if !trc10 && !trc20 {
-		return fmt.Errorf("%w, should be valid tron address", ErrInvalidAddress)
+		return fmt.Errorf("%w: should be valid tron address", ErrInvalidAddress)
 	}
 
 	return nil
@@ -102,15 +103,15 @@ func ValidateETHForkAddress(chain coin.Coin, addr string) error {
 
 func ValidateAddress(address string, prefix string, length int) error {
 	if !strings.HasPrefix(address, prefix) {
-		return fmt.Errorf("%w, %s should has prefix %s", ErrInvalidFileCase, address, prefix)
+		return fmt.Errorf("%w: %s should has prefix %s", ErrInvalidFileCase, address, prefix)
 	}
 
 	if len(address) != length {
-		return fmt.Errorf("%w, %s should be %d length", ErrInvalidFileNameLength, address, length)
+		return fmt.Errorf("%w: %s should be %d length", ErrInvalidFileNameLength, address, length)
 	}
 
 	if !pkg.IsLowerCase(address) {
-		return fmt.Errorf("%w, %s should be lowercase", ErrInvalidFileCase, address)
+		return fmt.Errorf("%w: %s should be lowercase", ErrInvalidFileCase, address)
 	}
 
 	return nil

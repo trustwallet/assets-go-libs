@@ -14,6 +14,7 @@ func NewService(fileProvider *file.FileProvider) (*Service, error) {
 	}, nil
 }
 
+// nolint:funlen
 func (s *Service) GetValidatorForFilesAndFolders(f *file.AssetFile) *Validator {
 	fileType := f.Info.Type()
 	switch fileType {
@@ -84,10 +85,6 @@ func (s *Service) GetValidatorForFilesAndFolders(f *file.AssetFile) *Validator {
 			FileType:       fileType,
 		}
 	}
-	// case file.TypeValidatorsFolder:
-	// 	return nil
-	// case file.TypeValidatorsAssetsFolder:
-	// 	return nil
 
 	return nil
 }

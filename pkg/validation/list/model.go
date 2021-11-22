@@ -18,8 +18,8 @@ type (
 	}
 
 	Payout struct {
-		Commission   float64 // in %
-		PayoutDelay  int     // in cycles
+		Commission   float64 // In percents (%).
+		PayoutDelay  int     // In cycles.
 		PayoutPeriod int
 	}
 

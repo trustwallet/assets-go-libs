@@ -5,10 +5,10 @@ const (
 	TypeAssetLogoFile      = "asset_logo"
 	TypeChainInfoFile      = "chain_info"
 	TypeChainLogoFile      = "chain_logo"
+	TypeTokenListFile      = "chain_token_list"
 	TypeValidatorsListFile = "validators_list"
 	TypeValidatorsLogoFile = "validators_logo"
 	TypeDappsLogoFile      = "dapps_logo"
-	TypeTokenListFile      = "chain_token_list"
 
 	TypeAssetFolder            = "asset"
 	TypeAssetsFolder           = "assets"
