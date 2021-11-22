@@ -6,8 +6,6 @@ import (
 	"github.com/trustwallet/go-primitives/coin"
 )
 
-// TODO: need to add check of open/close file
-
 type AssetFile struct {
 	Info *AssetInfo
 	*os.File

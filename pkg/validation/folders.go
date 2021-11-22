@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"io/fs"
 
-	log "github.com/sirupsen/logrus"
-
 	"github.com/trustwallet/assets-go-libs/pkg"
 )
 
@@ -36,9 +34,8 @@ OutLoop:
 func ValidateAllowedFiles(files []fs.DirEntry, allowedFiles []string) error {
 	compErr := NewErrComposite()
 	for _, f := range files {
-		log.WithField("allowed_file", f.Name()).WithField("files", files).Debug("Allowed files validation")
 		if !pkg.Contains(f.Name(), allowedFiles) {
-			compErr.Append(fmt.Errorf("%w %s", ErrNotAllowedFile, f.Name()))
+			compErr.Append(fmt.Errorf("%w: %s", ErrNotAllowedFile, f.Name()))
 		}
 	}
 

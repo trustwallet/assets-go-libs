@@ -7,7 +7,7 @@ import (
 
 var (
 	ErrMissingFile         = errors.New("missing file")
-	ErrNotAllowedFile      = errors.New("file not allowed")
+	ErrNotAllowedFile      = errors.New("file is not allowed")
 	ErrInvalidJson         = errors.New("invalid json")
 	ErrInvalidImgDimension = errors.New("invalid file dimension")
 
@@ -16,9 +16,6 @@ var (
 	ErrInvalidFileSize       = errors.New("invalid file size")
 	ErrInvalidFileNameLength = errors.New("invalid file name length")
 	ErrInvalidAddress        = errors.New("invalid address")
-	// ErrInvalidFileNamePrefix  = errors.New("invalid file name prefix")
-	// ErrInvalidFileNameFormat  = errors.New("invalid file name format")
-	// ErrInvalidInfoAssetPaylod = errors.New("invalid info asset payload")
 )
 
 func NewErrComposite() *ErrComposite {

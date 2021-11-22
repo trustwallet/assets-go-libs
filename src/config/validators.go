@@ -25,6 +25,10 @@ type ChainInfoFolder struct {
 	HasFiles []string `mapstructure:"has_files,omitempty"`
 }
 
+type ChainValidatorsAssetFolder struct {
+	HasFiles []string `mapstructure:"has_files,omitempty"`
+}
+
 type DappsFolder struct {
 	Ext string `mapstructure:"ext,omitempty"`
 }

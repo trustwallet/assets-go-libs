@@ -14,8 +14,8 @@ validators_settings:
 
   asset_folder:
     allowed_files:
-      - "logo.png"
       - "info.json"
+      - "logo.png"
 
   root_folder:
     allowed_files:
@@ -39,7 +39,6 @@ validators_settings:
       - ".eslintrc.js"
       - "go.mod"
       - "go.sum"
-      - "cmd"
     skip_files:
       - "node_modules"
 
@@ -51,6 +50,11 @@ validators_settings:
       - "info"
 
   chain_info_folder:
+    has_files:
+      - "info.json"
+      - "logo.png"
+
+  chain_validators_asset_folder:
     has_files:
       - "logo.png"
 

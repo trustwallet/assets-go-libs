@@ -451,7 +451,7 @@
   "chains": [
     "./blockchains"
   ],
-  "daaps": [
+  "dapps": [
     "./dapps"
   ],
   "dapps_logo": [

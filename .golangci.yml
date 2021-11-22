@@ -188,28 +188,28 @@ linters-settings:
 linters:
   disable-all: true
   enable:
-    # - bodyclose
+    - bodyclose
     - deadcode
     - depguard
     - dogsled
     - dupl
     - errcheck
     - exportloopref
-    # - exhaustive
-    # - funlen
-    # - gochecknoinits
+    - exhaustive
+    - funlen
+    - gochecknoinits
     - goconst
     - gocritic
-    # - gocyclo
+    - gocyclo
     - gofmt
     - goimports
     # - gomnd
     - goprintffuncname
     - gosec
     - gosimple
-    # - govet
+    - govet
     - ineffassign
-    # - lll
+    - lll
     - misspell
     - nakedret
     - noctx
@@ -227,11 +227,11 @@ linters:
     - asciicheck
     # - gochecknoglobals
     - gocognit
-    # - godot
+    - godot
     # - godox
     # - goerr113
     # - nestif
-    # - prealloc
+    - prealloc
     - testpackage
     # - revive
     # - wsl
