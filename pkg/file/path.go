@@ -20,7 +20,7 @@ var (
 	regexValidatorsAssetLogo = regexp.MustCompile(`./blockchains/(\w+[\-]\w+|\w+)/validators/assets/(\w+[\-]\w+|\w+)/logo.png$`)
 	regexValidatorsList      = regexp.MustCompile(`./blockchains/(\w+[\-]\w+|\w+)/validators/list.json$`)
 
-	regexDaapLogo = regexp.MustCompile(`./dapps/(\w+[\-]\w+|\w+)/logo.png$`)
+	regexDappsLogo = regexp.MustCompile(`./dapps/[a-zA-Z-.]+\.png$`)
 
 	regexTokenListFile = regexp.MustCompile(`./blockchains/(\w+[\-]\w+|\w+)/tokenlist.json$`)
 )
@@ -51,7 +51,7 @@ var regexes = map[string]*regexp.Regexp{
 	TypeValidatorsListFile: regexValidatorsList,
 	TypeValidatorsLogoFile: regexValidatorsAssetLogo,
 
-	TypeDappsLogoFile: regexDaapLogo,
+	TypeDappsLogoFile: regexDappsLogo,
 
 	TypeTokenListFile: regexTokenListFile,
 

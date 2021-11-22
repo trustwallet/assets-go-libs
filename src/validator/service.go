@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 
 	"github.com/trustwallet/assets-go-libs/pkg/file"
 	"github.com/trustwallet/assets-go-libs/pkg/validation"
@@ -63,16 +62,16 @@ func (s *Service) GetValidatorForFile(f *file.AssetFile) *Validator {
 			Run:            s.ValidateChainFolder,
 			FileType:       fileType,
 		}
+	case file.TypeChainLogoFile, file.TypeAssetLogoFile, file.TypeValidatorsLogoFile, file.TypeDappsLogoFile:
+		return &Validator{
+			ValidationName: "Logos (size, dimension)",
+			Run:            s.ValidateImage,
+			FileType:       fileType,
+		}
 		// case file.TypeAssetInfoFile:
 		// 	return &Validator{
 		// 		ValidationName: "Asset info (is valid json, fields)",
 		// 		Run:            s.ValidateAssetInfoFile,
-		// 		FileType:       fileType,
-		// 	}
-		// case file.TypeAssetLogoFile, file.TypeChainLogoFile, file.TypeValidatorsLogoFile, file.TypeDappsLogoFile:
-		// 	return &Validator{
-		// 		ValidationName: "Logos (size, dimension)",
-		// 		Run:            s.ValidateImage,
 		// 		FileType:       fileType,
 		// 	}
 		// case file.TypeChainInfoFile:
@@ -166,6 +165,25 @@ func (s *Service) ValidateChainFolder(file *file.AssetFile) error {
 		return err
 	}
 	err = validation.ValidateAllowedFiles(dirFiles, config.Default.ValidatorsSettings.ChainFolder.AllowedFiles)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *Service) ValidateImage(file *file.AssetFile) error {
+	err := validation.ValidateSize(file, config.Default.ValidatorsSettings.ImageFile.Size)
+	if err != nil {
+		return err
+	}
+
+	err = validation.ValidateImageDimension(file,
+		config.Default.ValidatorsSettings.ImageFile.MaxW,
+		config.Default.ValidatorsSettings.ImageFile.MaxH,
+		config.Default.ValidatorsSettings.ImageFile.MinW,
+		config.Default.ValidatorsSettings.ImageFile.MinH,
+	)
 	if err != nil {
 		return err
 	}
@@ -437,35 +455,6 @@ func (s *Service) ValidateAssetInfoFile(file *file.AssetFile) error {
 	}
 
 	err = info.ValidateAsset(payload, fileInfo.Chain(), fileInfo.Asset())
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (s *Service) ValidateImage(file *file.AssetFile) error {
-	b, err := ioutil.ReadAll(file)
-	if err != nil {
-		return err
-	}
-
-	err = validation.ValidateSize(b, config.Default.ValidatorsSettings.ImageFile.Size)
-	if err != nil {
-		return err
-	}
-
-	_, err = file.Seek(0, io.SeekStart)
-	if err != nil {
-		return err
-	}
-
-	err = validation.ValidateImageDimension(file,
-		config.Default.ValidatorsSettings.ImageFile.MaxW,
-		config.Default.ValidatorsSettings.ImageFile.MaxH,
-		config.Default.ValidatorsSettings.ImageFile.MinW,
-		config.Default.ValidatorsSettings.ImageFile.MinH,
-	)
 	if err != nil {
 		return err
 	}
