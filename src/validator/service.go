@@ -47,7 +47,7 @@ func NewService(fileProvider *file.FileProvider) (*Service, error) {
 	}, nil
 }
 
-func (s *Service) GetValidatorForFile(f *file.AssetFile) *Validator {
+func (s *Service) GetValidatorForFilesAndFolders(f *file.AssetFile) *Validator {
 	fileType := f.Info.Type()
 	switch fileType {
 	case file.TypeRootFolder:
@@ -58,7 +58,7 @@ func (s *Service) GetValidatorForFile(f *file.AssetFile) *Validator {
 		}
 	case file.TypeChainFolder:
 		return &Validator{
-			ValidationName: "Chain folders are lowercase, contains only allowed files",
+			ValidationName: "Chain folders are lowercase and contains only allowed files",
 			Run:            s.ValidateChainFolder,
 			FileType:       fileType,
 		}
@@ -66,6 +66,18 @@ func (s *Service) GetValidatorForFile(f *file.AssetFile) *Validator {
 		return &Validator{
 			ValidationName: "Logos (size, dimension)",
 			Run:            s.ValidateImage,
+			FileType:       fileType,
+		}
+	case file.TypeAssetFolder:
+		return &Validator{
+			ValidationName: "Each asset folder has valid asset address and contains logo/info",
+			Run:            s.ValidateAssetFolder,
+			FileType:       fileType,
+		}
+	case file.TypeDappsFolder:
+		return &Validator{
+			ValidationName: "Dapps folder (allowed only png files, lowercase)",
+			Run:            s.ValidateDappsFolder,
 			FileType:       fileType,
 		}
 		// case file.TypeAssetInfoFile:
@@ -96,22 +108,10 @@ func (s *Service) GetValidatorForFile(f *file.AssetFile) *Validator {
 		// 		Run:            s.ValidateTokenListFile,
 		// 		FileType:       fileType,
 		// 	}
-		// case file.TypeAssetFolder:
-		// 	return &Validator{
-		// 		ValidationName: "Each asset folder (valid asset address, contains logo/info)",
-		// 		Run:            s.ValidateAssetFolder,
-		// 		FileType:       fileType,
-		// 	}
 		// case file.TypeAssetsFolder:
 		// 	return &Validator{
 		// 		ValidationName: "Chain assets folder (chain specific validation also here)",
 		// 		Run:            s.ValidateChainAssetsFolder,
-		// 		FileType:       fileType,
-		// 	}
-		// case file.TypeDaapsFolder:
-		// 	return &Validator{
-		// 		ValidationName: "Daaps folder (allowed only png files, lowercase)",
-		// 		Run:            s.ValidateDaapsFolder,
 		// 		FileType:       fileType,
 		// 	}
 		// case file.TypeChainInfoFolder:
@@ -130,62 +130,6 @@ func (s *Service) GetValidatorForFile(f *file.AssetFile) *Validator {
 		// 		Run:            s.ValidateValidatorsAssetFolder,
 		// 		FileType:       fileType,
 		// 	}
-	}
-
-	return nil
-}
-
-func (s *Service) ValidateRootFolder(file *file.AssetFile) error {
-	dirFiles, err := file.ReadDir(0)
-	if err != nil {
-		return err
-	}
-
-	err = validation.ValidateAllowedFiles(dirFiles, config.Default.ValidatorsSettings.RootFolder.AllowedFiles)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (s *Service) ValidateChainFolder(file *file.AssetFile) error {
-	fileInfo, err := file.Stat()
-	if err != nil {
-		return err
-	}
-
-	err = validation.ValidateLowercase(fileInfo.Name())
-	if err != nil {
-		return err
-	}
-
-	dirFiles, err := file.ReadDir(0)
-	if err != nil {
-		return err
-	}
-	err = validation.ValidateAllowedFiles(dirFiles, config.Default.ValidatorsSettings.ChainFolder.AllowedFiles)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (s *Service) ValidateImage(file *file.AssetFile) error {
-	err := validation.ValidateSize(file, config.Default.ValidatorsSettings.ImageFile.Size)
-	if err != nil {
-		return err
-	}
-
-	err = validation.ValidateImageDimension(file,
-		config.Default.ValidatorsSettings.ImageFile.MaxW,
-		config.Default.ValidatorsSettings.ImageFile.MaxH,
-		config.Default.ValidatorsSettings.ImageFile.MinW,
-		config.Default.ValidatorsSettings.ImageFile.MinH,
-	)
-	if err != nil {
-		return err
 	}
 
 	return nil
@@ -230,93 +174,8 @@ func (s *Service) ValidateValidatorsAssetFolder(file *file.AssetFile) error {
 	return nil
 }
 
-func (s *Service) ValidateDaapsFolder(file *file.AssetFile) error {
-	dirFiles, err := file.ReadDir(0)
-	if err != nil {
-		return err
-	}
-
-	var compErr = validation.NewErrComposite()
-	for _, dirFile := range dirFiles {
-		err = validation.ValidateExtension(dirFile.Name(), config.Default.ValidatorsSettings.DappsFolder.Ext)
-		if err != nil {
-			compErr.Append(err)
-		}
-
-		err = validation.ValidateLowercase(dirFile.Name())
-		if err != nil {
-			compErr.Append(err)
-		}
-	}
-
-	if compErr.Len() > 0 {
-		return compErr
-	}
-
-	return nil
-}
-
-func (s *Service) ValidateAssetFolder(file *file.AssetFile) error {
-	assetInfo := file.Info
-	dirFiles, err := file.ReadDir(0)
-	if err != nil {
-		return err
-	}
-
-	var compErr = validation.NewErrComposite()
-	err = validation.ValidateAllowedFiles(dirFiles, config.Default.ValidatorsSettings.AssetFolder.AllowedFiles)
-	if err != nil {
-		compErr.Append(err)
-	}
-
-	err = validation.ValidateAssetAddress(assetInfo.Chain(), assetInfo.Asset())
-	if err != nil {
-		compErr.Append(err)
-	}
-
-	errInfo := validation.ValidateHasFiles(dirFiles, []string{"info.json"})
-	errLogo := validation.ValidateHasFiles(dirFiles, []string{"logo.png"})
-
-	if errLogo != nil || errInfo != nil {
-		infoFile, err := s.fileProvider.GetAssetFile(fmt.Sprintf("%s/info.json", assetInfo.Path()))
-		if err != nil {
-			return err
-		}
-
-		_, err = infoFile.Seek(0, io.SeekStart)
-		if err != nil {
-			return err
-		}
-
-		b, err := io.ReadAll(infoFile)
-		if err != nil {
-			return err
-		}
-
-		var infoJson info.AssetModel
-		err = json.Unmarshal(b, &infoJson)
-		if err != nil {
-			return err
-		}
-
-		if infoJson.GetStatus() != "spam" && infoJson.GetStatus() != "abandoned" {
-			compErr.Append(fmt.Errorf(
-				"%w logo.png for non-spam assest",
-				validation.ErrMissingFile,
-			))
-		}
-	}
-
-	if compErr.Len() > 0 {
-		return compErr
-	}
-
-	return nil
-}
-
 func (s *Service) ValidateChainAssetsFolder(file *file.AssetFile) error {
-	assetInfo := file.Info
-	if assetInfo.Chain().ID == coin.BINANCE {
+	if file.Info.Chain().ID == coin.BINANCE {
 		dirFiles, err := file.ReadDir(0)
 		if err != nil {
 			return err
@@ -467,12 +326,12 @@ func getValidatorsAssetsPath(chain coin.Coin) string {
 	return fmt.Sprintf("blockchains/%s/validators/assets", chain.Handle)
 }
 
-func isStackingChain(c coin.Coin) bool {
-	for _, stackingChain := range config.StackingChains {
-		if c.ID == stackingChain.ID {
-			return true
-		}
-	}
+// func isStackingChain(c coin.Coin) bool {
+// 	for _, stackingChain := range config.StackingChains {
+// 		if c.ID == stackingChain.ID {
+// 			return true
+// 		}
+// 	}
 
-	return false
-}
+// 	return false
+// }

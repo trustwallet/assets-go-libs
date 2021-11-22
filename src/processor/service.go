@@ -28,7 +28,7 @@ func (s *Service) RunSanityCheck(paths []string) error {
 			return err
 		}
 
-		validator := s.validatorsService.GetValidatorForFile(f)
+		validator := s.validatorsService.GetValidatorForFilesAndFolders(f)
 		if validator != nil {
 			err = validator.Run(f)
 			if err != nil {

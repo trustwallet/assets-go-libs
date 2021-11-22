@@ -14,12 +14,12 @@ const (
 	TypeAssetsFolder           = "assets"
 	TypeChainFolder            = "chain"
 	TypeChainsFolder           = "chains"
-	TypeDaapsFolder            = "daaps"
+	TypeDappsFolder            = "dapps"
 	TypeRootFolder             = "root"
 	TypeChainInfoFolder        = "chain_info_folder"
 	TypeValidatorsFolder       = "validators"
-	TypeValidatorsAssetsFolder = "validators_assets"
 	TypeValidatorsAssetFolder  = "validators_asset"
+	TypeValidatorsAssetsFolder = "validators_assets"
 
 	TypeUnknown = "unknown"
 )

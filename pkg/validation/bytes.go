@@ -4,15 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"image"
-
-	// Added gif and jpeg configs for image because repo has images not only in .png extension,
-	// gif and jpeg too, but name contains .png
 	_ "image/gif"
 	_ "image/jpeg"
 	_ "image/png"
 
-	"github.com/trustwallet/assets-go-libs/pkg/file"
 	_ "golang.org/x/image/webp"
+
+	"github.com/trustwallet/assets-go-libs/pkg/file"
 )
 
 const kbInByte = 1024

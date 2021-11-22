@@ -62,7 +62,7 @@ var regexes = map[string]*regexp.Regexp{
 	TypeChainsFolder:    regexChainsFolder,
 	TypeChainInfoFolder: regexChainInfoFolder,
 
-	TypeDaapsFolder: regexDappsFolder,
+	TypeDappsFolder: regexDappsFolder,
 	TypeRootFolder:  regexRoot,
 
 	TypeValidatorsFolder:       regexValidatorsFolder,
