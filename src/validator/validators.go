@@ -84,7 +84,6 @@ func (s *Service) ValidateImage(file *file.AssetFile) error {
 }
 
 func (s *Service) ValidateAssetFolder(file *file.AssetFile) error {
-	assetInfo := file.Info
 	dirFiles, err := file.ReadDir(0)
 	if err != nil {
 		return err
@@ -97,7 +96,7 @@ func (s *Service) ValidateAssetFolder(file *file.AssetFile) error {
 		compErr.Append(err)
 	}
 
-	err = validation.ValidateAssetAddress(assetInfo.Chain(), assetInfo.Asset())
+	err = validation.ValidateAssetAddress(file.Info.Chain(), file.Info.Asset())
 	if err != nil {
 		compErr.Append(err)
 	}
@@ -106,7 +105,7 @@ func (s *Service) ValidateAssetFolder(file *file.AssetFile) error {
 	errLogo := validation.ValidateHasFiles(dirFiles, []string{"logo.png"})
 
 	if errLogo != nil || errInfo != nil {
-		infoFile, err := s.fileProvider.GetAssetFile(fmt.Sprintf("%s/info.json", assetInfo.Path()))
+		infoFile, err := s.fileProvider.GetAssetFile(fmt.Sprintf("%s/info.json", file.Info.Path()))
 		if err != nil {
 			return err
 		}
