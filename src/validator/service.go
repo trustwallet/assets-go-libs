@@ -4,11 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
 
 	"github.com/trustwallet/assets-go-libs/pkg/file"
 	"github.com/trustwallet/assets-go-libs/pkg/validation"
-	"github.com/trustwallet/assets-go-libs/pkg/validation/info"
 	"github.com/trustwallet/assets-go-libs/pkg/validation/list"
 	"github.com/trustwallet/assets-go-libs/src/config"
 	"github.com/trustwallet/go-primitives/coin"
@@ -80,18 +78,18 @@ func (s *Service) GetValidatorForFilesAndFolders(f *file.AssetFile) *Validator {
 			Run:            s.ValidateDappsFolder,
 			FileType:       fileType,
 		}
-		// case file.TypeAssetInfoFile:
-		// 	return &Validator{
-		// 		ValidationName: "Asset info (is valid json, fields)",
-		// 		Run:            s.ValidateAssetInfoFile,
-		// 		FileType:       fileType,
-		// 	}
-		// case file.TypeChainInfoFile:
-		// 	return &Validator{
-		// 		ValidationName: "Chain Info (is valid json, fields)",
-		// 		Run:            s.ValidateChainInfoFile,
-		// 		FileType:       fileType,
-		// 	}
+	case file.TypeAssetInfoFile:
+		return &Validator{
+			ValidationName: "Asset info (is valid json, fields)",
+			Run:            s.ValidateAssetInfoFile,
+			FileType:       fileType,
+		}
+	case file.TypeChainInfoFile:
+		return &Validator{
+			ValidationName: "Chain Info (is valid json, fields)",
+			Run:            s.ValidateChainInfoFile,
+			FileType:       fileType,
+		}
 		// case file.TypeValidatorsListFile:
 		// 	if !isStackingChain(f.Info.Chain()) {
 		// 		return nil
@@ -245,75 +243,6 @@ func (s *Service) ValidateValidatorsListFile(file *file.AssetFile) error {
 	}
 
 	err = validation.ValidateHasFiles(dirAssetFolderFiles, listIDs)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (s *Service) ValidateChainInfoFile(file *file.AssetFile) error {
-	fileInfo := file.Info
-	buf := bytes.NewBuffer(nil)
-	_, err := buf.ReadFrom(file)
-	if err != nil {
-		return err
-	}
-
-	err = validation.ValidateJson(buf.Bytes())
-	if err != nil {
-		return err
-	}
-
-	_, err = file.Seek(0, io.SeekStart)
-	if err != nil {
-		return fmt.Errorf("%w, failed to seek reader", validation.ErrInvalidJson)
-	}
-
-	var payload info.CoinModel
-	err = json.Unmarshal(buf.Bytes(), &payload)
-	if err != nil {
-		return fmt.Errorf("%w, failed to decode", err)
-	}
-
-	var tags []string
-	for _, t := range config.Default.ValidatorsSettings.CoinInfoFile.Tags {
-		tags = append(tags, t.ID)
-	}
-
-	err = info.ValidateCoin(payload, fileInfo.Chain(), fileInfo.Asset(), tags)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (s *Service) ValidateAssetInfoFile(file *file.AssetFile) error {
-	fileInfo := file.Info
-	buf := bytes.NewBuffer(nil)
-	_, err := buf.ReadFrom(file)
-	if err != nil {
-		return err
-	}
-
-	err = validation.ValidateJson(buf.Bytes())
-	if err != nil {
-		return err
-	}
-
-	_, err = file.Seek(0, io.SeekStart)
-	if err != nil {
-		return fmt.Errorf("%w, failed to seek reader", validation.ErrInvalidJson)
-	}
-
-	var payload info.AssetModel
-	err = json.Unmarshal(buf.Bytes(), &payload)
-	if err != nil {
-		return fmt.Errorf("%w, failed to decode", err)
-	}
-
-	err = info.ValidateAsset(payload, fileInfo.Chain(), fileInfo.Asset())
 	if err != nil {
 		return err
 	}

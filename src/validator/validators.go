@@ -1,6 +1,7 @@
 package validator
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -157,6 +158,74 @@ func (s *Service) ValidateDappsFolder(file *file.AssetFile) error {
 
 	if compErr.Len() > 0 {
 		return compErr
+	}
+
+	return nil
+}
+
+func (s *Service) ValidateChainInfoFile(file *file.AssetFile) error {
+	fileInfo := file.Info
+	buf := bytes.NewBuffer(nil)
+	_, err := buf.ReadFrom(file)
+	if err != nil {
+		return err
+	}
+
+	err = validation.ValidateJson(buf.Bytes())
+	if err != nil {
+		return err
+	}
+
+	_, err = file.Seek(0, io.SeekStart)
+	if err != nil {
+		return fmt.Errorf("%w, failed to seek reader", validation.ErrInvalidJson)
+	}
+
+	var payload info.CoinModel
+	err = json.Unmarshal(buf.Bytes(), &payload)
+	if err != nil {
+		return fmt.Errorf("%w, failed to decode", err)
+	}
+
+	var tags []string
+	for _, t := range config.Default.ValidatorsSettings.CoinInfoFile.Tags {
+		tags = append(tags, t.ID)
+	}
+
+	err = info.ValidateCoin(payload, fileInfo.Chain(), fileInfo.Asset(), tags)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *Service) ValidateAssetInfoFile(file *file.AssetFile) error {
+	buf := bytes.NewBuffer(nil)
+	_, err := buf.ReadFrom(file)
+	if err != nil {
+		return err
+	}
+
+	err = validation.ValidateJson(buf.Bytes())
+	if err != nil {
+		return err
+	}
+
+	_, err = file.Seek(0, io.SeekStart)
+	if err != nil {
+		return fmt.Errorf("%w, failed to seek reader", validation.ErrInvalidJson)
+	}
+
+	var payload info.AssetModel
+	err = json.Unmarshal(buf.Bytes(), &payload)
+	if err != nil {
+		return fmt.Errorf("%w, failed to decode", err)
+	}
+
+	err = info.ValidateAsset(payload, file.Info.Chain(), file.Info.Asset())
+	if err != nil {
+		return err
 	}
 
 	return nil
