@@ -6,7 +6,6 @@ require (
 	github.com/sirupsen/logrus v1.8.1
 	github.com/trustwallet/go-libs v0.2.17
 	github.com/trustwallet/go-primitives v0.0.11
-	golang.org/x/image v0.0.0-20190802002840-cff245a6509b
 )
 
 require (
@@ -15,7 +14,6 @@ require (
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/magiconair/properties v1.8.5 // indirect
 	github.com/mitchellh/mapstructure v1.4.1 // indirect
-	github.com/patrickmn/go-cache v2.1.0+incompatible // indirect
 	github.com/pelletier/go-toml v1.9.3 // indirect
 	github.com/spf13/afero v1.6.0 // indirect
 	github.com/spf13/cast v1.3.1 // indirect
