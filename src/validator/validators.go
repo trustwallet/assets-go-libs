@@ -9,7 +9,9 @@ import (
 	"github.com/trustwallet/assets-go-libs/pkg/file"
 	"github.com/trustwallet/assets-go-libs/pkg/validation"
 	"github.com/trustwallet/assets-go-libs/pkg/validation/info"
+	"github.com/trustwallet/assets-go-libs/pkg/validation/list"
 	"github.com/trustwallet/assets-go-libs/src/config"
+	"github.com/trustwallet/go-primitives/coin"
 )
 
 func (s *Service) ValidateRootFolder(file *file.AssetFile) error {
@@ -164,7 +166,6 @@ func (s *Service) ValidateDappsFolder(file *file.AssetFile) error {
 }
 
 func (s *Service) ValidateChainInfoFile(file *file.AssetFile) error {
-	fileInfo := file.Info
 	buf := bytes.NewBuffer(nil)
 	_, err := buf.ReadFrom(file)
 	if err != nil {
@@ -178,13 +179,13 @@ func (s *Service) ValidateChainInfoFile(file *file.AssetFile) error {
 
 	_, err = file.Seek(0, io.SeekStart)
 	if err != nil {
-		return fmt.Errorf("%w, failed to seek reader", validation.ErrInvalidJson)
+		return fmt.Errorf("%w: failed to seek reader", validation.ErrInvalidJson)
 	}
 
 	var payload info.CoinModel
 	err = json.Unmarshal(buf.Bytes(), &payload)
 	if err != nil {
-		return fmt.Errorf("%w, failed to decode", err)
+		return fmt.Errorf("%w: failed to decode", err)
 	}
 
 	var tags []string
@@ -192,7 +193,7 @@ func (s *Service) ValidateChainInfoFile(file *file.AssetFile) error {
 		tags = append(tags, t.ID)
 	}
 
-	err = info.ValidateCoin(payload, fileInfo.Chain(), fileInfo.Asset(), tags)
+	err = info.ValidateCoin(payload, file.Info.Chain(), file.Info.Asset(), tags)
 	if err != nil {
 		return err
 	}
@@ -214,18 +215,132 @@ func (s *Service) ValidateAssetInfoFile(file *file.AssetFile) error {
 
 	_, err = file.Seek(0, io.SeekStart)
 	if err != nil {
-		return fmt.Errorf("%w, failed to seek reader", validation.ErrInvalidJson)
+		return fmt.Errorf("%w: failed to seek reader", validation.ErrInvalidJson)
 	}
 
 	var payload info.AssetModel
 	err = json.Unmarshal(buf.Bytes(), &payload)
 	if err != nil {
-		return fmt.Errorf("%w, failed to decode", err)
+		return fmt.Errorf("%w: failed to decode", err)
 	}
 
 	err = info.ValidateAsset(payload, file.Info.Chain(), file.Info.Asset())
 	if err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (s *Service) ValidateValidatorsListFile(file *file.AssetFile) error {
+	if !isStackingChain(file.Info.Chain()) {
+		return nil
+	}
+
+	buf := bytes.NewBuffer(nil)
+	_, err := buf.ReadFrom(file)
+	if err != nil {
+		return err
+	}
+
+	err = validation.ValidateJson(buf.Bytes())
+	if err != nil {
+		return err
+	}
+
+	var model []list.Model
+	err = json.Unmarshal(buf.Bytes(), &model)
+	if err != nil {
+		return err
+	}
+
+	err = list.ValidateList(model)
+	if err != nil {
+		return err
+	}
+
+	var listIDs []string
+	for _, listItem := range model {
+		listIDs = append(listIDs, *listItem.ID)
+	}
+
+	assetsPath := fmt.Sprintf("blockchains/%s/validators/assets", file.Info.Chain().Handle)
+	assetFolder, err := s.fileProvider.GetAssetFile(assetsPath)
+	if err != nil {
+		return err
+	}
+
+	dirAssetFolderFiles, err := assetFolder.ReadDir(0)
+	if err != nil {
+		return err
+	}
+
+	err = validation.ValidateHasFiles(dirAssetFolderFiles, listIDs)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func isStackingChain(c coin.Coin) bool {
+	for _, stackingChain := range config.StackingChains {
+		if c.ID == stackingChain.ID {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (s *Service) ValidateTokenListFile(file *file.AssetFile) error {
+	buf := bytes.NewBuffer(nil)
+	_, err := buf.ReadFrom(file)
+	if err != nil {
+		return err
+	}
+
+	err = validation.ValidateJson(buf.Bytes())
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *Service) ValidateInfoFolder(file *file.AssetFile) error {
+	dirFiles, err := file.ReadDir(0)
+	if err != nil {
+		return err
+	}
+
+	err = validation.ValidateHasFiles(dirFiles, config.Default.ValidatorsSettings.ChainInfoFolder.HasFiles)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *Service) ValidateValidatorsAssetFolder(file *file.AssetFile) error {
+	dirFiles, err := file.ReadDir(0)
+	if err != nil {
+		return err
+	}
+
+	compErr := validation.NewErrComposite()
+	err = validation.ValidateValidatorsAddress(file.Info.Chain(), file.Info.Asset())
+	if err != nil {
+		compErr.Append(err)
+	}
+
+	err = validation.ValidateHasFiles(dirFiles, config.Default.ValidatorsSettings.ChainValidatorsAssetFolder.HasFiles)
+	if err != nil {
+		compErr.Append(err)
+	}
+
+	if compErr.Len() > 0 {
+		return compErr
 	}
 
 	return nil

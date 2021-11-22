@@ -54,6 +54,10 @@ validators_settings:
       - "logo.png"
       - "info.json"
 
+  chain_validators_asset_folder:
+    has_files:
+      - "logo.png"
+
   dapps_folder:
     ext: ".png"
 
