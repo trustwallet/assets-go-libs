@@ -39,11 +39,22 @@ func (s *Service) RunSanityCheck(paths []string) error {
 
 		report.TotalFiles += 1
 
-		validator := s.validatorsService.GetFoldersFilesValidator(f)
+		validator := s.validatorsService.GetValidator(f)
+		fixer := s.validatorsService.GetFixer(f)
+
 		if validator != nil {
 			err = validator.Run(f)
 			if err != nil {
-				HandleError(err, f.Info, validator.ValidationName, report)
+				HandleError(err, f.Info, validator.Name, report)
+			}
+		}
+
+		if fixer != nil && err != nil {
+			err = fixer.Run(f)
+			if err != nil {
+				log.WithError(err).Error()
+			} else {
+				report.Fixed += 1
 			}
 		}
 
@@ -69,21 +80,16 @@ func HandleError(err error, info *file.AssetInfo, valName string, report *report
 	for _, err := range errors {
 		if warn, ok := err.(*validation.Warning); ok {
 			report.Warnings += 1
-			HandleWarning(warn, info)
-			continue
+			log.WithField("path", info.Path()).Warning(warn)
 		} else {
 			report.Errors += 1
-
-			log.WithField("type", info.Type()).
-				WithField("chain", info.Chain().Handle).
-				WithField("asset", info.Asset()).
-				WithField("path", info.Path()).
-				WithField("validation", valName).
-				Error(err)
-		}
-
-		switch err {
-		// TODO: Call fixers here.
+			log.WithFields(log.Fields{
+				"type":       info.Type(),
+				"chain":      info.Chain().Handle,
+				"asset":      info.Asset(),
+				"path":       info.Path(),
+				"validation": valName,
+			}).Error(err)
 		}
 	}
 }
@@ -100,8 +106,4 @@ func UnwrapComposite(err error) []error {
 	}
 
 	return errors
-}
-
-func HandleWarning(warning *validation.Warning, info *file.AssetInfo) {
-	log.WithField("path", info.Path()).Warning(warning)
 }
