@@ -5,62 +5,81 @@ import (
 
 	"github.com/trustwallet/assets-go-libs/pkg/file"
 	"github.com/trustwallet/assets-go-libs/pkg/validation"
+	"github.com/trustwallet/assets-go-libs/src/reporter"
 	"github.com/trustwallet/assets-go-libs/src/validator"
 )
 
+const (
+	reportSanityCheckKey = "sanity-check"
+)
+
 type Service struct {
-	fileStorage       *file.FileProvider
+	fileService       *file.FileService
 	validatorsService *validator.Service
+	reporterService   *reporter.Service
 }
 
-func NewService(storage *file.FileProvider, service *validator.Service) *Service {
+func NewService(fs *file.FileService, vs *validator.Service, rs *reporter.Service) *Service {
 	return &Service{
-		fileStorage:       storage,
-		validatorsService: service,
+		fileService:       fs,
+		validatorsService: vs,
+		reporterService:   rs,
 	}
 }
 
 func (s *Service) RunSanityCheck(paths []string) error {
+	report := s.reporterService.GetOrNew(reportSanityCheckKey)
+
 	for _, path := range paths {
-		f, err := s.fileStorage.GetAssetFile(path)
+		f, err := s.fileService.GetAssetFile(path)
 		if err != nil {
 			log.WithError(err).Error()
 			return err
 		}
 
-		validator := s.validatorsService.GetValidatorForFilesAndFolders(f)
+		report.TotalFiles += 1
+
+		validator := s.validatorsService.GetFoldersFilesValidator(f)
 		if validator != nil {
 			err = validator.Run(f)
 			if err != nil {
-				HandleError(err, f.Info, validator.ValidationName)
+				HandleError(err, f.Info, validator.ValidationName, report)
 			}
 		}
 
 		err = f.Close()
 		if err != nil {
 			log.WithError(err).Error()
-
 			return err
 		}
+	}
+
+	err := s.reporterService.Update(reportSanityCheckKey, report)
+	if err != nil {
+		log.WithError(err).Error()
+		return err
 	}
 
 	return nil
 }
 
-func HandleError(err error, info *file.AssetInfo, valName string) {
+func HandleError(err error, info *file.AssetInfo, valName string, report *reporter.Report) {
 	errors := UnwrapComposite(err)
 
 	for _, err := range errors {
 		if warn, ok := err.(*validation.Warning); ok {
+			report.Warnings += 1
 			HandleWarning(warn, info)
 			continue
 		} else {
-			log.WithField("file_type", info.Type()).
-				WithField("file_chain", info.Chain().Handle).
-				WithField("file_asset", info.Asset()).
-				WithField("file_path", info.Path()).
-				WithField("validation_name", valName).
-				Errorf("%+v", err)
+			report.Errors += 1
+
+			log.WithField("type", info.Type()).
+				WithField("chain", info.Chain().Handle).
+				WithField("asset", info.Asset()).
+				WithField("path", info.Path()).
+				WithField("validation", valName).
+				Error(err)
 		}
 
 		switch err {

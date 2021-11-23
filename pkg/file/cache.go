@@ -4,12 +4,12 @@ import (
 	"sync"
 )
 
-type FileProvider struct {
+type FileService struct {
 	mu    *sync.RWMutex
 	cache map[string]*AssetFile
 }
 
-func NewFileProvider(filePaths ...string) *FileProvider {
+func NewFileService(filePaths ...string) *FileService {
 	var filesMap = make(map[string]*AssetFile)
 
 	for _, path := range filePaths {
@@ -17,20 +17,20 @@ func NewFileProvider(filePaths ...string) *FileProvider {
 		filesMap[path] = assetF
 	}
 
-	return &FileProvider{
+	return &FileService{
 		mu:    &sync.RWMutex{},
 		cache: filesMap,
 	}
 }
 
-func (f *FileProvider) GetAssetFile(path string) (*AssetFile, error) {
+func (f *FileService) GetAssetFile(path string) (*AssetFile, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 
 	return f.getFile(path)
 }
 
-func (f *FileProvider) getFile(path string) (*AssetFile, error) {
+func (f *FileService) getFile(path string) (*AssetFile, error) {
 	if file, exists := f.cache[path]; exists {
 		err := file.open()
 		if err != nil {

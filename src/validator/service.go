@@ -5,18 +5,19 @@ import (
 )
 
 type Service struct {
-	fileProvider *file.FileProvider
+	fileService *file.FileService
 }
 
-func NewService(fileProvider *file.FileProvider) (*Service, error) {
+func NewService(fileProvider *file.FileService) (*Service, error) {
 	return &Service{
-		fileProvider: fileProvider,
+		fileService: fileProvider,
 	}, nil
 }
 
 // nolint:funlen
-func (s *Service) GetValidatorForFilesAndFolders(f *file.AssetFile) *Validator {
+func (s *Service) GetFoldersFilesValidator(f *file.AssetFile) *Validator {
 	fileType := f.Info.Type()
+
 	switch fileType {
 	case file.TypeRootFolder:
 		return &Validator{

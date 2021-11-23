@@ -105,7 +105,7 @@ func (s *Service) ValidateAssetFolder(file *file.AssetFile) error {
 	errLogo := validation.ValidateHasFiles(dirFiles, []string{"logo.png"})
 
 	if errLogo != nil || errInfo != nil {
-		infoFile, err := s.fileProvider.GetAssetFile(fmt.Sprintf("%s/info.json", file.Info.Path()))
+		infoFile, err := s.fileService.GetAssetFile(fmt.Sprintf("%s/info.json", file.Info.Path()))
 		if err != nil {
 			return err
 		}
@@ -264,7 +264,7 @@ func (s *Service) ValidateValidatorsListFile(file *file.AssetFile) error {
 	}
 
 	assetsPath := fmt.Sprintf("blockchains/%s/validators/assets", file.Info.Chain().Handle)
-	assetFolder, err := s.fileProvider.GetAssetFile(assetsPath)
+	assetFolder, err := s.fileService.GetAssetFile(assetsPath)
 	if err != nil {
 		return err
 	}
