@@ -40,12 +40,12 @@ func (s *Service) Update(key string, report *Report) error {
 
 	if r, ok := s.reports[key]; ok {
 		r.Fixed += report.Fixed
-		r.Fixed += report.Errors
-		r.Fixed += report.Warnings
-		r.Fixed += report.TotalFiles
+		r.Errors += report.Errors
+		r.Warnings += report.Warnings
+		r.TotalFiles += report.TotalFiles
 	}
 
-	s.reports["key"] = report
+	s.reports[key] = report
 
 	return nil
 }
@@ -57,26 +57,11 @@ func (s *Service) GetReports() ReportList {
 	return s.reports
 }
 
+type ReportList map[string]*Report
+
 type Report struct {
 	TotalFiles uint
 	Errors     uint
 	Warnings   uint
 	Fixed      uint
-}
-
-type ReportList map[string]*Report
-
-func (rl ReportList) WithTotal() map[string]*Report {
-	var totalReport = Report{}
-
-	for _, v := range rl {
-		totalReport.TotalFiles += v.TotalFiles
-		totalReport.Errors += v.Errors
-		totalReport.Warnings += v.Warnings
-		totalReport.Fixed += v.Fixed
-	}
-
-	rl["Total"] = &totalReport
-
-	return rl
 }
