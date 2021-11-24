@@ -31,6 +31,30 @@ OutLoop:
 	return nil
 }
 
+func ValidateFilesNotInList(files []fs.DirEntry, fileList []string) error {
+	compErr := NewErrComposite()
+
+	for _, dir := range files {
+		var found bool
+		for _, f := range fileList {
+			if dir.Name() == f {
+				found = true
+				break
+			}
+		}
+
+		if !found {
+			compErr.Append(fmt.Errorf("%w: %s", ErrMissingFile, dir.Name()))
+		}
+	}
+
+	if compErr.Len() > 0 {
+		return compErr
+	}
+
+	return nil
+}
+
 func ValidateAllowedFiles(files []fs.DirEntry, allowedFiles []string) error {
 	compErr := NewErrComposite()
 	for _, f := range files {
