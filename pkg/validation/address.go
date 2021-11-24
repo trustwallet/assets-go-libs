@@ -59,7 +59,7 @@ func ValidateValidatorsAddress(chain coin.Coin, address string) error {
 func ValidateWavesAddress(addr string) error {
 	condition := strings.HasPrefix(addr, "3P") && len(addr) == 35 && !pkg.IsLowerCase(addr) && !pkg.IsUpperCase(addr)
 	if !condition {
-		return fmt.Errorf("%w, %s - should be Waves address", ErrInvalidAddress, addr)
+		return fmt.Errorf("%w: should be Waves address", ErrInvalidAddress)
 	}
 
 	return nil
@@ -67,7 +67,7 @@ func ValidateWavesAddress(addr string) error {
 
 func ValidateTezosAddress(addr string) error {
 	if !strings.HasPrefix(addr, "tz") {
-		return fmt.Errorf("%w, shoud be valid tezos address", ErrInvalidAddress)
+		return fmt.Errorf("%w: shoud be valid tezos address", ErrInvalidAddress)
 	}
 
 	return nil

@@ -6,16 +6,15 @@ import (
 )
 
 var (
-	ErrMissingFile         = errors.New("missing file")
-	ErrNotAllowedFile      = errors.New("file is not allowed")
-	ErrInvalidJson         = errors.New("invalid json")
-	ErrInvalidImgDimension = errors.New("invalid file dimension")
-
+	ErrMissingFile           = errors.New("missing file")
+	ErrNotAllowedFile        = errors.New("file is not allowed")
+	ErrInvalidAddress        = errors.New("invalid address")
+	ErrInvalidJson           = errors.New("invalid json")
+	ErrInvalidImgDimension   = errors.New("invalid file dimension")
 	ErrInvalidFileCase       = errors.New("invalid file name case")
 	ErrInvalidFileExt        = errors.New("invalid file extension")
 	ErrInvalidFileSize       = errors.New("invalid file size")
 	ErrInvalidFileNameLength = errors.New("invalid file name length")
-	ErrInvalidAddress        = errors.New("invalid address")
 )
 
 func NewErrComposite() *ErrComposite {
@@ -33,7 +32,7 @@ func (e *ErrComposite) Len() int {
 func (e *ErrComposite) Error() string {
 	var msg string
 	for _, err := range e.errors {
-		msg = fmt.Sprintf("%s - validation error: %s \n", msg, err.Error())
+		msg += fmt.Sprintf("- %s\n", err.Error())
 	}
 
 	return msg

@@ -13,8 +13,8 @@ func NewFileService(filePaths ...string) *FileService {
 	var filesMap = make(map[string]*AssetFile)
 
 	for _, path := range filePaths {
-		assetF := newAssetFile(path)
-		filesMap[path] = assetF
+		assetFile := NewAssetFile(path)
+		filesMap[path] = assetFile
 	}
 
 	return &FileService{
@@ -32,7 +32,7 @@ func (f *FileService) GetAssetFile(path string) (*AssetFile, error) {
 
 func (f *FileService) getFile(path string) (*AssetFile, error) {
 	if file, exists := f.cache[path]; exists {
-		err := file.open()
+		err := file.Open()
 		if err != nil {
 			return nil, err
 		}
@@ -40,10 +40,10 @@ func (f *FileService) getFile(path string) (*AssetFile, error) {
 		return file, nil
 	}
 
-	assetF := newAssetFile(path)
+	assetF := NewAssetFile(path)
 	f.cache[path] = assetF
 
-	err := assetF.open()
+	err := assetF.Open()
 	if err != nil {
 		return nil, err
 	}

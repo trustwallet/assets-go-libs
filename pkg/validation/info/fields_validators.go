@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"strings"
 
-	log "github.com/sirupsen/logrus"
-
 	"github.com/trustwallet/assets-go-libs/pkg"
 	"github.com/trustwallet/assets-go-libs/pkg/validation"
 	"github.com/trustwallet/go-primitives/coin"
@@ -47,7 +45,7 @@ func ValidateAssetRequiredKeys(a AssetModel) error {
 	}
 
 	if len(fields) != len(requiredAssetFields) {
-		return fmt.Errorf("missing or empty required fields \n-%s",
+		return fmt.Errorf("missing or empty required fields\n-%s",
 			strings.Join(difference(requiredAssetFields, fields), "\n"))
 	}
 
@@ -57,7 +55,7 @@ func ValidateAssetRequiredKeys(a AssetModel) error {
 func ValidateAssetType(type_ string, chain coin.Coin) error {
 	chainFromType, err := types.GetChainFromAssetType(type_)
 	if err != nil {
-		return fmt.Errorf("invalid value of field - type, %w", err)
+		return fmt.Errorf("invalid type field: %w", err)
 	}
 
 	if chainFromType != chain {
@@ -73,10 +71,8 @@ func ValidateAssetType(type_ string, chain coin.Coin) error {
 
 func ValidateAssetID(id string, address string) error {
 	if id != address {
-		log.Debugf("id - %s, addr - %s", id, address)
-
 		if !strings.EqualFold(id, address) {
-			return fmt.Errorf("invalid value for id field")
+			return fmt.Errorf("invalid id field")
 		}
 
 		return fmt.Errorf("invalid casing for id field")
@@ -87,7 +83,7 @@ func ValidateAssetID(id string, address string) error {
 
 func ValidateAssetDecimalsAccordingType(type_ string, decimals int) error {
 	if type_ == "BEP2" && decimals != 8 {
-		return fmt.Errorf("invalid value for field - decimals, BEP2 tokens have 8 decimals")
+		return fmt.Errorf("invalid decimals field, BEP2 tokens have 8 decimals")
 	}
 
 	return nil
@@ -123,7 +119,7 @@ func ValidateCoinRequiredKeys(c CoinModel) error {
 	}
 
 	if len(fields) != len(requiredCoinFields) {
-		return fmt.Errorf("missing or empty required fields \n-%s",
+		return fmt.Errorf("missing or empty required fields\n-%s",
 			strings.Join(difference(requiredCoinFields, fields), "\n"))
 	}
 

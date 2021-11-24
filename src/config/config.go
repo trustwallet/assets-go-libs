@@ -23,9 +23,9 @@ type (
 
 	ValidatorsSettings struct {
 		ImageFile                  ImageFile                  `mapstructure:"image_file"`
-		AssetFolder                AssetFolder                `mapstructure:"asset_folder"`
 		RootFolder                 RootFolder                 `mapstructure:"root_folder"`
 		ChainFolder                ChainFolder                `mapstructure:"chain_folder"`
+		AssetFolder                AssetFolder                `mapstructure:"asset_folder"`
 		ChainInfoFolder            ChainInfoFolder            `mapstructure:"chain_info_folder"`
 		ChainValidatorsAssetFolder ChainValidatorsAssetFolder `mapstructure:"chain_validators_asset_folder"`
 		DappsFolder                DappsFolder                `mapstructure:"dapps_folder"`

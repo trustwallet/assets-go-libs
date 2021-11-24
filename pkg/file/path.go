@@ -73,10 +73,10 @@ var regexes = map[string]*regexp.Regexp{
 }
 
 type Path struct {
-	path  string
-	chain coin.Coin
-	asset string
-	type_ string
+	path     string
+	chain    coin.Coin
+	asset    string
+	fileType string
 }
 
 func NewPath(path string) *Path {
@@ -84,16 +84,16 @@ func NewPath(path string) *Path {
 		path: path,
 	}
 
-	type_, reg := defineFileType(path)
+	fileType, reg := defineFileType(path)
 	if reg == nil {
-		p.type_ = TypeUnknown
+		p.fileType = TypeUnknown
 
 		return &p
 	}
 
 	match := reg.FindStringSubmatch(path)
-	if type_ != TypeUnknown {
-		p.type_ = type_
+	if fileType != TypeUnknown {
+		p.fileType = fileType
 	}
 
 	if len(match) >= 2 {
@@ -113,7 +113,7 @@ func NewPath(path string) *Path {
 }
 
 func (p Path) Type() string {
-	return p.type_
+	return p.fileType
 }
 
 func (p Path) String() string {

@@ -8,43 +8,26 @@ import (
 )
 
 func ValidateHasFiles(files []fs.DirEntry, fileNames []string) error {
-	if len(files) < len(fileNames) {
-		return fmt.Errorf("%w, folders length shorter then needed", ErrMissingFile)
-	}
-
 	compErr := NewErrComposite()
-OutLoop:
-	for _, fName := range fileNames {
-		for _, dirF := range files {
-			if dirF.Name() == fName {
-				continue OutLoop
-			}
-		}
 
-		compErr.Append(fmt.Errorf("%w %s", ErrMissingFile, fName))
-	}
+	if len(files) < len(fileNames) {
+		compErr.Append(fmt.Errorf("%w: this folder must have more files", ErrMissingFile))
 
-	if compErr.Len() > 0 {
 		return compErr
 	}
 
-	return nil
-}
-
-func ValidateFilesNotInList(files []fs.DirEntry, fileList []string) error {
-	compErr := NewErrComposite()
-
-	for _, dir := range files {
+	for _, fName := range fileNames {
 		var found bool
-		for _, f := range fileList {
-			if dir.Name() == f {
+
+		for _, dirF := range files {
+			if dirF.Name() == fName {
 				found = true
 				break
 			}
 		}
 
 		if !found {
-			compErr.Append(fmt.Errorf("%w: %s", ErrMissingFile, dir.Name()))
+			compErr.Append(fmt.Errorf("%w: %s", ErrMissingFile, fName))
 		}
 	}
 
@@ -57,6 +40,7 @@ func ValidateFilesNotInList(files []fs.DirEntry, fileList []string) error {
 
 func ValidateAllowedFiles(files []fs.DirEntry, allowedFiles []string) error {
 	compErr := NewErrComposite()
+
 	for _, f := range files {
 		if !pkg.Contains(f.Name(), allowedFiles) {
 			compErr.Append(fmt.Errorf("%w: %s", ErrNotAllowedFile, f.Name()))

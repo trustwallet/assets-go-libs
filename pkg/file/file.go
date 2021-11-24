@@ -7,25 +7,14 @@ import (
 )
 
 type AssetFile struct {
-	Info *AssetInfo
 	*os.File
+
+	Info *AssetInfo
 }
 
-func Open(path string) (*AssetFile, error) {
-	file := newAssetFile(path)
-	err := file.open()
-	if err != nil {
-		return nil, err
-	}
-
-	return file, nil
-}
-
-func newAssetFile(path string) *AssetFile {
-	p := NewPath(path)
-
+func NewAssetFile(path string) *AssetFile {
 	info := AssetInfo{
-		path: p,
+		path: NewPath(path),
 	}
 
 	return &AssetFile{
@@ -33,7 +22,7 @@ func newAssetFile(path string) *AssetFile {
 	}
 }
 
-func (f *AssetFile) open() error {
+func (f *AssetFile) Open() error {
 	file, err := os.Open(f.Info.Path())
 	if err != nil {
 		return err
@@ -53,8 +42,9 @@ func (i *AssetInfo) Path() string {
 }
 
 func (i *AssetInfo) Type() string {
-	return i.path.type_
+	return i.path.fileType
 }
+
 func (i *AssetInfo) Chain() coin.Coin {
 	return i.path.chain
 }
