@@ -1,7 +1,6 @@
 package reporter
 
 import (
-	"fmt"
 	"sync"
 )
 
@@ -28,26 +27,6 @@ func (s *Service) GetOrNew(name string) *Report {
 	s.reports[name] = &Report{}
 
 	return s.reports[name]
-}
-
-func (s *Service) Update(key string, report *Report) error {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
-	if report == nil {
-		return fmt.Errorf("report param cannot be nil")
-	}
-
-	if r, ok := s.reports[key]; ok {
-		r.Fixed += report.Fixed
-		r.Errors += report.Errors
-		r.Warnings += report.Warnings
-		r.TotalFiles += report.TotalFiles
-	}
-
-	s.reports[key] = report
-
-	return nil
 }
 
 func (s *Service) GetReports() ReportList {
