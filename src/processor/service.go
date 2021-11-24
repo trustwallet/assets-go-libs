@@ -65,12 +65,6 @@ func (s *Service) RunSanityCheck(paths []string) error {
 		}
 	}
 
-	err := s.reporterService.Update(reportSanityCheckKey, report)
-	if err != nil {
-		log.WithError(err).Error()
-		return err
-	}
-
 	return nil
 }
 
