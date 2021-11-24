@@ -274,7 +274,7 @@ func (s *Service) ValidateValidatorsListFile(file *file.AssetFile) error {
 		return err
 	}
 
-	err = validation.ValidateFilesNotInList(dirAssetFolderFiles, listIDs)
+	err = validation.ValidateAllowedFiles(dirAssetFolderFiles, listIDs)
 	if err != nil {
 		return err
 	}

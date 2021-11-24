@@ -8,10 +8,8 @@ type Service struct {
 	fileService *file.FileService
 }
 
-func NewService(fileProvider *file.FileService) (*Service, error) {
-	return &Service{
-		fileService: fileProvider,
-	}, nil
+func NewService(fileProvider *file.FileService) *Service {
+	return &Service{fileService: fileProvider}
 }
 
 // nolint:funlen
@@ -94,7 +92,6 @@ func (s *Service) GetFixer(f *file.AssetFile) *Validator {
 	fileType := f.Info.Type()
 
 	switch fileType {
-
 	}
 
 	return nil
