@@ -94,7 +94,7 @@ func (s *Service) GetFixer(f *file.AssetFile) *Validator {
 	fileType := f.Info.Type()
 
 	switch fileType {
-		
+
 	}
 
 	return nil

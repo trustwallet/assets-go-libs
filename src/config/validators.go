@@ -1,15 +1,11 @@
 package config
 
 type ImageFile struct {
-	Size int `mapstructure:"size,omitempty"`
+	Size int `mapstructure:"size_kb,omitempty"`
 	MaxH int `mapstructure:"max_h,omitempty"`
 	MaxW int `mapstructure:"max_w,omitempty"`
 	MinH int `mapstructure:"min_h,omitempty"`
 	MinW int `mapstructure:"min_w,omitempty"`
-}
-
-type AssetFolder struct {
-	AllowedFiles []string `mapstructure:"allowed_files,omitempty"`
 }
 
 type RootFolder struct {
@@ -18,6 +14,10 @@ type RootFolder struct {
 }
 
 type ChainFolder struct {
+	AllowedFiles []string `mapstructure:"allowed_files,omitempty"`
+}
+
+type AssetFolder struct {
 	AllowedFiles []string `mapstructure:"allowed_files,omitempty"`
 }
 

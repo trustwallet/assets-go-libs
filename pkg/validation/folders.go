@@ -8,20 +8,27 @@ import (
 )
 
 func ValidateHasFiles(files []fs.DirEntry, fileNames []string) error {
+	compErr := NewErrComposite()
+
 	if len(files) < len(fileNames) {
-		return fmt.Errorf("%w, folders length shorter then needed", ErrMissingFile)
+		compErr.Append(fmt.Errorf("%w: this folder must have more files", ErrMissingFile))
+
+		return compErr
 	}
 
-	compErr := NewErrComposite()
-OutLoop:
 	for _, fName := range fileNames {
+		var found bool
+
 		for _, dirF := range files {
 			if dirF.Name() == fName {
-				continue OutLoop
+				found = true
+				break
 			}
 		}
 
-		compErr.Append(fmt.Errorf("%w %s", ErrMissingFile, fName))
+		if !found {
+			compErr.Append(fmt.Errorf("%w: %s", ErrMissingFile, fName))
+		}
 	}
 
 	if compErr.Len() > 0 {
@@ -36,6 +43,7 @@ func ValidateFilesNotInList(files []fs.DirEntry, fileList []string) error {
 
 	for _, dir := range files {
 		var found bool
+
 		for _, f := range fileList {
 			if dir.Name() == f {
 				found = true
