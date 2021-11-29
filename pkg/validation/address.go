@@ -116,3 +116,11 @@ func ValidateAddress(address string, prefix string, length int) error {
 
 	return nil
 }
+
+func IsEthereumAddress(addr string) bool {
+	if len(addr) == 40 || len(addr) == 42 && strings.HasPrefix(addr, "0x") {
+		return true
+	}
+
+	return false
+}

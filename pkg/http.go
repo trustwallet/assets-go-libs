@@ -8,6 +8,7 @@ import (
 	"github.com/pkg/errors"
 )
 
+// nolint: noctx
 func GetHTTPResponse(url string, v interface{}) error {
 	res, err := http.Get(url)
 	if err != nil {
@@ -32,6 +33,7 @@ func GetHTTPResponse(url string, v interface{}) error {
 	return nil
 }
 
+// nolint: noctx
 func GetHTTPResponseCode(url string) (int, error) {
 	res, err := http.Get(url)
 	if err != nil {
