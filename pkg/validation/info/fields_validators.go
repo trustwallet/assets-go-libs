@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/trustwallet/assets-go-libs/pkg"
-	"github.com/trustwallet/assets-go-libs/pkg/validation"
 	"github.com/trustwallet/go-primitives/coin"
 	"github.com/trustwallet/go-primitives/types"
 )
@@ -244,13 +243,7 @@ func ValidateExplorer(explorer, name string, chain coin.Coin, addr string) error
 		}
 
 		if matchCount == 0 {
-			err := fmt.Errorf("invalid value for explorer field, %s insted of %s",
-				explorerActual, explorerExpected)
-
-			if chain.ID == coin.ETHEREUM || chain.ID == coin.SMARTCHAIN {
-				err = validation.NewWarning(err)
-				return validation.NewWarning(err)
-			}
+			err := fmt.Errorf("invalid value for explorer field, %s insted of %s", explorerActual, explorerExpected)
 
 			return err
 		}
