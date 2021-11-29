@@ -31,3 +31,13 @@ func GetHTTPResponse(url string, v interface{}) error {
 
 	return nil
 }
+
+func GetHTTPResponseCode(url string) (int, error) {
+	res, err := http.Get(url)
+	if err != nil {
+		return 0, errors.Wrap(err, "failed to make GET request")
+	}
+	defer res.Body.Close()
+
+	return res.StatusCode, nil
+}
