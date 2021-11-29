@@ -243,9 +243,7 @@ func ValidateExplorer(explorer, name string, chain coin.Coin, addr string) error
 		}
 
 		if matchCount == 0 {
-			err := fmt.Errorf("invalid value for explorer field, %s insted of %s", explorerActual, explorerExpected)
-
-			return err
+			return fmt.Errorf("invalid value for explorer field, %s insted of %s", explorerActual, explorerExpected)
 		}
 	}
 
