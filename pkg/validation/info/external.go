@@ -2,15 +2,16 @@ package info
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/trustwallet/assets-go-libs/pkg"
 )
 
 type ExternalTokenInfo struct {
-	Symbol       string `json:"symbol"`
-	Decimals     int    `json:"decimals"`
-	HoldersCount int    `json:"holdersCount"`
+	Symbol       string
+	Decimals     int
+	HoldersCount int
 }
 
 func GetExternalTokenInfo(tokenID, tokentType string) (*ExternalTokenInfo, error) {
@@ -24,16 +25,31 @@ func GetExternalTokenInfo(tokenID, tokentType string) (*ExternalTokenInfo, error
 	return nil, nil
 }
 
+type ExternalTokenInfoERC20 struct {
+	Symbol       string `json:"symbol"`
+	Decimals     string `json:"decimals"`
+	HoldersCount int    `json:"holdersCount"`
+}
+
 func GetTokenInfoForERC20(tokenID string) (*ExternalTokenInfo, error) {
 	url := fmt.Sprintf("https://api.ethplorer.io/getTokenInfo/%s?apiKey=freekey", tokenID)
 
-	var result ExternalTokenInfo
+	var result ExternalTokenInfoERC20
 	err := pkg.GetHTTPResponse(url, &result)
 	if err != nil {
 		return nil, err
 	}
 
-	return &result, nil
+	decimals, err := strconv.Atoi(result.Decimals)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ExternalTokenInfo{
+		Symbol:       result.Symbol,
+		Decimals:     decimals,
+		HoldersCount: result.HoldersCount,
+	}, nil
 }
 
 // TODO: Implement it.
