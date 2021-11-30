@@ -16,7 +16,7 @@ func GetAssetLogoURL(repoOwner, repoName, branch, chain, tokenID string) string 
 		repoOwner, repoName, branch, chain, tokenID)
 }
 
-func GetTokenFromAssetLogoPath(path string) (tokenID, tokenType string, err error) {
+func GetTokenFromAssetLogoPath(path string) (tokenID, tokenType string) {
 	for _, t := range types.GetTokenTypes() {
 		chain, err := types.GetChainFromAssetType(string(t))
 		if err != nil {
@@ -38,9 +38,5 @@ func GetTokenFromAssetLogoPath(path string) (tokenID, tokenType string, err erro
 		tokenType = "TRC10"
 	}
 
-	if tokenID == "" && tokenType == "" {
-		return tokenID, tokenType, fmt.Errorf("couldn't get token id and token type")
-	}
-
-	return tokenID, tokenType, nil
+	return tokenID, tokenType
 }
