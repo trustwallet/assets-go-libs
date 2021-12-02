@@ -16,7 +16,7 @@ func GetHTTPResponse(url string, v interface{}) error {
 	defer res.Body.Close()
 
 	if res.StatusCode != 200 {
-		return fmt.Errorf("failed to obtain json: %v", err)
+		return fmt.Errorf("unsuccessful status code: %d", res.StatusCode)
 	}
 
 	body, err := ioutil.ReadAll(res.Body)
