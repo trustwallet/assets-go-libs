@@ -78,6 +78,10 @@ func supportedLinkNames() []string {
 func supportedLinkValues() []string {
 	values := make([]string, 0, len(allowedLinkKeys))
 	for _, v := range allowedLinkKeys {
+		if v == "" {
+			continue
+		}
+
 		values = append(values, v)
 	}
 

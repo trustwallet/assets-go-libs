@@ -143,7 +143,7 @@ func ValidateCoinLinks(links []Link) error {
 		prefix := allowedLinkKeys[*l.Name]
 		if prefix != "" {
 			if !strings.HasPrefix(*l.URL, prefix) {
-				return fmt.Errorf("ivalid value for links.url field, allowed only with prefixes - %s",
+				return fmt.Errorf("invalid value for links.url field, allowed only with prefixes - %s",
 					strings.Join(supportedLinkValues(), ", "))
 			}
 		}
