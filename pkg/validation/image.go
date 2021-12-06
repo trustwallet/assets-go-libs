@@ -24,7 +24,8 @@ func ValidatePngImageDimension(file io.Reader) error {
 	}
 
 	if img.Width > maxW || img.Height > maxH || img.Height < minH || img.Width < minW || img.Width != img.Height {
-		return fmt.Errorf("%w: logo should be 256x256: given %dx%d", ErrInvalidImgDimension, img.Width, img.Height)
+		return fmt.Errorf("%w: max - %dx%d, min - %dx%d; given %dx%d",
+			ErrInvalidImgDimension, maxW, maxH, minW, minH, img.Width, img.Height)
 	}
 
 	return nil
