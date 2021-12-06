@@ -8,12 +8,13 @@ import (
 )
 
 const (
-	kbInByte    = 1000
+	bytesInKB   = 1024
 	sizeLimitKB = 100
-	maxW        = 512
-	maxH        = 512
-	minW        = 128
-	minH        = 128
+
+	maxW = 512
+	maxH = 512
+	minW = 128
+	minH = 128
 )
 
 func ValidatePngImageDimension(file io.Reader) error {
@@ -43,7 +44,7 @@ func ValidateLogoStreamSize(imgBytes []byte) error {
 }
 
 func validateLogoSize(imgBytesCount int) error {
-	logoSizeKB := imgBytesCount / kbInByte
+	logoSizeKB := imgBytesCount / bytesInKB
 
 	if logoSizeKB > sizeLimitKB {
 		return fmt.Errorf("%w: logo should be less than %dKB, given %dKB", ErrInvalidFileSize, sizeLimitKB, logoSizeKB)
