@@ -61,17 +61,12 @@ func (s *Service) ValidateChainFolder(file *file.AssetFile) error {
 func (s *Service) ValidateImage(file *file.AssetFile) error {
 	var compErr = validation.NewErrComposite()
 
-	err := validation.ValidateSize(file, config.Default.ValidatorsSettings.ImageFile.Size)
+	err := validation.ValidateLogoFileSize(file.File)
 	if err != nil {
 		compErr.Append(err)
 	}
 
-	err = validation.ValidateImageDimension(file,
-		config.Default.ValidatorsSettings.ImageFile.MaxW,
-		config.Default.ValidatorsSettings.ImageFile.MaxH,
-		config.Default.ValidatorsSettings.ImageFile.MinW,
-		config.Default.ValidatorsSettings.ImageFile.MinH,
-	)
+	err = validation.ValidatePngImageDimension(file)
 	if err != nil {
 		compErr.Append(err)
 	}
