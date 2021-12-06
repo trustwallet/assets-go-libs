@@ -15,6 +15,7 @@ var (
 	symbolRegexp   = regexp.MustCompile(`<b>(\w+)<\/b>\s<span`)
 )
 
+// nolint:noctx
 func GetTokenInfoForBEP20(tokenID string) (*TokenInfo, error) {
 	url := fmt.Sprintf("https://bscscan.com/token/%s", tokenID)
 
@@ -29,7 +30,7 @@ func GetTokenInfoForBEP20(tokenID string) (*TokenInfo, error) {
 		return nil, err
 	}
 
-	// Remove all "," from content
+	// Remove all "," from content.
 	pageContent := strings.ReplaceAll(string(dataInBytes), ",", "")
 
 	var holders, decimals int

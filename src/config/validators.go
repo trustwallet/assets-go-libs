@@ -1,13 +1,5 @@
 package config
 
-type ImageFile struct {
-	Size int `mapstructure:"size_kb,omitempty"`
-	MaxH int `mapstructure:"max_h,omitempty"`
-	MaxW int `mapstructure:"max_w,omitempty"`
-	MinH int `mapstructure:"min_h,omitempty"`
-	MinW int `mapstructure:"min_w,omitempty"`
-}
-
 type RootFolder struct {
 	AllowedFiles []string `mapstructure:"allowed_files,omitempty"`
 	SkipFiles    []string `mapstructure:"skip_files,omitempty"`
