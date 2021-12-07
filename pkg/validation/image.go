@@ -27,7 +27,7 @@ func ValidatePngImageDimensionForCI(file io.Reader) error {
 	}
 
 	// TODO: If we fix all incorrect logos in assets repo, we could use "|| img.Width != img.Height" in addition.
-	if img.Width > maxW || img.Height > maxH || img.Height < minH {
+	if img.Width > maxW || img.Height > maxH || img.Width < 60 || img.Height < 60 {
 		return fmt.Errorf("%w: max - %dx%d, min - %dx%d; given %dx%d",
 			ErrInvalidImgDimension, maxW, maxH, minW, minH, img.Width, img.Height)
 	}
