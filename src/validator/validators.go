@@ -66,7 +66,9 @@ func (s *Service) ValidateImage(file *file.AssetFile) error {
 		compErr.Append(err)
 	}
 
-	err = validation.ValidatePngImageDimension(file)
+	// TODO: Replace it with validation.ValidatePngImageDimension when "assets" repo is fixed.
+	// Read comments inValidatePngImageDimensionForCI.
+	err = validation.ValidatePngImageDimensionForCI(file)
 	if err != nil {
 		compErr.Append(err)
 	}
