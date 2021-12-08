@@ -34,9 +34,7 @@ func (s *Service) UpdateBinanceTokens() error {
 }
 
 func fetchMissingAssets(assets []binancedex.Bep2Asset) error {
-	assetType := "BEP2"
-
-	chain, err := types.GetChainFromAssetType(assetType)
+	chain, err := types.GetChainFromAssetType(string(types.BEP2))
 	if err != nil {
 		return err
 	}
@@ -51,42 +49,50 @@ func fetchMissingAssets(assets []binancedex.Bep2Asset) error {
 			continue
 		}
 
-		log.WithField("path", assetLogoPath).Debug("Missing logo")
-
-		pkg.CreateDirPath(assetLogoPath)
-		err = pkg.CreatePNGFromURL(a.AssetImg, assetLogoPath)
-		if err != nil {
+		if err = createLogo(assetLogoPath, a); err != nil {
 			return err
 		}
 
-		assetInfoPath := asset.GetAssetInfoPath(chain.Handle, a.Asset)
-
-		explorerURL, err := coin.GetCoinExploreURL(chain, a.Asset)
-		if err != nil {
-			return err
-		}
-
-		website := ""
-		description := "-"
-		status := "active"
-
-		assetInfo := info.AssetModel{
-			Name:        &a.Name,
-			Type:        &assetType,
-			Symbol:      &a.MappedAsset,
-			Decimals:    &a.Decimals,
-			Website:     &website,
-			Description: &description,
-			Explorer:    &explorerURL,
-			Status:      &status,
-			ID:          &a.Asset,
-		}
-
-		err = pkg.CreateJSONFile(assetInfoPath, &assetInfo)
-		if err != nil {
+		if err = createInfoJSON(chain, a); err != nil {
 			return err
 		}
 	}
 
 	return nil
+}
+
+func createLogo(assetLogoPath string, a binancedex.Bep2Asset) error {
+	log.WithField("path", assetLogoPath).Debug("Missing logo")
+
+	pkg.CreateDirPath(assetLogoPath)
+
+	return pkg.CreatePNGFromURL(a.AssetImg, assetLogoPath)
+}
+
+func createInfoJSON(chain coin.Coin, a binancedex.Bep2Asset) error {
+	explorerURL, err := coin.GetCoinExploreURL(chain, a.Asset)
+	if err != nil {
+		return err
+	}
+
+	assetType := "BEP2"
+	website := ""
+	description := "-"
+	status := "active"
+
+	assetInfo := info.AssetModel{
+		Name:        &a.Name,
+		Type:        &assetType,
+		Symbol:      &a.MappedAsset,
+		Decimals:    &a.Decimals,
+		Website:     &website,
+		Description: &description,
+		Explorer:    &explorerURL,
+		Status:      &status,
+		ID:          &a.Asset,
+	}
+
+	assetInfoPath := asset.GetAssetInfoPath(chain.Handle, a.Asset)
+
+	return pkg.CreateJSONFile(assetInfoPath, &assetInfo)
 }
