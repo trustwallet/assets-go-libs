@@ -5,25 +5,23 @@ import (
 
 	"github.com/trustwallet/assets-go-libs/pkg/file"
 	"github.com/trustwallet/assets-go-libs/pkg/validation"
+	"github.com/trustwallet/assets-go-libs/src/core"
 	"github.com/trustwallet/assets-go-libs/src/reporter"
-	"github.com/trustwallet/assets-go-libs/src/validator"
 )
 
-const (
-	reportSanityCheckKey = "sanity-check"
-)
+const reportSanityCheckKey = "sanity-check"
 
 type Service struct {
-	fileService       *file.FileService
-	validatorsService *validator.Service
-	reporterService   *reporter.Service
+	fileService     *file.Service
+	coreService     *core.Service
+	reporterService *reporter.Service
 }
 
-func NewService(fs *file.FileService, vs *validator.Service, rs *reporter.Service) *Service {
+func NewService(fs *file.Service, cs *core.Service, rs *reporter.Service) *Service {
 	return &Service{
-		fileService:       fs,
-		validatorsService: vs,
-		reporterService:   rs,
+		fileService:     fs,
+		coreService:     cs,
+		reporterService: rs,
 	}
 }
 
@@ -39,8 +37,8 @@ func (s *Service) RunSanityCheck(paths []string) error {
 
 		report.TotalFiles += 1
 
-		validator := s.validatorsService.GetValidator(f)
-		fixer := s.validatorsService.GetFixer(f)
+		validator := s.coreService.GetValidator(f)
+		fixer := s.coreService.GetFixer(f)
 
 		if validator != nil {
 			err = validator.Run(f)
@@ -66,6 +64,21 @@ func (s *Service) RunSanityCheck(paths []string) error {
 	}
 
 	return nil
+}
+
+func (s *Service) RunUpdateAuto() error {
+	updaters := s.coreService.GetUpdatersAuto()
+
+	for _, updater := range updaters {
+		log.WithField("Name", updater.Name).Debug("Running updater")
+
+		err := updater.Run()
+		if err != nil {
+			log.WithError(err).Error()
+		}
+	}
+
+	return nil // ???
 }
 
 func HandleError(err error, info *file.AssetInfo, valName string, report *reporter.Report) {

@@ -1,4 +1,4 @@
-package validator
+package core
 
 import "github.com/trustwallet/assets-go-libs/pkg/file"
 
@@ -11,4 +11,10 @@ type Validator struct {
 
 type Fixer struct {
 	Validator
+}
+
+type UpdaterAuto struct {
+	Name string
+
+	Run func() error
 }

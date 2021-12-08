@@ -2,7 +2,7 @@ app:
   log_level: info
 
 client_urls:
-  binancedex: "https://dex-atlantic.binance.org"
+  binancedex: https://explorer.binance.org
 
 validators_settings:
   root_folder:
