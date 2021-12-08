@@ -1,4 +1,4 @@
-package binancedex
+package explorer
 
 import (
 	"net/url"

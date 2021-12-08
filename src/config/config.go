@@ -18,7 +18,10 @@ type (
 	}
 
 	ClientsURLs struct {
-		Binancedex string `mapstructure:"binancedex"`
+		Binance struct {
+			Explorer string `mapstructure:"explorer"`
+			Dex      string `mapstructure:"dex"`
+		} `mapstructure:"binance"`
 	}
 
 	ValidatorsSettings struct {
