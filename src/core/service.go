@@ -1,15 +1,17 @@
-package validator
+package core
 
 import (
 	"github.com/trustwallet/assets-go-libs/pkg/file"
 )
 
 type Service struct {
-	fileService *file.FileService
+	fileService *file.Service
 }
 
-func NewService(fileProvider *file.FileService) *Service {
-	return &Service{fileService: fileProvider}
+func NewService(fileProvider *file.Service) *Service {
+	return &Service{
+		fileService: fileProvider,
+	}
 }
 
 // nolint:funlen
@@ -88,11 +90,15 @@ func (s *Service) GetValidator(f *file.AssetFile) *Validator {
 	return nil
 }
 
-func (s *Service) GetFixer(f *file.AssetFile) *Validator {
-	fileType := f.Info.Type()
-
-	switch fileType {
-	}
-
+func (s *Service) GetFixer(f *file.AssetFile) *Fixer {
 	return nil
+}
+
+func (s *Service) GetUpdatersAuto() []UpdaterAuto {
+	return []UpdaterAuto{
+		{
+			Name: "Retrieving missing token images, creating binance token list.",
+			Run:  s.UpdateBinanceTokens,
+		},
+	}
 }

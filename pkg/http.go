@@ -21,7 +21,7 @@ func GetHTTPResponse(url string, v interface{}) error {
 
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		return fmt.Errorf("failed to read bytes from body: %v", err)
+		return fmt.Errorf("failed to read body: %v", err)
 	}
 
 	err = json.Unmarshal(body, v)
@@ -41,4 +41,19 @@ func GetHTTPResponseCode(url string) (int, error) {
 	defer res.Body.Close()
 
 	return res.StatusCode, nil
+}
+
+func GetHTTPResponseBytes(url string) ([]byte, error) {
+	response, err := http.Get(url)
+	if err != nil {
+		return nil, fmt.Errorf("failed to make GET request: %v", err)
+	}
+	defer response.Body.Close()
+
+	bytes, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read body: %v", err)
+	}
+
+	return bytes, nil
 }

@@ -2,7 +2,12 @@ app:
   log_level: info
 
 client_urls:
-  binancedex: "https://dex-atlantic.binance.org"
+  binance:
+    explorer: https://explorer.binance.org
+    dex: https://dex-atlantic.binance.org/api
+
+urls:
+  tw_assets_app: https://assets.trustwalletapp.com
 
 validators_settings:
   root_folder:
@@ -94,4 +99,7 @@ validators_settings:
         description: Binance-Peg tokens.
       - id: deflationary
         name: Deflationary
-        description: Tokens that are deflationary or use mechanism to burn a token on transfer/swap. 
+        description: Tokens that are deflationary or use mechanism to burn a token on transfer/swap.
+      - id: memes
+        name: Memes
+        description: A cryptocurrency that is associated with some theme, often as a joke rather than a serious product.

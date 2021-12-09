@@ -30,19 +30,19 @@ type (
 		Explorer      *string  `json:"explorer,omitempty"`
 		Status        *string  `json:"status,omitempty"`
 		ID            *string  `json:"id,omitempty"`
-		Research      string   `json:"research"`
+		Research      string   `json:"research,omitempty"`
 		Links         []Link   `json:"links,omitempty"`
-		ShortDesc     string   `json:"short_desc"`
-		Audit         string   `json:"audit"`
-		AuditReport   string   `json:"audit_report"`
-		Tags          []string `json:"tags"`
-		Code          string   `json:"code"`
-		Ticker        string   `json:"ticker"`
-		ExplorerEth   string   `json:"explorer-ETH"`
-		Address       string   `json:"address"`
-		Twitter       string   `json:"twitter"`
-		CoinMarketcap string   `json:"coinmarketcap"`
-		DataSource    string   `json:"data_source"`
+		ShortDesc     *string  `json:"short_desc,omitempty"`
+		Audit         *string  `json:"audit,omitempty"`
+		AuditReport   *string  `json:"audit_report,omitempty"`
+		Tags          []string `json:"tags,omitempty"`
+		Code          *string  `json:"code,omitempty"`
+		Ticker        *string  `json:"ticker,omitempty"`
+		ExplorerEth   *string  `json:"explorer-ETH,omitempty"`
+		Address       *string  `json:"address,omitempty"`
+		Twitter       *string  `json:"twitter,omitempty"`
+		CoinMarketcap *string  `json:"coinmarketcap,omitempty"`
+		DataSource    *string  `json:"data_source,omitempty"`
 	}
 )
 
