@@ -2,6 +2,10 @@ package core
 
 import (
 	"fmt"
+	"reflect"
+	"sort"
+	"strconv"
+	"time"
 
 	"github.com/trustwallet/assets-go-libs/pkg"
 	"github.com/trustwallet/assets-go-libs/pkg/asset"
@@ -20,6 +24,10 @@ const (
 	assetsRows       = 1000
 	marketPairsLimit = 1000
 	tokensListLimit  = 10000
+
+	twLogoURL       = "https://trustwallet.com/assets/images/favicon.png"
+	assetsURI       = "https://assets.trustwalletapp.com"
+	timestampFormat = "2006-01-02T15:04:05.000000"
 )
 
 func (s *Service) UpdateBinanceTokens() error {
@@ -42,20 +50,20 @@ func (s *Service) UpdateBinanceTokens() error {
 		return err
 	}
 
-	err = fetchMissingAssets(bep2AssetList.AssetInfoList)
-	if err != nil {
-		return err
-	}
-
-	return createTokenListJSON(marketPairs, tokensList)
-}
-
-func fetchMissingAssets(assets []explorer.Bep2Asset) error {
 	chain, err := types.GetChainFromAssetType(string(types.BEP2))
 	if err != nil {
 		return err
 	}
 
+	err = fetchMissingAssets(chain, bep2AssetList.AssetInfoList)
+	if err != nil {
+		return err
+	}
+
+	return createTokenListJSON(chain, marketPairs, tokensList)
+}
+
+func fetchMissingAssets(chain coin.Coin, assets []explorer.Bep2Asset) error {
 	for _, a := range assets {
 		if a.AssetImg == "" || a.Decimals == 0 {
 			continue
@@ -66,11 +74,11 @@ func fetchMissingAssets(assets []explorer.Bep2Asset) error {
 			continue
 		}
 
-		if err = createLogo(assetLogoPath, a); err != nil {
+		if err := createLogo(assetLogoPath, a); err != nil {
 			return err
 		}
 
-		if err = createInfoJSON(chain, a); err != nil {
+		if err := createInfoJSON(chain, a); err != nil {
 			return err
 		}
 	}
@@ -90,7 +98,7 @@ func createInfoJSON(chain coin.Coin, a explorer.Bep2Asset) error {
 		return err
 	}
 
-	assetType := "BEP2"
+	assetType := string(types.BEP2)
 	website := ""
 	description := "-"
 	status := "active"
@@ -112,13 +120,53 @@ func createInfoJSON(chain coin.Coin, a explorer.Bep2Asset) error {
 	return pkg.CreateJSONFile(assetInfoPath, &assetInfo)
 }
 
-func createTokenListJSON(marketPairs []dex.MarketPair, tokenList []dex.Token) error {
+func createTokenListJSON(chain coin.Coin, marketPairs []dex.MarketPair, tokenList []dex.Token) error {
 	tokens, err := generateTokenList(marketPairs, tokenList)
 	if err != nil {
 		return nil
 	}
 
+	tokenListPath := fmt.Sprintf("blockchains/%s/tokenlist.json", chain.Handle)
+
+	var oldTokenList TokenList
+	err = pkg.ReadJSONFile(tokenListPath, &oldTokenList)
+	if err != nil {
+		return nil
+	}
+
+	sortTokens(tokens)
+
+	if reflect.DeepEqual(oldTokenList.Tokens, tokens) {
+		return nil
+	}
+
+	if len(tokens) > 0 {
+		return pkg.CreateJSONFile(tokenListPath, &TokenList{
+			Name:      fmt.Sprintf("Trust Wallet: %s", coin.Coins[coin.BINANCE].Symbol),
+			LogoURI:   twLogoURL,
+			Timestamp: time.Now().Format(timestampFormat),
+			Tokens:    tokens,
+			Version:   Version{Major: oldTokenList.Version.Major + 1},
+		})
+	}
+
 	return nil
+}
+
+func sortTokens(tokens []TokenItem) {
+	sort.Slice(tokens, func(i, j int) bool {
+		if len(tokens[i].Pairs) != len(tokens[j].Pairs) {
+			return len(tokens[i].Pairs) > len(tokens[j].Pairs)
+		}
+
+		return tokens[i].Address < tokens[j].Address
+	})
+
+	for _, token := range tokens {
+		sort.Slice(token.Pairs, func(i, j int) bool {
+			return token.Pairs[i].Base < token.Pairs[j].Base
+		})
+	}
 }
 
 func generateTokenList(marketPairs []dex.MarketPair, tokenList []dex.Token) ([]TokenItem, error) {
@@ -157,6 +205,12 @@ func generateTokenList(marketPairs []dex.MarketPair, tokenList []dex.Token) ([]T
 	for pair := range pairsList {
 		token := tokensMap[pair]
 
+		var pairs []Pair
+		pairs, exists := pairsMap[token.Symbol]
+		if !exists {
+			pairs = make([]Pair, 0)
+		}
+
 		tokenItems = append(tokenItems, TokenItem{
 			Asset:    getAssetIDSymbol(token.Symbol, coin.Coins[coin.BINANCE].Symbol, coin.BINANCE),
 			Type:     getTokenType(token.Symbol, coin.Coins[coin.BINANCE].Symbol, string(types.BEP2)),
@@ -165,7 +219,7 @@ func generateTokenList(marketPairs []dex.MarketPair, tokenList []dex.Token) ([]T
 			Symbol:   token.OriginalSymbol,
 			Decimals: coin.Coins[coin.BINANCE].Decimals,
 			LogoURI:  getLogoURI(token.Symbol, coin.Coins[coin.BINANCE].Handle, coin.Coins[coin.BINANCE].Symbol),
-			Pairs:    pairsMap[token.Symbol],
+			Pairs:    pairs,
 		})
 	}
 
@@ -175,8 +229,8 @@ func generateTokenList(marketPairs []dex.MarketPair, tokenList []dex.Token) ([]T
 func getPair(marketPair dex.MarketPair) Pair {
 	return Pair{
 		Base:     getAssetIDSymbol(marketPair.BaseAssetSymbol, coin.Coins[coin.BINANCE].Symbol, coin.BINANCE),
-		LotSize:  numbers.ToSatoshi(marketPair.LotSize),
-		TickSize: numbers.ToSatoshi(marketPair.TickSize),
+		LotSize:  strconv.FormatInt(numbers.ToSatoshi(marketPair.LotSize), 10),
+		TickSize: strconv.FormatInt(numbers.ToSatoshi(marketPair.TickSize), 10),
 	}
 }
 
@@ -197,8 +251,6 @@ func getTokenType(symbol string, nativeCoinSymbol string, tokenType string) stri
 }
 
 func getLogoURI(id, githubChainFolder, nativeCoinSymbol string) string {
-	assetsURI := "https://assets.trustwalletapp.com"
-
 	if id == nativeCoinSymbol {
 		return fmt.Sprintf("%s/blockchains/%s/info/logo.png", assetsURI, githubChainFolder)
 	}

@@ -80,3 +80,23 @@ func CreateJSONFile(path string, payload interface{}) error {
 
 	return nil
 }
+
+func ReadJSONFile(path string, payload interface{}) error {
+	jsonFile, err := os.Open(path)
+	if err != nil {
+		return fmt.Errorf("failed to open file: %v", err)
+	}
+	defer jsonFile.Close()
+
+	data, err := ioutil.ReadAll(jsonFile)
+	if err != nil {
+		return fmt.Errorf("failed to read data from file: %v", err)
+	}
+
+	err = json.Unmarshal(data, payload)
+	if err != nil {
+		return fmt.Errorf("failed to unmarshal json: %v", err)
+	}
+
+	return nil
+}

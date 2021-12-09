@@ -44,8 +44,8 @@ func ValidateAssetRequiredKeys(a AssetModel) error {
 	}
 
 	if len(fields) != len(requiredAssetFields) {
-		return fmt.Errorf("missing or empty required fields\n-%s",
-			strings.Join(difference(requiredAssetFields, fields), "\n"))
+		return fmt.Errorf("missing or empty required fields: %s",
+			strings.Join(difference(requiredAssetFields, fields), ", "))
 	}
 
 	return nil
@@ -118,8 +118,8 @@ func ValidateCoinRequiredKeys(c CoinModel) error {
 	}
 
 	if len(fields) != len(requiredCoinFields) {
-		return fmt.Errorf("missing or empty required fields\n-%s",
-			strings.Join(difference(requiredCoinFields, fields), "\n"))
+		return fmt.Errorf("missing or empty required fields: %s",
+			strings.Join(difference(requiredCoinFields, fields), ", "))
 	}
 
 	return nil
@@ -136,14 +136,14 @@ func ValidateCoinLinks(links []Link) error {
 		}
 
 		if !linkNameAllowed(*l.Name) {
-			return fmt.Errorf("invalid value for links.name filed, allowed only - %s",
+			return fmt.Errorf("invalid value for links.name filed, allowed only: %s",
 				strings.Join(supportedLinkNames(), ", "))
 		}
 
 		prefix := allowedLinkKeys[*l.Name]
 		if prefix != "" {
 			if !strings.HasPrefix(*l.URL, prefix) {
-				return fmt.Errorf("invalid value for links.url field, allowed only with prefixes - %s",
+				return fmt.Errorf("invalid value for links.url field, allowed only with prefixes: %s",
 					strings.Join(supportedLinkValues(), ", "))
 			}
 		}
