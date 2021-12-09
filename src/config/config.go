@@ -10,6 +10,7 @@ type (
 	Config struct {
 		App                App                `mapstructure:"app"`
 		ClientURLs         ClientsURLs        `mapstructure:"client_urls"`
+		URLs               URLs               `mapstructure:"urls"`
 		ValidatorsSettings ValidatorsSettings `mapstructure:"validators_settings"`
 	}
 
@@ -22,6 +23,10 @@ type (
 			Explorer string `mapstructure:"explorer"`
 			Dex      string `mapstructure:"dex"`
 		} `mapstructure:"binance"`
+	}
+
+	URLs struct {
+		TWAssetsApp string `mapstructure:"tw_assets_app"`
 	}
 
 	ValidatorsSettings struct {

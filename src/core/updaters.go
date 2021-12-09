@@ -26,7 +26,6 @@ const (
 	tokensListLimit  = 10000
 
 	twLogoURL       = "https://trustwallet.com/assets/images/favicon.png"
-	assetsURI       = "https://assets.trustwalletapp.com"
 	timestampFormat = "2006-01-02T15:04:05.000000"
 )
 
@@ -252,8 +251,8 @@ func getTokenType(symbol string, nativeCoinSymbol string, tokenType string) stri
 
 func getLogoURI(id, githubChainFolder, nativeCoinSymbol string) string {
 	if id == nativeCoinSymbol {
-		return fmt.Sprintf("%s/blockchains/%s/info/logo.png", assetsURI, githubChainFolder)
+		return fmt.Sprintf("%s/blockchains/%s/info/logo.png", config.Default.URLs.TWAssetsApp, githubChainFolder)
 	}
 
-	return fmt.Sprintf("%s/blockchains/%s/assets/%s/logo.png", assetsURI, githubChainFolder, id)
+	return fmt.Sprintf("%s/blockchains/%s/assets/%s/logo.png", config.Default.URLs.TWAssetsApp, githubChainFolder, id)
 }

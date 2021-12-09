@@ -78,7 +78,7 @@ func (s *Service) RunUpdateAuto() error {
 		}
 	}
 
-	return nil // ???
+	return nil
 }
 
 func HandleError(err error, info *file.AssetInfo, valName string, report *reporter.Report) {
