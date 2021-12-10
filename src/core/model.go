@@ -11,7 +11,10 @@ type (
 	}
 
 	Fixer struct {
-		Validator
+		Name     string
+		FileType string
+
+		Run func(f *file.AssetFile) error
 	}
 
 	UpdaterAuto struct {

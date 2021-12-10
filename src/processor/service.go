@@ -6,28 +6,21 @@ import (
 	"github.com/trustwallet/assets-go-libs/pkg/file"
 	"github.com/trustwallet/assets-go-libs/pkg/validation"
 	"github.com/trustwallet/assets-go-libs/src/core"
-	"github.com/trustwallet/assets-go-libs/src/reporter"
 )
 
-const reportSanityCheckKey = "sanity-check"
-
 type Service struct {
-	fileService     *file.Service
-	coreService     *core.Service
-	reporterService *reporter.Service
+	fileService *file.Service
+	coreService *core.Service
 }
 
-func NewService(fs *file.Service, cs *core.Service, rs *reporter.Service) *Service {
+func NewService(fs *file.Service, cs *core.Service) *Service {
 	return &Service{
-		fileService:     fs,
-		coreService:     cs,
-		reporterService: rs,
+		fileService: fs,
+		coreService: cs,
 	}
 }
 
 func (s *Service) RunSanityCheck(paths []string) error {
-	report := s.reporterService.GetOrNew(reportSanityCheckKey)
-
 	for _, path := range paths {
 		f, err := s.fileService.GetAssetFile(path)
 		if err != nil {
@@ -35,24 +28,39 @@ func (s *Service) RunSanityCheck(paths []string) error {
 			return err
 		}
 
-		report.TotalFiles += 1
-
 		validator := s.coreService.GetValidator(f)
-		fixer := s.coreService.GetFixer(f)
 
 		if validator != nil {
 			err = validator.Run(f)
 			if err != nil {
-				HandleError(err, f.Info, validator.Name, report)
+				HandleError(err, f.Info, validator.Name)
 			}
 		}
 
-		if fixer != nil && err != nil {
+		err = f.Close()
+		if err != nil {
+			log.WithError(err).Error()
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (s *Service) RunFixers(paths []string) error {
+	for _, path := range paths {
+		f, err := s.fileService.GetAssetFile(path)
+		if err != nil {
+			log.WithError(err).Error()
+			return err
+		}
+
+		fixer := s.coreService.GetFixer(f)
+
+		if fixer != nil {
 			err = fixer.Run(f)
 			if err != nil {
-				log.WithError(err).Error()
-			} else {
-				report.Fixed += 1
+				HandleError(err, f.Info, fixer.Name)
 			}
 		}
 
@@ -81,22 +89,22 @@ func (s *Service) RunUpdateAuto() error {
 	return nil
 }
 
-func HandleError(err error, info *file.AssetInfo, valName string, report *reporter.Report) {
+func HandleError(err error, info *file.AssetInfo, valName string) {
 	errors := UnwrapComposite(err)
 
 	for _, err := range errors {
+		logFields := log.Fields{
+			"type":       info.Type(),
+			"chain":      info.Chain().Handle,
+			"asset":      info.Asset(),
+			"path":       info.Path(),
+			"validation": valName,
+		}
+
 		if warn, ok := err.(*validation.Warning); ok {
-			report.Warnings += 1
-			log.WithField("path", info.Path()).Warning(warn)
+			log.WithFields(logFields).Warning(warn)
 		} else {
-			report.Errors += 1
-			log.WithFields(log.Fields{
-				"type":       info.Type(),
-				"chain":      info.Chain().Handle,
-				"asset":      info.Asset(),
-				"path":       info.Path(),
-				"validation": valName,
-			}).Error(err)
+			log.WithFields(logFields).Error(err)
 		}
 	}
 }

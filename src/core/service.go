@@ -91,6 +91,17 @@ func (s *Service) GetValidator(f *file.AssetFile) *Validator {
 }
 
 func (s *Service) GetFixer(f *file.AssetFile) *Fixer {
+	fileType := f.Info.Type()
+
+	switch fileType {
+	case file.TypeChainInfoFile, file.TypeAssetInfoFile:
+		return &Fixer{
+			Name:     "Formatting info.json files",
+			Run:      s.FixInfoJSON,
+			FileType: fileType,
+		}
+	}
+
 	return nil
 }
 
