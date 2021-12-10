@@ -22,10 +22,10 @@ func (s *Service) FixInfoJSON(file *file.AssetFile) error {
 	}
 
 	var prettyJSON bytes.Buffer
-	err = json.Indent(&prettyJSON, data, "", "\t")
+	err = json.Indent(&prettyJSON, data, "", "    ")
 	if err != nil {
 		return err
 	}
 
-	return nil
+	return ioutil.WriteFile(file.Info.Path(), prettyJSON.Bytes(), 0644)
 }
