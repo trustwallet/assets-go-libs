@@ -20,7 +20,7 @@ func NewService(fs *file.Service, cs *core.Service) *Service {
 	}
 }
 
-func (s *Service) RunSanityCheck(paths []string) error {
+func (s *Service) RunCheck(paths []string) error {
 	for _, path := range paths {
 		f, err := s.fileService.GetAssetFile(path)
 		if err != nil {
@@ -31,6 +31,8 @@ func (s *Service) RunSanityCheck(paths []string) error {
 		validator := s.coreService.GetValidator(f)
 
 		if validator != nil {
+			log.WithField("name", validator.Name).Debug("Running validator")
+
 			err = validator.Run(f)
 			if err != nil {
 				HandleError(err, f.Info, validator.Name)
@@ -47,7 +49,7 @@ func (s *Service) RunSanityCheck(paths []string) error {
 	return nil
 }
 
-func (s *Service) RunFixers(paths []string) error {
+func (s *Service) RunFix(paths []string) error {
 	for _, path := range paths {
 		f, err := s.fileService.GetAssetFile(path)
 		if err != nil {
@@ -58,6 +60,8 @@ func (s *Service) RunFixers(paths []string) error {
 		fixer := s.coreService.GetFixer(f)
 
 		if fixer != nil {
+			log.WithField("name", fixer.Name).Debug("Running fixer")
+
 			err = fixer.Run(f)
 			if err != nil {
 				HandleError(err, f.Info, fixer.Name)
@@ -78,7 +82,7 @@ func (s *Service) RunUpdateAuto() error {
 	updaters := s.coreService.GetUpdatersAuto()
 
 	for _, updater := range updaters {
-		log.WithField("Name", updater.Name).Debug("Running updater")
+		log.WithField("name", updater.Name).Debug("Running updater")
 
 		err := updater.Run()
 		if err != nil {

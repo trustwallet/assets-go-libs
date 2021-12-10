@@ -29,3 +29,4 @@ func (s *Service) FixInfoJSON(file *file.AssetFile) error {
 
 	return ioutil.WriteFile(file.Info.Path(), prettyJSON.Bytes(), 0644)
 }
+
