@@ -10,9 +10,9 @@ import (
 	"github.com/trustwallet/assets-go-libs/pkg"
 	"github.com/trustwallet/assets-go-libs/pkg/asset"
 	"github.com/trustwallet/assets-go-libs/pkg/validation/info"
-	"github.com/trustwallet/assets-go-libs/src/client/binance/dex"
-	"github.com/trustwallet/assets-go-libs/src/client/binance/explorer"
 	"github.com/trustwallet/assets-go-libs/src/config"
+	"github.com/trustwallet/go-libs/blockchain/binance"
+	"github.com/trustwallet/go-libs/blockchain/binance/explorer"
 	assetlib "github.com/trustwallet/go-primitives/asset"
 	"github.com/trustwallet/go-primitives/coin"
 	"github.com/trustwallet/go-primitives/numbers"
@@ -30,21 +30,21 @@ const (
 )
 
 func (s *Service) UpdateBinanceTokens() error {
-	explorerClient := explorer.NewClient(config.Default.ClientURLs.Binance.Explorer, nil)
+	explorerClient := explorer.InitClient(config.Default.ClientURLs.Binance.Explorer, nil)
 
-	bep2AssetList, err := explorerClient.GetBep2Assets(assetsPage, assetsRows)
+	bep2AssetList, err := explorerClient.FetchBep2Assets(assetsPage, assetsRows)
 	if err != nil {
 		return err
 	}
 
-	dexClient := dex.NewClient(config.Default.ClientURLs.Binance.Dex, nil)
+	dexClient := binance.InitClient(config.Default.ClientURLs.Binance.Dex, "", nil)
 
-	marketPairs, err := dexClient.GetMarketPairs(marketPairsLimit)
+	marketPairs, err := dexClient.FetchMarketPairs(marketPairsLimit)
 	if err != nil {
 		return err
 	}
 
-	tokensList, err := dexClient.GetTokensList(tokensListLimit)
+	tokensList, err := dexClient.FetchTokens(tokensListLimit)
 	if err != nil {
 		return err
 	}
@@ -119,7 +119,7 @@ func createInfoJSON(chain coin.Coin, a explorer.Bep2Asset) error {
 	return pkg.CreateJSONFile(assetInfoPath, &assetInfo)
 }
 
-func createTokenListJSON(chain coin.Coin, marketPairs []dex.MarketPair, tokenList []dex.Token) error {
+func createTokenListJSON(chain coin.Coin, marketPairs []binance.MarketPair, tokenList binance.Tokens) error {
 	tokens, err := generateTokenList(marketPairs, tokenList)
 	if err != nil {
 		return nil
@@ -168,7 +168,7 @@ func sortTokens(tokens []TokenItem) {
 	}
 }
 
-func generateTokenList(marketPairs []dex.MarketPair, tokenList []dex.Token) ([]TokenItem, error) {
+func generateTokenList(marketPairs []binance.MarketPair, tokenList binance.Tokens) ([]TokenItem, error) {
 	if len(marketPairs) < 5 {
 		return nil, fmt.Errorf("no markets info is returned from Binance DEX: %d", len(marketPairs))
 	}
@@ -179,7 +179,7 @@ func generateTokenList(marketPairs []dex.MarketPair, tokenList []dex.Token) ([]T
 
 	pairsMap := make(map[string][]Pair)
 	pairsList := make(map[string]struct{})
-	tokensMap := make(map[string]dex.Token)
+	tokensMap := make(map[string]binance.Token)
 
 	for _, token := range tokenList {
 		tokensMap[token.Symbol] = token
@@ -225,7 +225,7 @@ func generateTokenList(marketPairs []dex.MarketPair, tokenList []dex.Token) ([]T
 	return tokenItems, nil
 }
 
-func getPair(marketPair dex.MarketPair) Pair {
+func getPair(marketPair binance.MarketPair) Pair {
 	return Pair{
 		Base:     getAssetIDSymbol(marketPair.BaseAssetSymbol, coin.Coins[coin.BINANCE].Symbol, coin.BINANCE),
 		LotSize:  strconv.FormatInt(numbers.ToSatoshi(marketPair.LotSize), 10),

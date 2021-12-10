@@ -20,8 +20,8 @@ type (
 
 	ClientsURLs struct {
 		Binance struct {
-			Explorer string `mapstructure:"explorer"`
 			Dex      string `mapstructure:"dex"`
+			Explorer string `mapstructure:"explorer"`
 		} `mapstructure:"binance"`
 	}
 
