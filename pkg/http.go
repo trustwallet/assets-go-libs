@@ -43,6 +43,7 @@ func GetHTTPResponseCode(url string) (int, error) {
 	return res.StatusCode, nil
 }
 
+// nolint: noctx
 func GetHTTPResponseBytes(url string) ([]byte, error) {
 	response, err := http.Get(url)
 	if err != nil {

@@ -241,19 +241,6 @@ linters:
   # - maligned
   # - scopelint
 
-
-run:
-  timeout: 2m
-  issues-exit-code: 0
-  tests: false
-  skip-dirs:
-    - ide
-  skip-dirs-use-default: true
-  skip-files:
-    - example.go
-  modules-download-mode: readonly
-  allow-parallel-runners: false
-
 output:
   format: colored-line-number
   print-issued-lines: true
