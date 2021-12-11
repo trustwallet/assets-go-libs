@@ -86,7 +86,10 @@ func fetchMissingAssets(chain coin.Coin, assets []explorer.Bep2Asset) error {
 }
 
 func createLogo(assetLogoPath string, a explorer.Bep2Asset) error {
-	pkg.CreateDirPath(assetLogoPath)
+	err := pkg.CreateDirPath(assetLogoPath)
+	if err != nil {
+		return err
+	}
 
 	return pkg.CreatePNGFromURL(a.AssetImg, assetLogoPath)
 }
@@ -199,7 +202,7 @@ func generateTokenList(marketPairs []binance.MarketPair, tokenList binance.Token
 		pairsList[marketPair.QuoteAssetSymbol] = struct{}{}
 	}
 
-	var tokenItems []TokenItem
+	tokenItems := make([]TokenItem, len(pairsList))
 
 	for pair := range pairsList {
 		token := tokensMap[pair]

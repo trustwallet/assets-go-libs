@@ -37,9 +37,10 @@ func FileExists(path string) bool {
 	return !os.IsNotExist(err)
 }
 
-func CreateDirPath(path string) {
+func CreateDirPath(path string) error {
 	dirPath := filepath.Dir(path)
-	os.MkdirAll(dirPath, os.ModePerm)
+
+	return os.MkdirAll(dirPath, os.ModePerm)
 }
 
 func CreatePNGFromURL(logoURL, logoPath string) error {
@@ -73,7 +74,7 @@ func CreateJSONFile(path string, payload interface{}) error {
 		return fmt.Errorf("failed to marshal json: %v", err)
 	}
 
-	err = ioutil.WriteFile(path, file, 0644)
+	err = ioutil.WriteFile(path, file, 0600)
 	if err != nil {
 		return fmt.Errorf("failed to write json to file: %v", err)
 	}
