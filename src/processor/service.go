@@ -20,28 +20,16 @@ func NewService(fs *file.Service, cs *core.Service) *Service {
 	}
 }
 
-func (s *Service) RunCheck(paths []string) error {
+func (s *Service) RunJob(paths []string, job func(*file.AssetFile)) error {
 	for _, path := range paths {
 		f, err := s.fileService.GetAssetFile(path)
 		if err != nil {
-			log.WithError(err).Error()
 			return err
 		}
 
-		validator := s.coreService.GetValidator(f)
+		job(f)
 
-		if validator != nil {
-			log.WithField("name", validator.Name).Debug("Running validator")
-
-			err = validator.Run(f)
-			if err != nil {
-				HandleError(err, f.Info, validator.Name)
-			}
-		}
-
-		err = f.Close()
-		if err != nil {
-			log.WithError(err).Error()
+		if err = f.Close(); err != nil {
 			return err
 		}
 	}
@@ -49,33 +37,28 @@ func (s *Service) RunCheck(paths []string) error {
 	return nil
 }
 
-func (s *Service) RunFix(paths []string) error {
-	for _, path := range paths {
-		f, err := s.fileService.GetAssetFile(path)
-		if err != nil {
-			log.WithError(err).Error()
-			return err
-		}
+func (s *Service) Check(f *file.AssetFile) {
+	validator := s.coreService.GetValidator(f)
 
-		fixer := s.coreService.GetFixer(f)
+	if validator != nil {
+		log.WithField("name", validator.Name).Debug("Running validator")
 
-		if fixer != nil {
-			log.WithField("name", fixer.Name).Debug("Running fixer")
-
-			err = fixer.Run(f)
-			if err != nil {
-				HandleError(err, f.Info, fixer.Name)
-			}
-		}
-
-		err = f.Close()
-		if err != nil {
-			log.WithError(err).Error()
-			return err
+		if err := validator.Run(f); err != nil {
+			HandleError(err, f.Info, validator.Name)
 		}
 	}
+}
 
-	return nil
+func (s *Service) Fix(f *file.AssetFile) {
+	fixer := s.coreService.GetFixer(f)
+
+	if fixer != nil {
+		log.WithField("name", fixer.Name).Debug("Running fixer")
+
+		if err := fixer.Run(f); err != nil {
+			HandleError(err, f.Info, fixer.Name)
+		}
+	}
 }
 
 func (s *Service) RunUpdateAuto() error {
