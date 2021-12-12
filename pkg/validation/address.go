@@ -13,24 +13,10 @@ import (
 var regexTRC10 = regexp.MustCompile(`^\d+$`)
 
 func ValidateAssetAddress(chain coin.Coin, address string) error {
-	switch chain.ID {
-	case
-		coin.ETHEREUM,
-		coin.CLASSIC,
-		coin.POA,
-		coin.TOMOCHAIN,
-		coin.GOCHAIN,
-		coin.WANCHAIN,
-		coin.THUNDERTOKEN,
-		coin.SMARTCHAIN,
-		coin.POLYGON,
-		coin.OPTIMISM,
-		coin.XDAI,
-		coin.AVALANCHEC,
-		coin.ARBITRUM,
-		coin.FANTOM:
+	switch {
+	case coin.IsEVM(chain.ID):
 		return ValidateETHForkAddress(chain, address)
-	case coin.TRON:
+	case chain.ID == coin.TRON:
 		return ValidateTronAddress(address)
 	}
 
