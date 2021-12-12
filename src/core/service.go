@@ -94,10 +94,10 @@ func (s *Service) GetFixer(f *file.AssetFile) *Fixer {
 	fileType := f.Info.Type()
 
 	switch fileType {
-	case file.TypeChainInfoFile, file.TypeAssetInfoFile:
+	case file.TypeChainInfoFile, file.TypeAssetInfoFile, file.TypeValidatorsListFile:
 		return &Fixer{
-			Name:     "Formatting info.json files",
-			Run:      s.FixInfoJSON,
+			Name:     "Formatting all info.json files",
+			Run:      s.FixJSON,
 			FileType: fileType,
 		}
 	}
