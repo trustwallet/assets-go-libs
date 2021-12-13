@@ -98,7 +98,7 @@ func (s *Service) GetFixer(f *file.AssetFile) *Fixer {
 			Run:      s.FixJSON,
 			FileType: fileType,
 		}
-	case file.TypeAssetsFolder:
+	case file.TypeAssetFolder:
 		return &Fixer{
 			Name:     "Checking address checksum for EVM asset's info.json files",
 			Run:      s.FixETHAddressChecksum,
