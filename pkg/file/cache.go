@@ -1,6 +1,8 @@
 package file
 
 import (
+	"path/filepath"
+	"strings"
 	"sync"
 )
 
@@ -28,6 +30,20 @@ func (f *Service) GetAssetFile(path string) (*AssetFile, error) {
 	defer f.mu.RUnlock()
 
 	return f.getFile(path)
+}
+
+func (f *Service) UpdateFile(file *AssetFile, newFileBaseName string) {
+	f.mu.RLock()
+	defer f.mu.RUnlock()
+
+	oldFileBaseName := filepath.Base(file.Info.Path())
+
+	for path := range f.cache {
+		if strings.Contains(path, oldFileBaseName) {
+			newPath := strings.ReplaceAll(path, oldFileBaseName, newFileBaseName)
+			f.cache[path] = NewAssetFile(newPath)
+		}
+	}
 }
 
 func (f *Service) getFile(path string) (*AssetFile, error) {

@@ -1,6 +1,8 @@
 package processor
 
 import (
+	"fmt"
+
 	log "github.com/sirupsen/logrus"
 
 	"github.com/trustwallet/assets-go-libs/pkg/file"
@@ -24,13 +26,13 @@ func (s *Service) RunJob(paths []string, job func(*file.AssetFile)) error {
 	for _, path := range paths {
 		f, err := s.fileService.GetAssetFile(path)
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to get asset file: %s", err)
 		}
 
 		job(f)
 
 		if err = f.Close(); err != nil {
-			return err
+			return fmt.Errorf("failed to close asset file: %s", err)
 		}
 	}
 
@@ -41,9 +43,8 @@ func (s *Service) Check(f *file.AssetFile) {
 	validator := s.coreService.GetValidator(f)
 
 	if validator != nil {
-		log.WithField("name", validator.Name).Debug("Running validator")
-
 		if err := validator.Run(f); err != nil {
+			// TODO: somehow return an error from Check if there are any errors.
 			HandleError(err, f.Info, validator.Name)
 		}
 	}
@@ -53,8 +54,6 @@ func (s *Service) Fix(f *file.AssetFile) {
 	fixer := s.coreService.GetFixer(f)
 
 	if fixer != nil {
-		log.WithField("name", fixer.Name).Debug("Running fixer")
-
 		if err := fixer.Run(f); err != nil {
 			HandleError(err, f.Info, fixer.Name)
 		}
@@ -65,8 +64,6 @@ func (s *Service) RunUpdateAuto() error {
 	updaters := s.coreService.GetUpdatersAuto()
 
 	for _, updater := range updaters {
-		log.WithField("name", updater.Name).Debug("Running updater")
-
 		err := updater.Run()
 		if err != nil {
 			log.WithError(err).Error()

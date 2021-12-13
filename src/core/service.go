@@ -9,9 +9,7 @@ type Service struct {
 }
 
 func NewService(fileProvider *file.Service) *Service {
-	return &Service{
-		fileService: fileProvider,
-	}
+	return &Service{fileService: fileProvider}
 }
 
 // nolint:funlen
@@ -94,10 +92,16 @@ func (s *Service) GetFixer(f *file.AssetFile) *Fixer {
 	fileType := f.Info.Type()
 
 	switch fileType {
-	case file.TypeChainInfoFile, file.TypeAssetInfoFile:
+	case file.TypeChainInfoFile, file.TypeAssetInfoFile, file.TypeValidatorsListFile:
 		return &Fixer{
-			Name:     "Formatting info.json files",
-			Run:      s.FixInfoJSON,
+			Name:     "Formatting all info.json files",
+			Run:      s.FixJSON,
+			FileType: fileType,
+		}
+	case file.TypeAssetFolder:
+		return &Fixer{
+			Name:     "Checking address checksum for EVM asset's info.json files",
+			Run:      s.FixETHAddressChecksum,
 			FileType: fileType,
 		}
 	}

@@ -101,3 +101,25 @@ func ReadJSONFile(path string, result interface{}) error {
 
 	return nil
 }
+
+func FormatJSONFile(path string) error {
+	jsonFile, err := os.Open(path)
+	if err != nil {
+		return err
+	}
+	defer jsonFile.Close()
+
+	data, err := ioutil.ReadAll(jsonFile)
+	if err != nil {
+		return err
+	}
+
+	var prettyJSON bytes.Buffer
+
+	err = json.Indent(&prettyJSON, data, "", "    ")
+	if err != nil {
+		return err
+	}
+
+	return ioutil.WriteFile(path, prettyJSON.Bytes(), 0600)
+}
