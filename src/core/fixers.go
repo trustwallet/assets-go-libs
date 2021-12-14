@@ -47,3 +47,50 @@ func (s *Service) FixETHAddressChecksum(file *file.AssetFile) error {
 
 	return nil
 }
+
+func (s *Service) FixLogo(file *file.AssetFile) error {
+	width, height, err := pkg.GetPNGImageDimensions(file.Info.Path())
+	if err != nil {
+		return err
+	}
+
+	var isLogoTooLarge bool
+	if width > validation.MaxW || height > validation.MaxH {
+		isLogoTooLarge = true
+	}
+
+	if isLogoTooLarge {
+		log.WithField("path", file.Info.Path()).Debug("Fixing too large image")
+
+		targetW, targetH := calculateTargetDimension(width, height)
+
+		err = pkg.ResizePNG(file.Info.Path(), targetW, targetH)
+		if err != nil {
+			return err
+		}
+	}
+
+	err = validation.ValidateLogoFileSize(file.Info.Path())
+	if err != nil { // nolint:staticcheck
+		// TODO: Compress images.
+	}
+
+	return nil
+}
+
+func calculateTargetDimension(width, height int) (targetW, targetH int) {
+	widthFloat := float32(width)
+	heightFloat := float32(height)
+
+	maxEdge := widthFloat
+	if heightFloat > widthFloat {
+		maxEdge = heightFloat
+	}
+
+	ratio := validation.MaxW / maxEdge
+
+	targetW = int(widthFloat * ratio)
+	targetH = int(heightFloat * ratio)
+
+	return targetW, targetH
+}

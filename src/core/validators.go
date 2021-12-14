@@ -61,14 +61,14 @@ func (s *Service) ValidateChainFolder(file *file.AssetFile) error {
 func (s *Service) ValidateImage(file *file.AssetFile) error {
 	var compErr = validation.NewErrComposite()
 
-	err := validation.ValidateLogoFileSize(file.File)
+	err := validation.ValidateLogoFileSize(file.Info.Path())
 	if err != nil {
 		compErr.Append(err)
 	}
 
 	// TODO: Replace it with validation.ValidatePngImageDimension when "assets" repo is fixed.
 	// Read comments inValidatePngImageDimensionForCI.
-	err = validation.ValidatePngImageDimensionForCI(file)
+	err = validation.ValidatePngImageDimensionForCI(file.Info.Path())
 	if err != nil {
 		compErr.Append(err)
 	}

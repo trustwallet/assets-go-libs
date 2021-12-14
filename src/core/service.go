@@ -100,8 +100,14 @@ func (s *Service) GetFixer(f *file.AssetFile) *Fixer {
 		}
 	case file.TypeAssetFolder:
 		return &Fixer{
-			Name:     "Checking address checksum for EVM asset's info.json files",
+			Name:     "Renaming EVM's asset folder to valid address checksum",
 			Run:      s.FixETHAddressChecksum,
+			FileType: fileType,
+		}
+	case file.TypeChainLogoFile, file.TypeAssetLogoFile, file.TypeValidatorsLogoFile, file.TypeDappsLogoFile:
+		return &Fixer{
+			Name:     "Resizing and compressing logo images",
+			Run:      s.FixLogo,
 			FileType: fileType,
 		}
 	}
