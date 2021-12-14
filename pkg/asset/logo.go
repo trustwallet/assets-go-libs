@@ -27,15 +27,16 @@ func GetTokenFromAssetLogoPath(path string) (tokenID, tokenType string) {
 		suffix := "/logo.png"
 
 		if strings.HasPrefix(path, prefix) && strings.HasSuffix(path, suffix) {
-			tokenType = string(t)
 			tokenID = path[len(prefix):(len(path) - len(suffix))]
+
+			var ok bool
+			tokenType, ok = types.GetTokenType(chain.ID, tokenID)
+			if !ok {
+				tokenType = string(t)
+			}
 
 			break
 		}
-	}
-
-	if tokenType == "TRC20" && strings.HasPrefix(tokenID, "10") {
-		tokenType = "TRC10"
 	}
 
 	return tokenID, tokenType
