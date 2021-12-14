@@ -2,54 +2,60 @@ package validation
 
 import (
 	"fmt"
-	"image/png"
-	"io"
 	"os"
+
+	"github.com/trustwallet/assets-go-libs/pkg"
 )
 
 const (
 	bytesInKB   = 1024
 	sizeLimitKB = 100
 
-	maxW = 512
-	maxH = 512
-	minW = 128
-	minH = 128
+	MaxW = 512
+	MaxH = 512
+	MinW = 128
+	MinH = 128
 )
 
 // TODO: Fix all logos in "assets" and then we can use ValidatePngImageDimension in CI.
 // Old logo's have dimensions like 195x163, 60x60 and etc. This method is used only in CI.
 // ValidatePngImageDimensionForCI should be removed after logo's fixing.
-func ValidatePngImageDimensionForCI(file io.Reader) error {
-	img, err := png.DecodeConfig(file)
+func ValidatePngImageDimensionForCI(path string) error {
+	imgWidth, imgHeight, err := pkg.GetPNGImageDimensions(path)
 	if err != nil {
-		return fmt.Errorf("failed to decode image: %w", err)
+		return err
 	}
 
 	// TODO: If we fix all incorrect logos in assets repo, we could use "|| img.Width != img.Height" in addition.
-	if img.Width > maxW || img.Height > maxH || img.Width < 60 || img.Height < 60 {
+	if imgWidth > MaxW || imgHeight > MaxH || imgWidth < 60 || imgHeight < 60 {
 		return fmt.Errorf("%w: max - %dx%d, min - %dx%d; given %dx%d",
-			ErrInvalidImgDimension, maxW, maxH, minW, minH, img.Width, img.Height)
+			ErrInvalidImgDimension, MaxW, MaxH, MinW, MinH, imgWidth, imgHeight)
 	}
 
 	return nil
 }
 
-func ValidatePngImageDimension(file io.Reader) error {
-	img, err := png.DecodeConfig(file)
+func ValidatePngImageDimension(path string) error {
+	imgWidth, imgHeight, err := pkg.GetPNGImageDimensions(path)
 	if err != nil {
-		return fmt.Errorf("failed to decode image: %w", err)
+		return err
 	}
 
-	if img.Width > maxW || img.Height > maxH || img.Height < minH || img.Width < minW || img.Width != img.Height {
+	if imgWidth > MaxW || imgHeight > MaxH || imgHeight < MinH || imgWidth < MinW || imgWidth != imgHeight {
 		return fmt.Errorf("%w: max - %dx%d, min - %dx%d; given %dx%d",
-			ErrInvalidImgDimension, maxW, maxH, minW, minH, img.Width, img.Height)
+			ErrInvalidImgDimension, MaxW, MaxH, MinW, MinH, imgWidth, imgHeight)
 	}
 
 	return nil
 }
 
-func ValidateLogoFileSize(file *os.File) error {
+func ValidateLogoFileSize(path string) error {
+	file, err := os.Open(path)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
 	fileInfo, err := file.Stat()
 	if err != nil {
 		return err
