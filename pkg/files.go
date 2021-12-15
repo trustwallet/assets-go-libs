@@ -69,12 +69,17 @@ func CreatePNGFromURL(logoURL, logoPath string) error {
 }
 
 func CreateJSONFile(path string, payload interface{}) error {
-	file, err := json.MarshalIndent(payload, "", "    ")
+	content, err := json.MarshalIndent(payload, "", "    ")
 	if err != nil {
 		return fmt.Errorf("failed to marshal json: %v", err)
 	}
 
-	err = ioutil.WriteFile(path, file, 0600)
+	// The solution of escaping special HTML characters in golang json.marshal.
+	content = bytes.ReplaceAll(content, []byte("\\u003c"), []byte("<"))
+	content = bytes.ReplaceAll(content, []byte("\\u003e"), []byte(">"))
+	content = bytes.ReplaceAll(content, []byte("\\u0026"), []byte("&"))
+
+	err = ioutil.WriteFile(path, content, 0600)
 	if err != nil {
 		return fmt.Errorf("failed to write json to file: %v", err)
 	}
