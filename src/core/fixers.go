@@ -8,8 +8,10 @@ import (
 	"github.com/trustwallet/assets-go-libs/pkg"
 	"github.com/trustwallet/assets-go-libs/pkg/file"
 	"github.com/trustwallet/assets-go-libs/pkg/validation"
+	"github.com/trustwallet/assets-go-libs/pkg/validation/info"
 	"github.com/trustwallet/go-primitives/address"
 	"github.com/trustwallet/go-primitives/coin"
+	"github.com/trustwallet/go-primitives/types"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -96,8 +98,19 @@ func calculateTargetDimension(width, height int) (targetW, targetH int) {
 }
 
 func (s *Service) FixChainInfoJSON(file *file.AssetFile) error {
+	chainInfo := info.CoinModel{}
 
-	return nil
+	err := pkg.ReadJSONFile(file.Info.Path(), &chainInfo)
+	if err != nil {
+		return err
+	}
+
+	expectedType := string(types.Coin)
+	if chainInfo.Type == nil || *chainInfo.Type != expectedType {
+		chainInfo.Type = &expectedType
+	}
+
+	return pkg.CreateJSONFile(file.Info.Path(), &chainInfo)
 }
 
 func (s *Service) FixAssetInfoJSON(file *file.AssetFile) error {
