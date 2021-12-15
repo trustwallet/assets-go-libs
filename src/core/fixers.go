@@ -94,3 +94,13 @@ func calculateTargetDimension(width, height int) (targetW, targetH int) {
 
 	return targetW, targetH
 }
+
+func (s *Service) FixChainInfoJSON(file *file.AssetFile) error {
+
+	return nil
+}
+
+func (s *Service) FixAssetInfoJSON(file *file.AssetFile) error {
+
+	return nil
+}
