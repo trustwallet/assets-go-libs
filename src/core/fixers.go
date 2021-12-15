@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/trustwallet/assets-go-libs/pkg"
 	"github.com/trustwallet/assets-go-libs/pkg/file"
@@ -108,12 +109,63 @@ func (s *Service) FixChainInfoJSON(file *file.AssetFile) error {
 	expectedType := string(types.Coin)
 	if chainInfo.Type == nil || *chainInfo.Type != expectedType {
 		chainInfo.Type = &expectedType
+
+		return pkg.CreateJSONFile(file.Info.Path(), &chainInfo)
 	}
 
-	return pkg.CreateJSONFile(file.Info.Path(), &chainInfo)
+	return nil
 }
 
 func (s *Service) FixAssetInfoJSON(file *file.AssetFile) error {
+	assetInfo := info.AssetModel{}
+
+	err := pkg.ReadJSONFile(file.Info.Path(), &assetInfo)
+	if err != nil {
+		return err
+	}
+
+	var isModified bool
+
+	// Fix asset type.
+	var assetType string
+	if assetInfo.Type != nil {
+		assetType = *assetInfo.Type
+	}
+
+	// We need to skip error check to fix asset type if it's incorrect or empty.
+	chain, _ := types.GetChainFromAssetType(assetType)
+
+	expectedTokenType, ok := types.GetTokenType(file.Info.Chain().ID, file.Info.Asset())
+	if !ok {
+		expectedTokenType = strings.ToUpper(assetType)
+	}
+
+	if chain.ID != file.Info.Chain().ID || !strings.EqualFold(assetType, expectedTokenType) {
+		assetInfo.Type = &expectedTokenType
+		isModified = true
+	}
+
+	// Fix asset id.
+	assetID := file.Info.Asset()
+	if assetInfo.ID == nil || *assetInfo.ID != assetID {
+		assetInfo.ID = &assetID
+		isModified = true
+	}
+
+	expectedExplorerURL, err := coin.GetCoinExploreURL(file.Info.Chain(), file.Info.Asset())
+	if err != nil {
+		return err
+	}
+
+	// Fix asset explorer url.
+	if assetInfo.Explorer == nil || !strings.EqualFold(expectedExplorerURL, *assetInfo.Explorer) {
+		assetInfo.Explorer = &expectedExplorerURL
+		isModified = true
+	}
+
+	if isModified {
+		return pkg.CreateJSONFile(file.Info.Path(), &assetInfo)
+	}
 
 	return nil
 }
