@@ -51,9 +51,9 @@ func (s *Service) Check(f *file.AssetFile) {
 }
 
 func (s *Service) Fix(f *file.AssetFile) {
-	fixer := s.coreService.GetFixer(f)
+	fixers := s.coreService.GetFixers(f)
 
-	if fixer != nil {
+	for _, fixer := range fixers {
 		if err := fixer.Run(f); err != nil {
 			HandleError(err, f.Info, fixer.Name)
 		}

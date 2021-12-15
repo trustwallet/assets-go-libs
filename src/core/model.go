@@ -4,23 +4,18 @@ import "github.com/trustwallet/assets-go-libs/pkg/file"
 
 type (
 	Validator struct {
-		Name     string
-		FileType string
-
-		Run func(f *file.AssetFile) error
+		Name string
+		Run  func(f *file.AssetFile) error
 	}
 
 	Fixer struct {
-		Name     string
-		FileType string
-
-		Run func(f *file.AssetFile) error
+		Name string
+		Run  func(f *file.AssetFile) error
 	}
 
 	UpdaterAuto struct {
 		Name string
-
-		Run func() error
+		Run  func() error
 	}
 )
 

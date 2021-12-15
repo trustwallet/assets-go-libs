@@ -28,9 +28,9 @@ type (
 		Description   *string  `json:"description,omitempty"`
 		Website       *string  `json:"website,omitempty"`
 		Explorer      *string  `json:"explorer,omitempty"`
+		Research      string   `json:"research,omitempty"`
 		Status        *string  `json:"status,omitempty"`
 		ID            *string  `json:"id,omitempty"`
-		Research      string   `json:"research,omitempty"`
 		Links         []Link   `json:"links,omitempty"`
 		ShortDesc     *string  `json:"short_desc,omitempty"`
 		Audit         *string  `json:"audit,omitempty"`
