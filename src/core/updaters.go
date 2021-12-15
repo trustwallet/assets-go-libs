@@ -202,7 +202,7 @@ func generateTokenList(marketPairs []binance.MarketPair, tokenList binance.Token
 		pairsList[marketPair.QuoteAssetSymbol] = struct{}{}
 	}
 
-	tokenItems := make([]TokenItem, len(pairsList))
+	tokenItems := make([]TokenItem, 0, len(pairsList))
 
 	for pair := range pairsList {
 		token := tokensMap[pair]
