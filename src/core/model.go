@@ -51,3 +51,32 @@ type (
 		Patch int `json:"patch"`
 	}
 )
+
+type (
+	ForceListPair struct {
+		Token1 string
+		Token2 string
+	}
+
+	TradingPairs struct {
+		Data struct {
+			Pairs []TradingPair `json:"pairs"`
+		} `json:"data"`
+	}
+
+	TradingPair struct {
+		ID         string     `json:"id"`
+		ReserveUSD string     `json:"reserveUSD"`
+		VolumeUSD  string     `json:"volumeUSD"`
+		TxCount    string     `json:"txCount"`
+		Token0     *TokenInfo `json:"token0"`
+		Token1     *TokenInfo `json:"token1"`
+	}
+
+	TokenInfo struct {
+		ID       string `json:"id"`
+		Symbol   string `json:"symbol"`
+		Name     string `json:"name"`
+		Decimals int    `json:"decimals"`
+	}
+)
