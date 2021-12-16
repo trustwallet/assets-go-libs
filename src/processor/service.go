@@ -63,6 +63,16 @@ func (s *Service) Fix(f *file.AssetFile) {
 func (s *Service) RunUpdateAuto() error {
 	updaters := s.coreService.GetUpdatersAuto()
 
+	return s.runUpdaters(updaters)
+}
+
+func (s *Service) RunUpdateManual() error {
+	updaters := s.coreService.GetUpdatersManual()
+
+	return s.runUpdaters(updaters)
+}
+
+func (s *Service) runUpdaters(updaters []core.Updater) error {
 	for _, updater := range updaters {
 		err := updater.Run()
 		if err != nil {

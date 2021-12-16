@@ -13,7 +13,7 @@ type (
 		Run  func(f *file.AssetFile) error
 	}
 
-	UpdaterAuto struct {
+	Updater struct {
 		Name string
 		Run  func() error
 	}
