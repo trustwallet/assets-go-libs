@@ -23,6 +23,7 @@ type (
 			Dex      string `mapstructure:"dex"`
 			Explorer string `mapstructure:"explorer"`
 		} `mapstructure:"binance"`
+		BackendAPI string `mapstructure:"backend_api"`
 	}
 
 	URLs struct {

@@ -42,6 +42,8 @@ github.com/subosito/gotenv v1.2.0 h1:Slr1R9HxAlEKefgq5jn9U+DnETlIUa6HfgEzj0g5d7s
 github.com/subosito/gotenv v1.2.0/go.mod h1:N0PQaV/YGNqwC0u51sEeR/aUtSLEXKX9iv69rRypqCw=
 github.com/trustwallet/go-libs v0.2.20 h1:pYstFNgsc7CVyVeYt5GHsMa0JNQHJVRvPQqMvXMpCtY=
 github.com/trustwallet/go-libs v0.2.20/go.mod h1:7QdAp1lcteKKI0DYqGoaO8KO4eTNYjGmg8vHy0YXkKc=
+github.com/trustwallet/go-libs v0.2.21-0.20211217144209-59d4828f9793 h1:KFtyLpBPbMyUdeCth/Zcej/SSgAFIo6fxdS2eEPEg3I=
+github.com/trustwallet/go-libs v0.2.21-0.20211217144209-59d4828f9793/go.mod h1:7QdAp1lcteKKI0DYqGoaO8KO4eTNYjGmg8vHy0YXkKc=
 github.com/trustwallet/go-primitives v0.0.17 h1:1fBxZMKGCHdHtgdUzsqdFlD21+1GneIk/sxN6jxYBds=
 github.com/trustwallet/go-primitives v0.0.17/go.mod h1:jLqd7rm+4EYG5JdpxhngM9HwbqfEXzKy/wK4vUB7STs=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=

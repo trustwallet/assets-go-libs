@@ -54,8 +54,8 @@ type (
 
 type (
 	ForceListPair struct {
+		Token0 string
 		Token1 string
-		Token2 string
 	}
 
 	TradingPairs struct {
@@ -77,6 +77,6 @@ type (
 		ID       string `json:"id"`
 		Symbol   string `json:"symbol"`
 		Name     string `json:"name"`
-		Decimals int    `json:"decimals"`
+		Decimals string `json:"decimals"`
 	}
 )
