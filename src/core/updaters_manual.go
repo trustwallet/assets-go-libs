@@ -102,8 +102,14 @@ var (
 )
 
 func (s *Service) UpdateEthereumTokenlist() error {
+	log.WithFields(log.Fields{
+		"limit_liquidity": UniswapMinLiquidity,
+		"volume":          UniswapMinVol24,
+		"tx_count":        UniswapMinTxCount24,
+	}).Debug("Retrieving pairs from Uniswap")
+
 	tradingPairs, err := retrieveUniswapPairs(UniswapTradingPairsUrl, UniswapTradingPairsQuery,
-		UniswapMinLiquidity, UniswapMinVol24, UniswapMinTxCount24, PrimaryTokensETH)
+		UniswapMinLiquidity, UniswapMinVol24, UniswapMinTxCount24, UniswapForceInclude, PrimaryTokensETH)
 	if err != nil {
 		return err
 	}
@@ -140,8 +146,8 @@ func (s *Service) UpdateSmartchainTokenlist() error {
 }
 
 func retrieveUniswapPairs(url string, query map[string]string, minLiquidity, minVol24, minTxCount24 int,
-	primaryTokens []string) ([]TradingPair, error) {
-	includeList := parseForceList(UniswapForceInclude)
+	forceIncludeList []string, primaryTokens []string) ([]TradingPair, error) {
+	includeList := parseForceList(forceIncludeList)
 
 	pairs, err := getTradingPairs(url, query)
 	if err != nil {
@@ -150,7 +156,11 @@ func retrieveUniswapPairs(url string, query map[string]string, minLiquidity, min
 
 	filtered := make([]TradingPair, 0)
 	for _, pair := range pairs.Data.Pairs {
-		if checkTradingPairOK(pair, minLiquidity, minVol24, minTxCount24, primaryTokens, includeList) {
+		ok, err := checkTradingPairOK(pair, minLiquidity, minVol24, minTxCount24, primaryTokens, includeList)
+		if err != nil {
+			log.Debug(err)
+		}
+		if ok {
 			filtered = append(filtered, pair)
 		}
 	}
@@ -165,6 +175,7 @@ func parseForceList(forceList []string) []ForceListPair {
 		pair := ForceListPair{}
 
 		tokens := strings.Split(item, "-")
+
 		pair.Token0 = tokens[0]
 		if len(tokens) >= 2 {
 			pair.Token1 = tokens[1]
@@ -182,50 +193,64 @@ func getTradingPairs(url string, query map[string]string) (*TradingPairs, error)
 		return nil, err
 	}
 
+	log.WithField("url", url).Debug("Retrieving trading pair infos")
+
 	var result TradingPairs
 	err = pkg.PostHTTPResponse(url, jsonValue, &result)
 	if err != nil {
 		return nil, err
 	}
 
+	log.Debugf("Retrieved %d trading pair infos", len(result.Data.Pairs))
+
 	return &result, nil
 }
 
 func checkTradingPairOK(pair TradingPair, minLiquidity, minVol24, minTxCount24 int, primaryTokens []string,
-	forceIncludeList []ForceListPair) bool {
+	forceIncludeList []ForceListPair) (bool, error) {
 	if pair.ID == "" || pair.ReserveUSD == "" || pair.VolumeUSD == "" || pair.TxCount == "" ||
 		pair.Token0 == nil || pair.Token1 == nil {
-		return false
+		return false, nil
 	}
 
 	if !(isTokenPrimary(pair.Token0, primaryTokens) || isTokenPrimary(pair.Token1, primaryTokens)) {
-		return false
+		log.Debugf("pair with no primary coin: %s -- %s", pair.Token0.Symbol, pair.Token1.Symbol)
+		return false, nil
 	}
 
 	if isPairMatchedToForceList(getTokenItemFromInfo(pair.Token0), getTokenItemFromInfo(pair.Token1), forceIncludeList) {
-		return true
+		log.Debugf("pair included due to FORCE INCLUDE: %s -- %s", pair.Token0.Symbol, pair.Token1.Symbol)
+		return true, nil
 	}
 
-	reserveUSD, err := strconv.Atoi(pair.ReserveUSD)
+	reserveUSD, err := strconv.ParseFloat(pair.ReserveUSD, 64)
 	if err != nil {
-		return false
+		return false, err
+	}
+	if int(reserveUSD) < minLiquidity {
+		log.Debugf("pair with low liquidity: %s -- %s", pair.Token0.Symbol, pair.Token1.Symbol)
+		return false, nil
 	}
 
-	volumeUSD, err := strconv.Atoi(pair.VolumeUSD)
+	volumeUSD, err := strconv.ParseFloat(pair.VolumeUSD, 64)
 	if err != nil {
-		return false
+		return false, err
+	}
+	if int(volumeUSD) < minVol24 {
+		log.Debugf("pair with low volume: %s -- %s", pair.Token0.Symbol, pair.Token1.Symbol)
+		return false, nil
 	}
 
-	txCount, err := strconv.Atoi(pair.TxCount)
+	txCount, err := strconv.ParseFloat(pair.TxCount, 64)
 	if err != nil {
-		return false
+		return false, err
+	}
+	if int(txCount) < minTxCount24 {
+		log.Debugf("pair with low tx count: %s -- %s", pair.Token0.Symbol, pair.Token1.Symbol)
+		return false, nil
 	}
 
-	if reserveUSD < minLiquidity || volumeUSD < minVol24 || txCount < minTxCount24 {
-		return false
-	}
-
-	return true
+	return true, nil
 }
 
 func getTokenItemFromInfo(tokenInfo *TokenInfo) *TokenItem {
@@ -349,15 +374,18 @@ func rebuildTokenList(chain coin.Coin, pairs [][]TokenItem, forceExcludeList []s
 
 	for _, pair := range pairs {
 		if !checkTokenExists(chain.Handle, pair[0].Address) {
-			return fmt.Errorf("pair with unsupported 1st coin: %s-%s", pair[0].Symbol, pair[1].Symbol)
+			log.Debugf("pair with unsupported 1st coin: %s-%s", pair[0].Symbol, pair[1].Symbol)
+			continue
 		}
 
 		if !checkTokenExists(chain.Handle, pair[1].Address) {
-			return fmt.Errorf("pair with unsupported 2nd coin: %s-%s", pair[0].Symbol, pair[1].Symbol)
+			log.Debugf("pair with unsupported 2nd coin: %s-%s", pair[0].Symbol, pair[1].Symbol)
+			continue
 		}
 
 		if matchPairToForceList(&pair[0], &pair[1], excludeList) {
-			return fmt.Errorf("pair excluded due to FORCE EXCLUDE: %s-%s", pair[0].Symbol, pair[1].Symbol)
+			log.Debugf("pair excluded due to FORCE EXCLUDE: %s-%s", pair[0].Symbol, pair[1].Symbol)
+			continue
 		}
 
 		pairs2 = append(pairs2, pair)
@@ -368,22 +396,24 @@ func rebuildTokenList(chain coin.Coin, pairs [][]TokenItem, forceExcludeList []s
 
 	tokenListPath := fmt.Sprintf("blockchains/%s/tokenlist.json", chain.Handle)
 
-	var oldTokenList TokenList
-	err := pkg.ReadJSONFile(tokenListPath, &oldTokenList)
+	var list TokenList
+	err := pkg.ReadJSONFile(tokenListPath, &list)
 	if err != nil {
 		return nil
 	}
 
-	removeAllPairs(&oldTokenList)
+	removeAllPairs(&list)
 
 	for _, pair := range pairs2 {
-		err = addPairIfNeeded(&pair[0], &pair[1], &oldTokenList)
+		err = addPairIfNeeded(&pair[0], &pair[1], &list)
 		if err != nil {
 			return err
 		}
 	}
 
-	return nil
+	log.Debugf("Tokenlist updated: %d tokens", list.Tokens)
+
+	return pkg.CreateJSONFile(tokenListPath, list)
 }
 
 func checkTokenExists(chain, tokenID string) bool {
