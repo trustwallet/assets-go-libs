@@ -41,8 +41,8 @@ type (
 
 	Pair struct {
 		Base     string `json:"base"`
-		LotSize  string `json:"lotSize"`
-		TickSize string `json:"tickSize"`
+		LotSize  string `json:"lotSize,omitempty"`
+		TickSize string `json:"tickSize,omitempty"`
 	}
 
 	Version struct {

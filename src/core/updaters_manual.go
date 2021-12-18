@@ -411,7 +411,16 @@ func rebuildTokenList(chain coin.Coin, pairs [][]TokenItem, forceExcludeList []s
 		}
 	}
 
-	log.Debugf("Tokenlist updated: %d tokens", list.Tokens)
+	log.Debugf("Tokenlist updated: %d tokens", len(list.Tokens))
+
+	var totalPairs int
+
+	for _, item := range list.Tokens {
+		totalPairs += len(item.Pairs)
+	}
+
+	log.Debugf("Tokenlist: list with %d tokens and %d pairs written to %s.",
+		len(list.Tokens), totalPairs, tokenListPath)
 
 	return pkg.CreateJSONFile(tokenListPath, list)
 }
