@@ -8,7 +8,6 @@ import (
 	"net/http"
 )
 
-// nolint: noctx
 func GetHTTPResponse(url string, result interface{}) error {
 	bodyBytes, err := GetHTTPResponseBytes(url)
 	if err != nil {

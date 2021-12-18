@@ -1,4 +1,4 @@
-package core
+package processor
 
 import (
 	"encoding/json"
@@ -18,13 +18,21 @@ import (
 )
 
 var (
-	UniswapForceInclude = []string{"TUSD", "STAKE", "YFI", "BAT", "MANA", "1INCH", "REP", "KP3R", "UNI", "WBTC", "HEX", "CREAM", "SLP", "REN", "XOR", "Link", "sUSD", "HEGIC", "RLC", "DAI", "SUSHI", "FYZ", "DYT", "AAVE", "LEND", "UBT", "DIA", "RSR", "SXP", "OCEAN", "MKR", "USDC", "CEL", "BAL", "BAND", "COMP", "SNX", "OMG", "AMPL", "USDT", "KNC", "ZRX", "AXS", "ENJ", "STMX", "DPX", "FTT", "DPI", "PAX"}
+	UniswapForceInclude = []string{
+		"TUSD", "STAKE", "YFI", "BAT", "MANA", "1INCH", "REP", "KP3R", "UNI", "WBTC", "HEX", "CREAM", "SLP",
+		"REN", "XOR", "Link", "sUSD", "HEGIC", "RLC", "DAI", "SUSHI", "FYZ", "DYT", "AAVE", "LEND", "UBT",
+		"DIA", "RSR", "SXP", "OCEAN", "MKR", "USDC", "CEL", "BAL", "BAND", "COMP", "SNX", "OMG", "AMPL",
+		"USDT", "KNC", "ZRX", "AXS", "ENJ", "STMX", "DPX", "FTT", "DPI", "PAX",
+	}
 	UniswapForceExclude = []string{"STARL", "UFO"}
 
 	PolygonSwapForceInclude = []string{}
 	PolygonSwapForceExclude = []string{}
 
-	PancakeSwapForceInclude = []string{"Cake", "DAI", "ETH", "TWT", "VAI", "USDT", "BLINK", "BTCB", "ALPHA", "INJ", "CTK", "UNI", "XVS", "BUSD", "HARD", "BIFI", "FRONT"}
+	PancakeSwapForceInclude = []string{
+		"Cake", "DAI", "ETH", "TWT", "VAI", "USDT", "BLINK", "BTCB", "ALPHA", "INJ", "CTK", "UNI", "XVS",
+		"BUSD", "HARD", "BIFI", "FRONT",
+	}
 	PancakeSwapForceExclude = []string{}
 )
 
@@ -149,12 +157,13 @@ func retrieveUniswapPairs(url string, query map[string]string, minLiquidity, min
 	forceIncludeList []string, primaryTokens []string) ([]TradingPair, error) {
 	includeList := parseForceList(forceIncludeList)
 
-	pairs, err := getTradingPairs(url, query)
+	pairs, err := fetchTradingPairs(url, query)
 	if err != nil {
 		return nil, err
 	}
 
 	filtered := make([]TradingPair, 0)
+
 	for _, pair := range pairs.Data.Pairs {
 		ok, err := checkTradingPairOK(pair, minLiquidity, minVol24, minTxCount24, primaryTokens, includeList)
 		if err != nil {
@@ -172,11 +181,11 @@ func parseForceList(forceList []string) []ForceListPair {
 	result := make([]ForceListPair, 0, len(forceList))
 
 	for _, item := range forceList {
-		pair := ForceListPair{}
-
 		tokens := strings.Split(item, "-")
+		pair := ForceListPair{
+			Token0: tokens[0],
+		}
 
-		pair.Token0 = tokens[0]
 		if len(tokens) >= 2 {
 			pair.Token1 = tokens[1]
 		}
@@ -187,7 +196,7 @@ func parseForceList(forceList []string) []ForceListPair {
 	return result
 }
 
-func getTradingPairs(url string, query map[string]string) (*TradingPairs, error) {
+func fetchTradingPairs(url string, query map[string]string) (*TradingPairs, error) {
 	jsonValue, err := json.Marshal(query)
 	if err != nil {
 		return nil, err
@@ -210,6 +219,7 @@ func checkTradingPairOK(pair TradingPair, minLiquidity, minVol24, minTxCount24 i
 	forceIncludeList []ForceListPair) (bool, error) {
 	if pair.ID == "" || pair.ReserveUSD == "" || pair.VolumeUSD == "" || pair.TxCount == "" ||
 		pair.Token0 == nil || pair.Token1 == nil {
+
 		return false, nil
 	}
 
@@ -319,9 +329,9 @@ func isPairMatchedToForceList(token0, token1 *TokenItem, forceIncludeList []Forc
 
 func matchPairToForceListEntry(token0, token1 *TokenItem, forceListEntry ForceListPair) bool {
 	if forceListEntry.Token1 == "" {
-		// entry is token only
 		if matchTokenToForceListEntry(token0, forceListEntry.Token0) ||
 			(token1 != nil && matchTokenToForceListEntry(token1, forceListEntry.Token0)) {
+
 			return true
 		}
 
@@ -332,13 +342,18 @@ func matchPairToForceListEntry(token0, token1 *TokenItem, forceListEntry ForceLi
 		return false
 	}
 
-	if matchTokenToForceListEntry(token0, forceListEntry.Token0) && matchTokenToForceListEntry(token0, forceListEntry.Token1) {
+	if matchTokenToForceListEntry(token0, forceListEntry.Token0) &&
+		matchTokenToForceListEntry(token0, forceListEntry.Token1) {
+
 		return true
 	}
 
-	if matchTokenToForceListEntry(token0, forceListEntry.Token1) && matchTokenToForceListEntry(token1, forceListEntry.Token0) {
+	if matchTokenToForceListEntry(token0, forceListEntry.Token1) &&
+		matchTokenToForceListEntry(token1, forceListEntry.Token0) {
+
 		return true
 	}
+
 	return false
 }
 
@@ -346,6 +361,7 @@ func matchTokenToForceListEntry(token *TokenItem, forceListEntry string) bool {
 	if strings.EqualFold(forceListEntry, token.Symbol) ||
 		strings.EqualFold(forceListEntry, token.Asset) ||
 		strings.EqualFold(forceListEntry, token.Name) {
+
 		return true
 	}
 
@@ -392,6 +408,7 @@ func rebuildTokenList(chain coin.Coin, pairs [][]TokenItem, forceExcludeList []s
 	}
 
 	filteredCount := len(pairs) - len(pairs2)
+
 	log.Debugf("%d unsupported tokens filtered out, %d pairs", filteredCount, len(pairs2))
 
 	tokenListPath := fmt.Sprintf("blockchains/%s/tokenlist.json", chain.Handle)
@@ -454,8 +471,8 @@ func addPairIfNeeded(token0, token1 *TokenItem, list *TokenList) error {
 }
 
 func addTokenIfNeeded(token *TokenItem, list *TokenList) error {
-	for _, token := range list.Tokens {
-		if strings.EqualFold(token.Address, token.Address) {
+	for _, t := range list.Tokens {
+		if strings.EqualFold(t.Address, token.Address) {
 			return nil
 		}
 	}
@@ -493,25 +510,28 @@ func updateTokenInfo(token *TokenItem) error {
 }
 
 func addPairToToken(pairToken, token *TokenItem, list *TokenList) {
-	var tokenInList *TokenItem
-	for _, t := range list.Tokens {
+	var tokenInListIndex = -1
+
+	for i, t := range list.Tokens {
 		if t.Address == token.Address {
-			tokenInList = &t
+			tokenInListIndex = i
 			break
 		}
 	}
 
-	if tokenInList != nil {
-		tokenInList.Pairs = make([]Pair, 0)
+	if tokenInListIndex == -1 {
+		return
 	}
 
-	for _, pair := range tokenInList.Pairs {
+	if list.Tokens[tokenInListIndex].Pairs == nil {
+		list.Tokens[tokenInListIndex].Pairs = make([]Pair, 0)
+	}
+
+	for _, pair := range list.Tokens[tokenInListIndex].Pairs {
 		if pair.Base == pairToken.Asset {
 			return
 		}
 	}
 
-	tokenInList.Pairs = append(tokenInList.Pairs, Pair{
-		Base: pairToken.Asset,
-	})
+	list.Tokens[tokenInListIndex].Pairs = append(list.Tokens[tokenInListIndex].Pairs, Pair{Base: pairToken.Asset})
 }

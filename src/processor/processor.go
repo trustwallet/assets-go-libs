@@ -1,4 +1,4 @@
-package core
+package processor
 
 import (
 	"github.com/trustwallet/assets-go-libs/pkg/file"

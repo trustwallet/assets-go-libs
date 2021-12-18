@@ -1,4 +1,4 @@
-package processor
+package service
 
 import (
 	"fmt"
@@ -7,18 +7,18 @@ import (
 
 	"github.com/trustwallet/assets-go-libs/pkg/file"
 	"github.com/trustwallet/assets-go-libs/pkg/validation"
-	"github.com/trustwallet/assets-go-libs/src/core"
+	"github.com/trustwallet/assets-go-libs/src/processor"
 )
 
 type Service struct {
-	fileService *file.Service
-	coreService *core.Service
+	fileService      *file.Service
+	processorService *processor.Service
 }
 
-func NewService(fs *file.Service, cs *core.Service) *Service {
+func NewService(fs *file.Service, cs *processor.Service) *Service {
 	return &Service{
-		fileService: fs,
-		coreService: cs,
+		fileService:      fs,
+		processorService: cs,
 	}
 }
 
@@ -40,7 +40,7 @@ func (s *Service) RunJob(paths []string, job func(*file.AssetFile)) error {
 }
 
 func (s *Service) Check(f *file.AssetFile) {
-	validator := s.coreService.GetValidator(f)
+	validator := s.processorService.GetValidator(f)
 
 	if validator != nil {
 		if err := validator.Run(f); err != nil {
@@ -51,7 +51,7 @@ func (s *Service) Check(f *file.AssetFile) {
 }
 
 func (s *Service) Fix(f *file.AssetFile) {
-	fixers := s.coreService.GetFixers(f)
+	fixers := s.processorService.GetFixers(f)
 
 	for _, fixer := range fixers {
 		if err := fixer.Run(f); err != nil {
@@ -61,18 +61,18 @@ func (s *Service) Fix(f *file.AssetFile) {
 }
 
 func (s *Service) RunUpdateAuto() error {
-	updaters := s.coreService.GetUpdatersAuto()
+	updaters := s.processorService.GetUpdatersAuto()
 
 	return s.runUpdaters(updaters)
 }
 
 func (s *Service) RunUpdateManual() error {
-	updaters := s.coreService.GetUpdatersManual()
+	updaters := s.processorService.GetUpdatersManual()
 
 	return s.runUpdaters(updaters)
 }
 
-func (s *Service) runUpdaters(updaters []core.Updater) error {
+func (s *Service) runUpdaters(updaters []processor.Updater) error {
 	for _, updater := range updaters {
 		err := updater.Run()
 		if err != nil {
