@@ -43,7 +43,7 @@ func ResizePNG(path string, targetWidth, targetHeight int) error {
 	}
 	defer output.Close()
 
-	// Set the expected size that you want.
+	// Set the expected size.
 	dst := image.NewRGBA(image.Rect(0, 0, targetWidth, targetHeight))
 
 	// Resize.
