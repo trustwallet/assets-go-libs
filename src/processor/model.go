@@ -1,4 +1,4 @@
-package core
+package processor
 
 import "github.com/trustwallet/assets-go-libs/pkg/file"
 
@@ -13,7 +13,7 @@ type (
 		Run  func(f *file.AssetFile) error
 	}
 
-	UpdaterAuto struct {
+	Updater struct {
 		Name string
 		Run  func() error
 	}
@@ -41,13 +41,42 @@ type (
 
 	Pair struct {
 		Base     string `json:"base"`
-		LotSize  string `json:"lotSize"`
-		TickSize string `json:"tickSize"`
+		LotSize  string `json:"lotSize,omitempty"`
+		TickSize string `json:"tickSize,omitempty"`
 	}
 
 	Version struct {
 		Major int `json:"major"`
 		Minor int `json:"minor"`
 		Patch int `json:"patch"`
+	}
+)
+
+type (
+	ForceListPair struct {
+		Token0 string
+		Token1 string
+	}
+
+	TradingPairs struct {
+		Data struct {
+			Pairs []TradingPair `json:"pairs"`
+		} `json:"data"`
+	}
+
+	TradingPair struct {
+		ID         string     `json:"id"`
+		ReserveUSD string     `json:"reserveUSD"`
+		VolumeUSD  string     `json:"volumeUSD"`
+		TxCount    string     `json:"txCount"`
+		Token0     *TokenInfo `json:"token0"`
+		Token1     *TokenInfo `json:"token1"`
+	}
+
+	TokenInfo struct {
+		ID       string `json:"id"`
+		Symbol   string `json:"symbol"`
+		Name     string `json:"name"`
+		Decimals string `json:"decimals"`
 	}
 )

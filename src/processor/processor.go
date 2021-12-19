@@ -1,4 +1,4 @@
-package core
+package processor
 
 import (
 	"github.com/trustwallet/assets-go-libs/pkg/file"
@@ -133,11 +133,28 @@ func (s *Service) GetFixers(f *file.AssetFile) []Fixer {
 	return nil
 }
 
-func (s *Service) GetUpdatersAuto() []UpdaterAuto {
-	return []UpdaterAuto{
+func (s *Service) GetUpdatersAuto() []Updater {
+	return []Updater{
 		{
 			Name: "Retrieving missing token images, creating binance token list.",
 			Run:  s.UpdateBinanceTokens,
+		},
+	}
+}
+
+func (s *Service) GetUpdatersManual() []Updater {
+	return []Updater{
+		{
+			Name: "Update tokenlist.json for Ethereum",
+			Run:  s.UpdateEthereumTokenlist,
+		},
+		{
+			Name: "Update tokenlist.json for Polygon",
+			Run:  s.UpdatePolygonTokenlist,
+		},
+		{
+			Name: "Update tokenlist.json for Smartchain",
+			Run:  s.UpdateSmartchainTokenlist,
 		},
 	}
 }

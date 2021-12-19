@@ -7,8 +7,8 @@ on:
     branches: [ master ]
 
 jobs:
-  test:
-    name: Unit test
+  check:
+    name: Check
     runs-on: ubuntu-latest
     steps:
       - name: Set up Go
@@ -19,24 +19,12 @@ jobs:
 
       - name: Check out code
         uses: actions/checkout@v2
+
       - name: Get dependencies
-        run: |
-          go get -v -t -d ./...
+        run: go get -v -t -d ./...
+
       - name: Unit Test
         run: make test
-
-  check:
-    name: Linter
-    runs-on: ubuntu-latest
-    steps:
-      - name: Set up Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: 1.17
-        id: go
-
-      - name: Check out code
-        uses: actions/checkout@v2
 
       - name: Lint
         run: make lint
