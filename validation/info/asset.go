@@ -1,7 +1,7 @@
 package info
 
 import (
-	"github.com/trustwallet/assets-go-libs/pkg/validation"
+	"github.com/trustwallet/assets-go-libs/validation"
 	"github.com/trustwallet/go-primitives/coin"
 )
 
@@ -10,7 +10,7 @@ func ValidateAsset(a AssetModel, chain coin.Coin, addr string) error {
 		return err
 	}
 
-	// All fields validated for nil and can be safety used in func.
+	// All fields validated for nil and can be safety used.
 	compErr := validation.NewErrComposite()
 	if err := ValidateAssetType(*a.Type, chain); err != nil {
 		compErr.Append(err)

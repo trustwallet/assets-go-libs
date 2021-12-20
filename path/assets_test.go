@@ -1,9 +1,9 @@
-package asset_test
+package path_test
 
 import (
 	"testing"
 
-	"github.com/trustwallet/assets-go-libs/pkg/asset"
+	"github.com/trustwallet/assets-go-libs/path"
 )
 
 func Test_GetTokenFromAssetLogoPath(t *testing.T) {
@@ -41,7 +41,7 @@ func Test_GetTokenFromAssetLogoPath(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tokenID, tokenType := asset.GetTokenFromAssetLogoPath(tt.path)
+			tokenID, tokenType := path.GetTokenFromAssetLogoPath(tt.path)
 			if tokenID != tt.resulTokenID || tokenType != tt.resultTokenType {
 				t.Errorf("got tokenID=%s tokenType=%s, want tokenID=%s tokenType=%s",
 					tokenID, tokenType, tt.resulTokenID, tt.resultTokenType)

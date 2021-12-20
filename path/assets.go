@@ -1,4 +1,4 @@
-package asset
+package path
 
 import (
 	"fmt"
@@ -7,14 +7,31 @@ import (
 	"github.com/trustwallet/go-primitives/types"
 )
 
+// Asset paths.
+
+func GetTokenListPath(chain string) string {
+	return fmt.Sprintf("blockchains/%s/tokenlist.json", chain)
+}
+
+func GetAssetPath(chain, tokenID string) string {
+	return fmt.Sprintf("blockchains/%s/assets/%s", chain, tokenID)
+}
+
+func GetAssetInfoPath(chain, tokenID string) string {
+	return fmt.Sprintf("blockchains/%s/assets/%s/info.json", chain, tokenID)
+}
+
 func GetAssetLogoPath(chain, tokenID string) string {
 	return fmt.Sprintf("blockchains/%s/assets/%s/logo.png", chain, tokenID)
 }
 
-func GetAssetLogoURL(repoOwner, repoName, branch, chain, tokenID string) string {
-	return fmt.Sprintf("https://raw.githubusercontent.com/%s/%s/%s/blockchains/%s/assets/%s/logo.png",
-		repoOwner, repoName, branch, chain, tokenID)
+// Validator paths.
+
+func GetValidatorAssetsPath(chain string) string {
+	return fmt.Sprintf("blockchains/%s/validators/assets", chain)
 }
+
+// Utils.
 
 func GetTokenFromAssetLogoPath(path string) (tokenID, tokenType string) {
 	for _, t := range types.GetTokenTypes() {

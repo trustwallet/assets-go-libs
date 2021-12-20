@@ -1,4 +1,4 @@
-package pkg
+package http
 
 import (
 	"bytes"
@@ -16,7 +16,7 @@ func GetHTTPResponse(url string, result interface{}) error {
 
 	err = json.Unmarshal(bodyBytes, result)
 	if err != nil {
-		return fmt.Errorf("failed to unmarshal json: %v", err)
+		return fmt.Errorf("failed to unmarshal json: %w", err)
 	}
 
 	return nil
@@ -26,7 +26,7 @@ func GetHTTPResponse(url string, result interface{}) error {
 func GetHTTPResponseBytes(url string) ([]byte, error) {
 	resp, err := http.Get(url)
 	if err != nil {
-		return nil, fmt.Errorf("failed to make GET request: %v", err)
+		return nil, fmt.Errorf("failed to make GET request: %w", err)
 	}
 	defer resp.Body.Close()
 
@@ -36,7 +36,7 @@ func GetHTTPResponseBytes(url string) ([]byte, error) {
 
 	bodyBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read body: %v", err)
+		return nil, fmt.Errorf("failed to read body: %w", err)
 	}
 
 	return bodyBytes, nil
@@ -46,7 +46,7 @@ func GetHTTPResponseBytes(url string) ([]byte, error) {
 func GetHTTPResponseCode(url string) (int, error) {
 	res, err := http.Get(url)
 	if err != nil {
-		return 0, fmt.Errorf("failed to make GET request: %v", err)
+		return 0, fmt.Errorf("failed to make GET request: %w", err)
 	}
 	defer res.Body.Close()
 
@@ -57,24 +57,24 @@ func GetHTTPResponseCode(url string) (int, error) {
 func PostHTTPResponse(url string, payload []byte, result interface{}) error {
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(payload))
 	if err != nil {
-		return fmt.Errorf("failed to create POST request: %v", err)
+		return fmt.Errorf("failed to create POST request: %w", err)
 	}
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return fmt.Errorf("failed to do POST request: %v", err)
+		return fmt.Errorf("failed to do POST request: %w", err)
 	}
 	defer resp.Body.Close()
 
 	bodyBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return fmt.Errorf("failed to read body: %v", err)
+		return fmt.Errorf("failed to read body: %w", err)
 	}
 
 	err = json.Unmarshal(bodyBytes, result)
 	if err != nil {
-		return fmt.Errorf("failed to unmarshal json: %v", err)
+		return fmt.Errorf("failed to unmarshal json: %w", err)
 	}
 
 	return nil

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/trustwallet/assets-go-libs/pkg"
+	"github.com/trustwallet/assets-go-libs/http"
 )
 
 type TokenInfoERC20 struct {
@@ -17,7 +17,7 @@ func GetTokenInfoForERC20(tokenID string) (*TokenInfo, error) {
 	url := fmt.Sprintf("https://api.ethplorer.io/getTokenInfo/%s?apiKey=freekey", tokenID)
 
 	var result TokenInfoERC20
-	err := pkg.GetHTTPResponse(url, &result)
+	err := http.GetHTTPResponse(url, &result)
 	if err != nil {
 		return nil, err
 	}

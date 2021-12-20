@@ -4,14 +4,13 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/trustwallet/assets-go-libs/pkg"
+	str "github.com/trustwallet/assets-go-libs/strings"
+	"github.com/trustwallet/assets-go-libs/validation"
 	"github.com/trustwallet/go-primitives/coin"
 	"github.com/trustwallet/go-primitives/types"
 )
 
-// Here is list of function for validate info.CoinModel and info.AssetModel structs.
-
-// AssetModel info specific validators.
+// Asset info specific validators.
 
 func ValidateAssetRequiredKeys(a AssetModel) error {
 	var fields []string
@@ -44,8 +43,8 @@ func ValidateAssetRequiredKeys(a AssetModel) error {
 	}
 
 	if len(fields) != len(requiredAssetFields) {
-		return fmt.Errorf("missing or empty required fields: %s",
-			strings.Join(difference(requiredAssetFields, fields), ", "))
+		return fmt.Errorf("%w: %s", validation.ErrMissingField,
+			strings.Join(str.Difference(requiredAssetFields, fields), ", "))
 	}
 
 	return nil
@@ -54,15 +53,15 @@ func ValidateAssetRequiredKeys(a AssetModel) error {
 func ValidateAssetType(type_ string, chain coin.Coin) error {
 	chainFromType, err := types.GetChainFromAssetType(type_)
 	if err != nil {
-		return fmt.Errorf("invalid type field: %w", err)
+		return fmt.Errorf("failed to get chain from asset type: %w", err)
 	}
 
 	if chainFromType != chain {
-		return fmt.Errorf("invalid value for field type")
+		return fmt.Errorf("%w: asset type field", validation.ErrInvalidField)
 	}
 
 	if strings.ToUpper(type_) != type_ {
-		return fmt.Errorf("invalid value for type filed, should be ALLCAPS")
+		return fmt.Errorf("%w: asset type should be ALLCAPS", validation.ErrInvalidField)
 	}
 
 	return nil
@@ -71,10 +70,10 @@ func ValidateAssetType(type_ string, chain coin.Coin) error {
 func ValidateAssetID(id string, address string) error {
 	if id != address {
 		if !strings.EqualFold(id, address) {
-			return fmt.Errorf("invalid id field")
+			return fmt.Errorf("%w: invalid id field", validation.ErrInvalidField)
 		}
 
-		return fmt.Errorf("invalid casing for id field")
+		return fmt.Errorf("%w: invalid case for id field", validation.ErrInvalidField)
 	}
 
 	return nil
@@ -82,7 +81,7 @@ func ValidateAssetID(id string, address string) error {
 
 func ValidateAssetDecimalsAccordingType(type_ string, decimals int) error {
 	if type_ == "BEP2" && decimals != 8 {
-		return fmt.Errorf("invalid decimals field, BEP2 tokens have 8 decimals")
+		return fmt.Errorf("%w: invalid decimals field, BEP2 tokens have 8 decimals", validation.ErrInvalidField)
 	}
 
 	return nil
@@ -118,8 +117,8 @@ func ValidateCoinRequiredKeys(c CoinModel) error {
 	}
 
 	if len(fields) != len(requiredCoinFields) {
-		return fmt.Errorf("missing or empty required fields: %s",
-			strings.Join(difference(requiredCoinFields, fields), ", "))
+		return fmt.Errorf("%w: %s", validation.ErrMissingField,
+			strings.Join(str.Difference(requiredCoinFields, fields), ", "))
 	}
 
 	return nil
@@ -132,7 +131,7 @@ func ValidateCoinLinks(links []Link) error {
 
 	for _, l := range links {
 		if l.Name == nil || l.URL == nil {
-			return fmt.Errorf("missing required fields links.url and links.name")
+			return fmt.Errorf("%w: missing required fields links.url and links.name", validation.ErrMissingField)
 		}
 
 		if !linkNameAllowed(*l.Name) {
@@ -164,7 +163,7 @@ func ValidateCoinLinks(links []Link) error {
 
 func ValidateCoinType(type_ string) error {
 	if type_ != "coin" {
-		return fmt.Errorf("invalid value for coin field, allowed only \"coin\"")
+		return fmt.Errorf("%w: only \"coin\" type allowed for coin field", validation.ErrInvalidField)
 	}
 
 	return nil
@@ -172,8 +171,8 @@ func ValidateCoinType(type_ string) error {
 
 func ValidateCoinTags(tags []string, allowedTags []string) error {
 	for _, t := range tags {
-		if !pkg.Contains(t, allowedTags) {
-			return fmt.Errorf("invalid value for tags field, tag %s - not allowed", t)
+		if !str.Contains(t, allowedTags) {
+			return fmt.Errorf("%w: tag '%s' not allowed", validation.ErrInvalidField, t)
 		}
 	}
 
@@ -184,7 +183,7 @@ func ValidateCoinTags(tags []string, allowedTags []string) error {
 
 func ValidateDecimals(decimals int) error {
 	if decimals > 30 || decimals < 0 {
-		return fmt.Errorf("invalid value for decimals field")
+		return fmt.Errorf("%w: decimals field", validation.ErrInvalidField)
 	}
 
 	return nil
@@ -197,16 +196,16 @@ func ValidateStatus(status string) error {
 		}
 	}
 
-	return fmt.Errorf("invalid value for status field")
+	return fmt.Errorf("%w: status field", validation.ErrInvalidField)
 }
 
 func ValidateDescription(description string) error {
 	if description == "" {
-		return fmt.Errorf("invalid value for description field, for empty desciption use \"-\"")
+		return fmt.Errorf("%w: for empty desciption field use \"-\"", validation.ErrInvalidField)
 	}
 
 	if len(description) > 600 {
-		return fmt.Errorf("invalid length for description field")
+		return fmt.Errorf("%w: invalid length for description field", validation.ErrInvalidField)
 	}
 
 	return nil
@@ -214,7 +213,7 @@ func ValidateDescription(description string) error {
 
 func ValidateDescriptionWebsite(description, website string) error {
 	if description != "-" && website == "" {
-		return fmt.Errorf("missing value for one of required fields - website")
+		return fmt.Errorf("%w: website field", validation.ErrMissingField)
 	}
 
 	return nil
@@ -248,22 +247,6 @@ func ValidateExplorer(explorer, name string, chain coin.Coin, addr string) error
 	}
 
 	return nil
-}
-
-func difference(a, b []string) []string {
-	mb := make(map[string]struct{}, len(b))
-	for _, x := range b {
-		mb[x] = struct{}{}
-	}
-
-	var diff []string
-	for _, x := range a {
-		if _, found := mb[x]; !found {
-			diff = append(diff, x)
-		}
-	}
-
-	return diff
 }
 
 func isEmpty(field string) bool {

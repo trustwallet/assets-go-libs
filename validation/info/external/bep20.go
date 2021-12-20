@@ -2,11 +2,11 @@ package external
 
 import (
 	"fmt"
-	"io/ioutil"
-	"net/http"
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/trustwallet/assets-go-libs/http"
 )
 
 var (
@@ -15,23 +15,16 @@ var (
 	symbolRegexp   = regexp.MustCompile(`<b>(\w+)<\/b>\s<span`)
 )
 
-// nolint:noctx
 func GetTokenInfoForBEP20(tokenID string) (*TokenInfo, error) {
 	url := fmt.Sprintf("https://bscscan.com/token/%s", tokenID)
 
-	resp, err := http.Get(url)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	dataInBytes, err := ioutil.ReadAll(resp.Body)
+	data, err := http.GetHTTPResponseBytes(url)
 	if err != nil {
 		return nil, err
 	}
 
 	// Remove all "," from content.
-	pageContent := strings.ReplaceAll(string(dataInBytes), ",", "")
+	pageContent := strings.ReplaceAll(string(data), ",", "")
 
 	var holders, decimals int
 	var symbol string
