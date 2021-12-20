@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"image"
 	"image/png"
+	"io"
 	"os"
 
 	"golang.org/x/image/draw"
@@ -19,7 +20,11 @@ func GetPNGImageDimensions(path string) (width, height int, err error) {
 	}
 	defer file.Close()
 
-	img, err := png.DecodeConfig(file)
+	return GetPNGImageDimensionsFromReader(file)
+}
+
+func GetPNGImageDimensionsFromReader(r io.Reader) (width, height int, err error) {
+	img, err := png.DecodeConfig(r)
 	if err != nil {
 		return 0, 0, fmt.Errorf("failed to decode config: %w", err)
 	}

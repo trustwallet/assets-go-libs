@@ -35,14 +35,18 @@ func ValidatePngImageDimensionForCI(path string) error {
 }
 
 func ValidatePngImageDimension(path string) error {
-	imgWidth, imgHeight, err := image.GetPNGImageDimensions(path)
+	width, height, err := image.GetPNGImageDimensions(path)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to get png dimensions: %w", err)
 	}
 
-	if imgWidth > MaxW || imgHeight > MaxH || imgHeight < MinH || imgWidth < MinW || imgWidth != imgHeight {
+	return ValidateImageDimension(width, height)
+}
+
+func ValidateImageDimension(width, height int) error {
+	if width > MaxW || height > MaxH || width < MinW || height < MinH || width != height {
 		return fmt.Errorf("%w: max - %dx%d, min - %dx%d; given %dx%d",
-			ErrInvalidImgDimension, MaxW, MaxH, MinW, MinH, imgWidth, imgHeight)
+			ErrInvalidImgDimension, MaxW, MaxH, MinW, MinH, width, height)
 	}
 
 	return nil
