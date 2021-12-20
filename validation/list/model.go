@@ -8,7 +8,7 @@ type (
 		Website     *string
 		Staking     Staking
 		Payout      Payout
-		Status      ValidatorStatus
+		Status      Status
 	}
 
 	Staking struct {
@@ -23,7 +23,7 @@ type (
 		PayoutPeriod int
 	}
 
-	ValidatorStatus struct {
+	Status struct {
 		Disabled bool
 		Note     string
 	}

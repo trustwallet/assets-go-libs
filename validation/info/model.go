@@ -15,11 +15,6 @@ type (
 		Links       []Link   `json:"links,omitempty"`
 	}
 
-	Link struct {
-		Name *string `json:"name,omitempty"`
-		URL  *string `json:"url,omitempty"`
-	}
-
 	AssetModel struct {
 		Name          *string  `json:"name,omitempty"`
 		Symbol        *string  `json:"symbol,omitempty"`
@@ -43,6 +38,11 @@ type (
 		Twitter       *string  `json:"twitter,omitempty"`
 		CoinMarketcap *string  `json:"coinmarketcap,omitempty"`
 		DataSource    *string  `json:"data_source,omitempty"`
+	}
+
+	Link struct {
+		Name *string `json:"name,omitempty"`
+		URL  *string `json:"url,omitempty"`
 	}
 )
 

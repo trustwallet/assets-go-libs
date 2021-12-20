@@ -7,11 +7,13 @@ import (
 
 var (
 	ErrMissingFile           = errors.New("missing file")
+	ErrMissingField          = errors.New("missing required fields")
+	ErrInvalidField          = errors.New("invalid field")
 	ErrNotAllowedFile        = errors.New("file is not allowed")
 	ErrInvalidAddress        = errors.New("invalid address")
 	ErrInvalidJson           = errors.New("invalid json")
 	ErrInvalidImgDimension   = errors.New("invalid file dimension")
-	ErrInvalidFileCase       = errors.New("invalid file name case")
+	ErrInvalidFileNameCase   = errors.New("invalid file name case")
 	ErrInvalidFileExt        = errors.New("invalid file extension")
 	ErrInvalidFileSize       = errors.New("invalid file size")
 	ErrInvalidFileNameLength = errors.New("invalid file name length")
@@ -44,16 +46,4 @@ func (e *ErrComposite) Append(err error) {
 
 func (e *ErrComposite) GetErrors() []error {
 	return e.errors
-}
-
-type Warning struct {
-	err error
-}
-
-func NewWarning(err error) *Warning {
-	return &Warning{err: err}
-}
-
-func (e *Warning) Error() string {
-	return fmt.Sprintf("warrning: %s", e.err.Error())
 }
