@@ -36,7 +36,7 @@ func ValidateCoin(model CoinModel, chain coin.Coin, addr string, allowedTags []s
 		compErr.Append(err)
 	}
 
-	if err := ValidateCoinLinks(model.Links); err != nil {
+	if err := ValidateLinks(model.Links); err != nil {
 		compErr.Append(err)
 	}
 

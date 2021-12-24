@@ -44,6 +44,10 @@ func ValidateAsset(a AssetModel, chain coin.Coin, addr string) error {
 		compErr.Append(err)
 	}
 
+	if err := ValidateLinks(a.Links); err != nil {
+		compErr.Append(err)
+	}
+
 	if compErr.Len() > 0 {
 		return compErr
 	}
