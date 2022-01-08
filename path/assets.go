@@ -25,6 +25,12 @@ func GetAssetLogoPath(chain, tokenID string) string {
 	return fmt.Sprintf("blockchains/%s/assets/%s/logo.png", chain, tokenID)
 }
 
+// Chain paths.
+
+func GetChainInfoPath(chain string) string {
+	return fmt.Sprintf("blockchains/%s/info.json", chain)
+}
+
 // Validator paths.
 
 func GetValidatorAssetsPath(chain string) string {
