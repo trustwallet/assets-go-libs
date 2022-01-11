@@ -201,15 +201,15 @@ func ValidateStatus(status string) error {
 }
 
 func ValidateDescription(description string) error {
-	if len(description) > 400 {
+	if len(description) > 600 {
 		return fmt.Errorf("%w: invalid length for description field", validation.ErrInvalidField)
 	}
 
 	return nil
 }
 
-func ValidateWebsite(website string) error {
-	if website == "" {
+func ValidateDescriptionWebsite(description, website string) error {
+	if description != "-" && website == "" {
 		return fmt.Errorf("%w: website field", validation.ErrMissingField)
 	}
 
