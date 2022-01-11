@@ -38,6 +38,8 @@ var (
 		"docs":          "",
 		"source_code":   "", // Other than github.
 	}
+
+	whiteSpaceCharacters = []string{"\n", "  "}
 )
 
 func explorerUrlAlternatives(chain string, name string) []string {
