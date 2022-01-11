@@ -36,7 +36,7 @@ func ValidateAsset(a AssetModel, chain coin.Coin, addr string) error {
 		compErr.Append(err)
 	}
 
-	if err := ValidateDescriptionWebsite(*a.Description, *a.Website); err != nil {
+	if err := ValidateWebsite(*a.Website); err != nil {
 		compErr.Append(err)
 	}
 
