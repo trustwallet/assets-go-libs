@@ -205,6 +205,13 @@ func ValidateDescription(description string) error {
 		return fmt.Errorf("%w: invalid length for description field", validation.ErrInvalidField)
 	}
 
+	for _, ch := range whiteSpaceCharacters {
+		if strings.Contains(description, ch) {
+			return fmt.Errorf("%w: description contains not allowed characters (new line, double space)",
+				validation.ErrInvalidField)
+		}
+	}
+
 	return nil
 }
 
