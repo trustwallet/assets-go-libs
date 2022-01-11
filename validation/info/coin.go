@@ -24,7 +24,7 @@ func ValidateCoin(model CoinModel, chain coin.Coin, addr string, allowedTags []s
 		compErr.Append(err)
 	}
 
-	if err := ValidateCoinTags(model.Tags, allowedTags); err != nil {
+	if err := ValidateTags(model.Tags, allowedTags); err != nil {
 		compErr.Append(err)
 	}
 
@@ -32,7 +32,7 @@ func ValidateCoin(model CoinModel, chain coin.Coin, addr string, allowedTags []s
 		compErr.Append(err)
 	}
 
-	if err := ValidateDescriptionWebsite(*model.Description, *model.Website); err != nil {
+	if err := ValidateWebsite(*model.Website); err != nil {
 		compErr.Append(err)
 	}
 

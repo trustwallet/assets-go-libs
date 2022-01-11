@@ -125,7 +125,7 @@ func ValidateCoinRequiredKeys(c CoinModel) error {
 }
 
 func ValidateLinks(links []Link) error {
-	if len(links) < 1 {
+	if len(links) < 2 {
 		return nil
 	}
 
@@ -169,7 +169,7 @@ func ValidateCoinType(type_ string) error {
 	return nil
 }
 
-func ValidateCoinTags(tags []string, allowedTags []string) error {
+func ValidateTags(tags []string, allowedTags []string) error {
 	for _, t := range tags {
 		if !str.Contains(t, allowedTags) {
 			return fmt.Errorf("%w: tag '%s' not allowed", validation.ErrInvalidField, t)
@@ -196,23 +196,20 @@ func ValidateStatus(status string) error {
 		}
 	}
 
-	return fmt.Errorf("%w: status field", validation.ErrInvalidField)
+	return fmt.Errorf("%w: allowed status field values: %s", validation.ErrInvalidField,
+		strings.Join(allowedStatusValues, ", "))
 }
 
 func ValidateDescription(description string) error {
-	if description == "" {
-		return fmt.Errorf("%w: for empty desciption field use \"-\"", validation.ErrInvalidField)
-	}
-
-	if len(description) > 600 {
+	if len(description) > 400 {
 		return fmt.Errorf("%w: invalid length for description field", validation.ErrInvalidField)
 	}
 
 	return nil
 }
 
-func ValidateDescriptionWebsite(description, website string) error {
-	if description != "-" && website == "" {
+func ValidateWebsite(website string) error {
+	if website == "" {
 		return fmt.Errorf("%w: website field", validation.ErrMissingField)
 	}
 
