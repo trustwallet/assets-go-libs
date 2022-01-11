@@ -1,6 +1,7 @@
 package validation
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"strconv"
@@ -11,7 +12,7 @@ func ValidateJson(b []byte) error {
 		return ErrInvalidJson
 	}
 
-	return nil
+	return validateDuplicateKeys(json.NewDecoder(bytes.NewReader(b)), nil)
 }
 
 func validateDuplicateKeys(d *json.Decoder, path []string) error {
@@ -30,6 +31,7 @@ func validateDuplicateKeys(d *json.Decoder, path []string) error {
 		keys := make(map[string]bool)
 		for d.More() {
 			theToken, err := d.Token()
+
 			if err != nil {
 				return err
 			}
@@ -37,20 +39,21 @@ func validateDuplicateKeys(d *json.Decoder, path []string) error {
 			key := theToken.(string)
 
 			if _, exists := keys[key]; exists {
-				return fmt.Errorf("duplicate key: %s", key)
+				return fmt.Errorf("duplicate key in json: %s", key)
 			}
 			keys[key] = true
 
 			if err := validateDuplicateKeys(d, append(path, key)); err != nil {
 				return fmt.Errorf("invalid value on key: %s", key)
 			}
-
 		}
+
 		if _, err := d.Token(); err != nil {
 			return err
 		}
 	} else if delimiter == '[' {
 		counter := 0
+
 		for d.More() {
 			if err := validateDuplicateKeys(d, append(path, strconv.Itoa(counter))); err != nil {
 				return err
