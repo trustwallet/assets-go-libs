@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
+	"strings"
 )
 
 func ValidateJson(b []byte) error {
@@ -12,56 +13,60 @@ func ValidateJson(b []byte) error {
 		return ErrInvalidJson
 	}
 
-	return validateDuplicateKeys(json.NewDecoder(bytes.NewReader(b)), nil)
+	return checkDuplicateKey(json.NewDecoder(bytes.NewReader(b)), nil)
 }
 
-func validateDuplicateKeys(d *json.Decoder, path []string) error {
-	mainToken, err := d.Token()
+func checkDuplicateKey(d *json.Decoder, path []string) error {
+	// Get next token from JSON.
+	t, err := d.Token()
 	if err != nil {
 		return err
 	}
 
-	delimiter, ok := mainToken.(json.Delim)
-
+	delim, ok := t.(json.Delim)
 	if !ok {
 		return nil
 	}
 
-	if delimiter == '{' {
+	switch delim {
+	case '{':
 		keys := make(map[string]bool)
 		for d.More() {
-			theToken, err := d.Token()
-
+			// Get attribute key.
+			t, err := d.Token()
 			if err != nil {
 				return err
 			}
+			key := t.(string)
 
-			key := theToken.(string)
-
-			if _, exists := keys[key]; exists {
-				return fmt.Errorf("duplicate key in json: %s", key)
+			// Check for duplicates.
+			if keys[key] {
+				return fmt.Errorf("duplicate key '%s'", strings.Join(append(path, key), "/"))
 			}
 			keys[key] = true
 
-			if err := validateDuplicateKeys(d, append(path, key)); err != nil {
-				return fmt.Errorf("invalid value on key: %s", key)
+			// Check value.
+			if err := checkDuplicateKey(d, append(path, key)); err != nil {
+				return err
 			}
 		}
 
+		// Consume trailing "}".
 		if _, err := d.Token(); err != nil {
 			return err
 		}
-	} else if delimiter == '[' {
-		counter := 0
 
+	case '[':
+		i := 0
 		for d.More() {
-			if err := validateDuplicateKeys(d, append(path, strconv.Itoa(counter))); err != nil {
+			if err := checkDuplicateKey(d, append(path, strconv.Itoa(i))); err != nil {
 				return err
 			}
 
-			counter++
+			i++
 		}
 
+		// Consume trailing "]".
 		if _, err := d.Token(); err != nil {
 			return err
 		}
