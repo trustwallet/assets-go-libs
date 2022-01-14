@@ -2,7 +2,7 @@ module github.com/trustwallet/assets-go-libs
 
 go 1.17
 
-require github.com/trustwallet/go-primitives v0.0.19
+require github.com/trustwallet/go-primitives v0.0.20
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
