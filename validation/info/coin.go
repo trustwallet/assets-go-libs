@@ -4,7 +4,7 @@ import (
 	"github.com/trustwallet/assets-go-libs/validation"
 )
 
-func ValidateCoin(c CoinModel, addr string, allowedTags []string) error {
+func ValidateCoin(c CoinModel, allowedTags []string) error {
 	if err := ValidateCoinRequiredKeys(c); err != nil {
 		return err
 	}
