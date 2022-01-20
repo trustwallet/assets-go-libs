@@ -7,6 +7,7 @@ import (
 	"github.com/trustwallet/go-primitives/coin"
 )
 
+// nolint:gochecknoglobals
 var (
 	requiredCoinFields = []string{
 		"name", "type", "symbol", "decimals",
@@ -42,19 +43,19 @@ var (
 	whiteSpaceCharacters = []string{"\n", "  "}
 )
 
-func explorerUrlAlternatives(chain string, name string) []string {
+func explorerURLAlternatives(chain, name string) []string {
 	var altUrls []string
 
 	if name != "" {
-		NameNorm := strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(
+		nameNorm := strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(
 			strings.ToLower(name), " ", ""), ")", ""), "(", "")
 
 		if strings.ToLower(chain) == coin.Coins[coin.ETHEREUM].Name {
-			altUrls = append(altUrls, fmt.Sprintf("https://etherscan.io/token/%s", NameNorm))
+			altUrls = append(altUrls, fmt.Sprintf("https://etherscan.io/token/%s", nameNorm))
 		}
 
-		altUrls = append(altUrls, fmt.Sprintf("https://explorer.%s.io", NameNorm))
-		altUrls = append(altUrls, fmt.Sprintf("https://scan.%s.io", NameNorm))
+		altUrls = append(altUrls, fmt.Sprintf("https://explorer.%s.io", nameNorm))
+		altUrls = append(altUrls, fmt.Sprintf("https://scan.%s.io", nameNorm))
 	}
 
 	return altUrls

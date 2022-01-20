@@ -8,9 +8,9 @@ import (
 	"strings"
 )
 
-func ValidateJson(b []byte) error {
+func ValidateJSON(b []byte) error {
 	if !json.Valid(b) {
-		return ErrInvalidJson
+		return ErrInvalidJSON
 	}
 
 	return checkDuplicateKey(json.NewDecoder(bytes.NewReader(b)), nil)
@@ -37,7 +37,11 @@ func checkDuplicateKey(d *json.Decoder, path []string) error {
 			if err != nil {
 				return err
 			}
-			key := t.(string)
+
+			key, ok := t.(string)
+			if !ok {
+				return fmt.Errorf("failed while casting key to string")
+			}
 
 			// Check for duplicates.
 			if keys[key] {

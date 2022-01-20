@@ -11,7 +11,7 @@ var (
 	ErrInvalidField          = errors.New("invalid field")
 	ErrNotAllowedFile        = errors.New("file is not allowed")
 	ErrInvalidAddress        = errors.New("invalid address")
-	ErrInvalidJson           = errors.New("invalid json")
+	ErrInvalidJSON           = errors.New("invalid json")
 	ErrInvalidImgDimension   = errors.New("invalid file dimension")
 	ErrInvalidFileNameCase   = errors.New("invalid file name case")
 	ErrInvalidFileExt        = errors.New("invalid file extension")

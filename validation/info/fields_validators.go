@@ -50,8 +50,8 @@ func ValidateAssetRequiredKeys(a AssetModel) error {
 	return nil
 }
 
-func ValidateAssetType(type_ string, chain coin.Coin) error {
-	chainFromType, err := types.GetChainFromAssetType(type_)
+func ValidateAssetType(assetType string, chain coin.Coin) error {
+	chainFromType, err := types.GetChainFromAssetType(assetType)
 	if err != nil {
 		return fmt.Errorf("failed to get chain from asset type: %w", err)
 	}
@@ -60,14 +60,14 @@ func ValidateAssetType(type_ string, chain coin.Coin) error {
 		return fmt.Errorf("%w: asset type field", validation.ErrInvalidField)
 	}
 
-	if strings.ToUpper(type_) != type_ {
+	if strings.ToUpper(assetType) != assetType {
 		return fmt.Errorf("%w: asset type should be ALLCAPS", validation.ErrInvalidField)
 	}
 
 	return nil
 }
 
-func ValidateAssetID(id string, address string) error {
+func ValidateAssetID(id, address string) error {
 	if id != address {
 		if !strings.EqualFold(id, address) {
 			return fmt.Errorf("%w: invalid id field", validation.ErrInvalidField)
@@ -79,8 +79,8 @@ func ValidateAssetID(id string, address string) error {
 	return nil
 }
 
-func ValidateAssetDecimalsAccordingType(type_ string, decimals int) error {
-	if type_ == "BEP2" && decimals != 8 {
+func ValidateAssetDecimalsAccordingType(assetType string, decimals int) error {
+	if assetType == "BEP2" && decimals != 8 {
 		return fmt.Errorf("%w: invalid decimals field, BEP2 tokens have 8 decimals", validation.ErrInvalidField)
 	}
 
@@ -161,15 +161,15 @@ func ValidateLinks(links []Link) error {
 	return nil
 }
 
-func ValidateCoinType(type_ string) error {
-	if type_ != "coin" {
+func ValidateCoinType(assetType string) error {
+	if assetType != "coin" {
 		return fmt.Errorf("%w: only \"coin\" type allowed for coin field", validation.ErrInvalidField)
 	}
 
 	return nil
 }
 
-func ValidateTags(tags []string, allowedTags []string) error {
+func ValidateTags(tags, allowedTags []string) error {
 	for _, t := range tags {
 		if !str.Contains(t, allowedTags) {
 			return fmt.Errorf("%w: tag '%s' not allowed", validation.ErrInvalidField, t)
@@ -223,8 +223,8 @@ func ValidateDescriptionWebsite(description, website string) error {
 	return nil
 }
 
-func ValidateExplorer(explorer, name string, chain coin.Coin, addr string) error {
-	explorerExpected, err := coin.GetCoinExploreURL(chain, addr)
+func ValidateExplorer(explorer, name string, chain coin.Coin, addr, tokenType string) error {
+	explorerExpected, err := coin.GetCoinExploreURL(chain, addr, tokenType)
 	if err != nil {
 		explorerExpected = ""
 	}
@@ -232,12 +232,12 @@ func ValidateExplorer(explorer, name string, chain coin.Coin, addr string) error
 	explorerActual := explorer
 
 	if !strings.EqualFold(explorerActual, explorerExpected) {
-		explorerAlt := explorerUrlAlternatives(chain.Handle, name)
+		explorerAlt := explorerURLAlternatives(chain.Handle, name)
 		if len(explorerAlt) == 0 {
 			return nil
 		}
 
-		var matchCount = 0
+		var matchCount int
 
 		for _, e := range explorerAlt {
 			if strings.EqualFold(e, explorerActual) {
