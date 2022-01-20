@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	fileModeReadWrite = 0600
+	fileModeReadWrite = 0600 // nolint
 	indent            = "    "
 	prefix            = ""
 )

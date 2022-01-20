@@ -7,8 +7,6 @@ import (
 	"github.com/trustwallet/go-primitives/types"
 )
 
-// Asset paths.
-
 func GetTokenListPath(chain string) string {
 	return fmt.Sprintf("blockchains/%s/tokenlist.json", chain)
 }
@@ -25,19 +23,13 @@ func GetAssetLogoPath(chain, tokenID string) string {
 	return fmt.Sprintf("blockchains/%s/assets/%s/logo.png", chain, tokenID)
 }
 
-// Chain paths.
-
 func GetChainInfoPath(chain string) string {
 	return fmt.Sprintf("blockchains/%s/info/info.json", chain)
 }
 
-// Validator paths.
-
 func GetValidatorAssetsPath(chain string) string {
 	return fmt.Sprintf("blockchains/%s/validators/assets", chain)
 }
-
-// Utils.
 
 func GetTokenFromAssetLogoPath(path string) (tokenID, tokenType string) {
 	for _, t := range types.GetTokenTypes() {

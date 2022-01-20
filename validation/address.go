@@ -87,7 +87,7 @@ func ValidateETHForkAddress(chain coin.Coin, addr string) error {
 	return nil
 }
 
-func ValidateAddress(address string, prefix string, length int) error {
+func ValidateAddress(address, prefix string, length int) error {
 	if !strings.HasPrefix(address, prefix) {
 		return fmt.Errorf("%w: %s should has prefix %s", ErrInvalidFileNameCase, address, prefix)
 	}

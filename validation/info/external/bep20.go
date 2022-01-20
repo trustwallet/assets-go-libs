@@ -32,9 +32,6 @@ func GetTokenInfoForBEP20(tokenID string) (*TokenInfo, error) {
 	match := symbolRegexp.FindStringSubmatch(pageContent)
 	if len(match) > 1 {
 		symbol = match[1]
-		if err != nil {
-			return nil, err
-		}
 	}
 
 	match = decimalsRegexp.FindStringSubmatch(pageContent)

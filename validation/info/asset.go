@@ -40,7 +40,7 @@ func ValidateAsset(a AssetModel, chain coin.Coin, addr string) error {
 		compErr.Append(err)
 	}
 
-	if err := ValidateExplorer(*a.Explorer, *a.Name, chain, addr); err != nil {
+	if err := ValidateExplorer(*a.Explorer, *a.Name, chain, addr, *a.Type); err != nil {
 		compErr.Append(err)
 	}
 

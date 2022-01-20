@@ -36,6 +36,10 @@ func ValidateCoin(c CoinModel, chain coin.Coin, addr string, allowedTags []strin
 		compErr.Append(err)
 	}
 
+	if err := ValidateExplorer(*c.Explorer, *c.Name, chain, addr, *c.Type); err != nil {
+		compErr.Append(err)
+	}
+
 	if err := ValidateLinks(c.Links); err != nil {
 		compErr.Append(err)
 	}

@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 )
 
-func FileExists(path string) bool {
+func Exists(path string) bool {
 	_, err := os.Stat(path)
 
 	return !os.IsNotExist(err)
@@ -18,7 +18,7 @@ func CreateDirPath(path string) error {
 }
 
 func CreateFileWithPath(p string) (*os.File, error) {
-	if err := os.MkdirAll(filepath.Dir(p), 0770); err != nil {
+	if err := os.MkdirAll(filepath.Dir(p), os.ModePerm); err != nil {
 		return nil, err
 	}
 
