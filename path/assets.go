@@ -11,6 +11,10 @@ func GetTokenListPath(chain string) string {
 	return fmt.Sprintf("blockchains/%s/tokenlist.json", chain)
 }
 
+func GetTokenListExtendedPath(chain string) string {
+	return fmt.Sprintf("blockchains/%s/tokenlist-extended.json", chain)
+}
+
 func GetAssetPath(chain, tokenID string) string {
 	return fmt.Sprintf("blockchains/%s/assets/%s", chain, tokenID)
 }
