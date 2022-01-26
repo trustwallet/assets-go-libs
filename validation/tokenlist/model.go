@@ -19,7 +19,7 @@ type (
 		Symbol   string          `json:"symbol"`
 		Decimals uint            `json:"decimals"`
 		LogoURI  string          `json:"logoURI"`
-		Pairs    []Pair          `json:"pairs"`
+		Pairs    []Pair          `json:"pairs,omitempty"`
 	}
 
 	Pair struct {
