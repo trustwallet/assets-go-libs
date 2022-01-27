@@ -7,12 +7,22 @@ import (
 	"github.com/trustwallet/go-primitives/types"
 )
 
-func GetTokenListPath(chain string) string {
-	return fmt.Sprintf("blockchains/%s/tokenlist.json", chain)
-}
+type TokenListType int
 
-func GetTokenListExtendedPath(chain string) string {
-	return fmt.Sprintf("blockchains/%s/tokenlist-extended.json", chain)
+const (
+	TokenlistDefault = iota
+	TokenlistExtended
+)
+
+func GetTokenListPath(chain string, tokenlistType TokenListType) string {
+	switch tokenlistType {
+	case TokenlistDefault:
+		return fmt.Sprintf("blockchains/%s/tokenlist.json", chain)
+	case TokenlistExtended:
+		return fmt.Sprintf("blockchains/%s/tokenlist-extended.json", chain)
+	}
+
+	return ""
 }
 
 func GetAssetPath(chain, tokenID string) string {
