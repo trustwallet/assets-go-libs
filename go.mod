@@ -2,7 +2,7 @@ module github.com/trustwallet/assets-go-libs
 
 go 1.17
 
-require github.com/trustwallet/go-primitives v0.0.29
+require github.com/trustwallet/go-primitives v0.0.30
 
 require github.com/patrickmn/go-cache v2.1.0+incompatible // indirect
 

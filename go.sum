@@ -7,8 +7,8 @@ github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZb
 github.com/stretchr/testify v1.7.0 h1:nwc3DEeHmmLAfoZucVR881uASk0Mfjw8xYJ99tb5CcY=
 github.com/trustwallet/go-libs v0.2.25 h1:V/cRI70vHMcRIUI75W34bpw8JeMTu1CQDfHAhIUWWO0=
 github.com/trustwallet/go-libs v0.2.25/go.mod h1:7QdAp1lcteKKI0DYqGoaO8KO4eTNYjGmg8vHy0YXkKc=
-github.com/trustwallet/go-primitives v0.0.29 h1:Hd/BbeEdXgmuMZXVdXjMG5SanuhebsVSXwwUMUoxi6A=
-github.com/trustwallet/go-primitives v0.0.29/go.mod h1:jLqd7rm+4EYG5JdpxhngM9HwbqfEXzKy/wK4vUB7STs=
+github.com/trustwallet/go-primitives v0.0.30 h1:KnNU7RSGlNeczD3P44NVRaYfAcxkbBELxNZD6kL4Qc0=
+github.com/trustwallet/go-primitives v0.0.30/go.mod h1:jLqd7rm+4EYG5JdpxhngM9HwbqfEXzKy/wK4vUB7STs=
 golang.org/x/crypto v0.0.0-20211209193657-4570a0811e8b h1:QAqMVf3pSa6eeTsuklijukjXBlj7Es2QQplab+/RbQ4=
 golang.org/x/crypto v0.0.0-20211209193657-4570a0811e8b/go.mod h1:IxCIyHEi3zRg3s0A5j5BB6A9Jmi73HwBIUl50j+osU4=
 golang.org/x/image v0.0.0-20211028202545-6944b10bf410 h1:hTftEOvwiOq2+O8k2D5/Q7COC7k5Qcrgc2TFURJYnvQ=
