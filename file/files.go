@@ -1,6 +1,8 @@
 package file
 
 import (
+	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
 )
@@ -23,4 +25,19 @@ func CreateFileWithPath(p string) (*os.File, error) {
 	}
 
 	return os.Create(p)
+}
+
+func ReadDir(path string) ([]fs.DirEntry, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, fmt.Errorf("failed to open file: %w", err)
+	}
+	defer file.Close()
+
+	dirFiles, err := file.ReadDir(0)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read dir: %w", err)
+	}
+
+	return dirFiles, nil
 }
