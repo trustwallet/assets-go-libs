@@ -14,6 +14,16 @@ func GetAssetLogoGithubURL(repoOwner, repoName, branch, chain, tokenID string) s
 		githubUserContentURL, repoOwner, repoName, branch, chain, tokenID)
 }
 
+func GetValidatorAssetLogoGithubURL(repoOwner, repoName, branch, chain, tokenID string) string {
+	return fmt.Sprintf("%s/%s/%s/%s/blockchains/%s/validators/assets/%s/logo.png",
+		githubUserContentURL, repoOwner, repoName, branch, chain, tokenID)
+}
+
+func GetValidatorListGithubURL(repoOwner, repoName, branch, chain string) string {
+	return fmt.Sprintf("%s/%s/%s/%s/blockchains/%s/validators/list.json",
+		githubUserContentURL, repoOwner, repoName, branch, chain)
+}
+
 func GetChainLogoURL(host, chain string) string {
 	return fmt.Sprintf("%s/blockchains/%s/info/logo.png", host, chain)
 }
