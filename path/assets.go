@@ -56,6 +56,10 @@ func GetTokenFromAssetLogoPath(path string) (tokenID, tokenType string) {
 		suffix := "/logo.png"
 
 		if strings.HasPrefix(path, prefix) && strings.HasSuffix(path, suffix) {
+			if len(prefix) >= (len(path) - len(suffix)) {
+				return "", ""
+			}
+
 			tokenID = path[len(prefix):(len(path) - len(suffix))]
 
 			var ok bool
