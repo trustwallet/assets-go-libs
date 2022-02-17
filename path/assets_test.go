@@ -37,6 +37,18 @@ func Test_GetTokenFromAssetLogoPath(t *testing.T) {
 			resulTokenID:    "0x0b3f42481C228F70756DbFA0309d3ddC2a5e0F6a",
 			resultTokenType: "BEP20",
 		},
+		{
+			name:            "Broken path",
+			path:            "blockchains/ethereum/assets/0x6D3a160B86eDcD46D8F9bBa25c2F88ccCADe19fc/final logo fwc trust.png",
+			resulTokenID:    "",
+			resultTokenType: "",
+		},
+		{
+			name:            "Broken path 2",
+			path:            "blockchains/smartchain/assets/logo.png",
+			resulTokenID:    "",
+			resultTokenType: "",
+		},
 	}
 
 	for _, tt := range tests {
