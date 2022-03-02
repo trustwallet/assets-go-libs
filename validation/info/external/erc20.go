@@ -7,14 +7,15 @@ import (
 	"github.com/trustwallet/assets-go-libs/http"
 )
 
+const ethAPIURL = "https://api.ethplorer.io/getTokenInfo/%s?apiKey=freekey"
+
 type TokenInfoERC20 struct {
-	Symbol       string `json:"symbol"`
 	Decimals     string `json:"decimals"`
 	HoldersCount int    `json:"holdersCount"`
 }
 
 func GetTokenInfoForERC20(tokenID string) (*TokenInfo, error) {
-	url := fmt.Sprintf("https://api.ethplorer.io/getTokenInfo/%s?apiKey=freekey", tokenID)
+	url := fmt.Sprintf(ethAPIURL, tokenID)
 
 	var result TokenInfoERC20
 	err := http.GetHTTPResponse(url, &result)
@@ -28,7 +29,6 @@ func GetTokenInfoForERC20(tokenID string) (*TokenInfo, error) {
 	}
 
 	return &TokenInfo{
-		Symbol:       result.Symbol,
 		Decimals:     decimals,
 		HoldersCount: result.HoldersCount,
 	}, nil
