@@ -33,6 +33,8 @@ func GetTokenInfo(tokenID, tokentType string) (*TokenInfo, error) {
 		return GetTokenInfoByScraping(fmt.Sprintf("https://polygonscan.com/token/%s", tokenID))
 	case "avalanche":
 		return GetTokenInfoByScraping(fmt.Sprintf("https://snowtrace.io/token/%s", tokenID))
+	case "spl":
+		return GetTokenInfoForSPL(tokenID)
 	}
 
 	return nil, nil
