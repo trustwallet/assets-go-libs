@@ -17,8 +17,8 @@ github.com/rogpeppe/go-internal v1.8.1/go.mod h1:JeRgkft04UBgHMgCIwADu4Pn6Mtm5d4
 github.com/stretchr/testify v1.7.0 h1:nwc3DEeHmmLAfoZucVR881uASk0Mfjw8xYJ99tb5CcY=
 github.com/trustwallet/go-libs v0.3.13 h1:zB30WfP6Do+5Cf3+HgkUhawBf1fnOdvvC/eBfCHKBEw=
 github.com/trustwallet/go-libs v0.3.13/go.mod h1:FuDoyKxhE1IgLPWMfU1PFok87MqfYm/spJJx1QziWe8=
-github.com/trustwallet/go-primitives v0.0.39 h1:POi/hcdUni5AP/b/55ZRba9vE7KFeL1G8cjuwsB071k=
-github.com/trustwallet/go-primitives v0.0.39/go.mod h1:4IujMVfxa0uJS267wFszPDYd7vVjQY+/uOREZclnfU0=
+github.com/trustwallet/go-primitives v0.0.40 h1:xAOS9j3YoaT3+9uZhufVT8J9h7NHk1ICN7UZpIqcG10=
+github.com/trustwallet/go-primitives v0.0.40/go.mod h1:4IujMVfxa0uJS267wFszPDYd7vVjQY+/uOREZclnfU0=
 golang.org/x/crypto v0.0.0-20220214200702-86341886e292 h1:f+lwQ+GtmgoY+A2YaQxlSOnDjXcQ7ZRLWOHbC6HtRqE=
 golang.org/x/crypto v0.0.0-20220214200702-86341886e292/go.mod h1:IxCIyHEi3zRg3s0A5j5BB6A9Jmi73HwBIUl50j+osU4=
 golang.org/x/image v0.0.0-20211028202545-6944b10bf410 h1:hTftEOvwiOq2+O8k2D5/Q7COC7k5Qcrgc2TFURJYnvQ=
