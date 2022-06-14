@@ -28,7 +28,9 @@ func TestPrepareJSONData(t *testing.T) {
 		{
 			name: "wrong_json",
 			args: args{
-				payload: "",
+				payload: struct {
+					C chan int
+				}{},
 			},
 			wantErr: true,
 		},
