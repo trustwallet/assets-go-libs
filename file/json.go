@@ -14,10 +14,10 @@ const (
 	prefix            = ""
 )
 
-func CreateJSONFile(path string, payload interface{}) error {
+func PrepareJSONData(payload interface{}) ([]byte, error) {
 	data, err := json.MarshalIndent(payload, prefix, indent)
 	if err != nil {
-		return fmt.Errorf("failed to marshal json: %w", err)
+		return nil, fmt.Errorf("failed to marshal json: %w", err)
 	}
 
 	// The solution of escaping special HTML characters in golang json.marshal.
@@ -25,7 +25,11 @@ func CreateJSONFile(path string, payload interface{}) error {
 	data = bytes.ReplaceAll(data, []byte("\\u003e"), []byte(">"))
 	data = bytes.ReplaceAll(data, []byte("\\u0026"), []byte("&"))
 
-	err = ioutil.WriteFile(path, data, fileModeReadWrite)
+	return data, nil
+}
+
+func CreateJSONFile(path string, data []byte) error {
+	err := ioutil.WriteFile(path, data, fileModeReadWrite)
 	if err != nil {
 		return fmt.Errorf("failed to write json to file: %w", err)
 	}
