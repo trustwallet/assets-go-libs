@@ -7,7 +7,7 @@ import (
 	"github.com/trustwallet/go-primitives/coin"
 )
 
-// nolint:gochecknoglobals
+//nolint:gochecknoglobals
 var (
 	requiredCoinFields = []string{
 		"name", "type", "symbol", "decimals",
