@@ -4,12 +4,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 )
 
 const (
-	fileModeReadWrite = 0600 // nolint
+	fileModeReadWrite = 0600 //nolint
 	indent            = "    "
 	prefix            = ""
 )
@@ -29,7 +29,7 @@ func PrepareJSONData(payload interface{}) ([]byte, error) {
 }
 
 func CreateJSONFile(path string, data []byte) error {
-	err := ioutil.WriteFile(path, data, fileModeReadWrite)
+	err := os.WriteFile(path, data, fileModeReadWrite)
 	if err != nil {
 		return fmt.Errorf("failed to write json to file: %w", err)
 	}
@@ -44,7 +44,7 @@ func ReadJSONFile(path string, result interface{}) error {
 	}
 	defer file.Close()
 
-	data, err := ioutil.ReadAll(file)
+	data, err := io.ReadAll(file)
 	if err != nil {
 		return fmt.Errorf("failed to read data from file: %w", err)
 	}
@@ -64,7 +64,7 @@ func FormatJSONFile(path string) error {
 	}
 	defer file.Close()
 
-	data, err := ioutil.ReadAll(file)
+	data, err := io.ReadAll(file)
 	if err != nil {
 		return fmt.Errorf("failed to read data from file: %w", err)
 	}
@@ -76,7 +76,7 @@ func FormatJSONFile(path string) error {
 		return fmt.Errorf("failed to indent json: %w", err)
 	}
 
-	err = ioutil.WriteFile(path, prettyJSON.Bytes(), fileModeReadWrite)
+	err = os.WriteFile(path, prettyJSON.Bytes(), fileModeReadWrite)
 	if err != nil {
 		return fmt.Errorf("failed to write json to file: %w", err)
 	}

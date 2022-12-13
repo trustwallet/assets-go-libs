@@ -11,7 +11,7 @@ import (
 
 var (
 	holdersRegexp  = regexp.MustCompile(`(\d+)\saddresses`)
-	decimalsRegexp = regexp.MustCompile(`(\d+)\s<\/div>`)
+	decimalsRegexp = regexp.MustCompile(`(\d+)\s+<\/div>`)
 	symbolRegexp   = regexp.MustCompile(`<b>(\w+)<\/b>\s<span`)
 )
 
