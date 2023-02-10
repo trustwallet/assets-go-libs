@@ -35,6 +35,10 @@ func GetTokenInfo(tokenID, tokentType string) (*TokenInfo, error) {
 		return GetTokenInfoByScraping(fmt.Sprintf("https://snowtrace.io/token/%s", tokenID))
 	case "spl":
 		return GetTokenInfoForSPL(tokenID)
+	case "trc20":
+		return GetTokenInfoForTRC20(tokenID)
+	case "trc10":
+		return GetTokenInfoForTRC10(tokenID)
 	}
 
 	return nil, nil
