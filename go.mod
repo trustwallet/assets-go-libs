@@ -14,7 +14,7 @@ require (
 	github.com/deckarep/golang-set v1.7.1 // indirect
 	github.com/trustwallet/go-libs v0.3.13
 	golang.org/x/crypto v0.1.0 // indirect
-	golang.org/x/image v0.5.0
-	golang.org/x/sys v0.1.0 // indirect
+	golang.org/x/image v0.8.0
+	golang.org/x/sys v0.5.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
