@@ -2,7 +2,7 @@ module github.com/trustwallet/assets-go-libs
 
 go 1.18
 
-require github.com/trustwallet/go-primitives v0.0.76
+require github.com/trustwallet/go-primitives v0.0.79
 
 require (
 	github.com/kr/text v0.2.0 // indirect
