@@ -57,6 +57,10 @@ func ValidateAssetType(assetType string, chain coin.Coin) error {
 	}
 
 	chainFromType := chainFromTypeRaw
+	// Due to cronos -> cryptoorg rename we should overwrite it here
+	// When trying to get corresponding chain to CRC20 token,
+	// it returns Cronos which causes validation error in trustwallet/assets CI
+	// Related issue: https://github.com/trustwallet/assets/issues/25572
 	if chainFromTypeRaw.ID == coin.CRONOS {
 		chainFromType = coin.Cryptoorg()
 	}
