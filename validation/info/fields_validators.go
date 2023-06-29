@@ -56,7 +56,7 @@ func ValidateAssetType(assetType string, chain coin.Coin) error {
 		return fmt.Errorf("failed to get chain from asset type: %w", err)
 	}
 
-	var chainFromType coin.Coin
+	chainFromType := chainFromTypeRaw
 	if chainFromTypeRaw.ID == coin.CRONOS {
 		chainFromType = coin.Cryptoorg()
 	}
