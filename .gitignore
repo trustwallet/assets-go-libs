@@ -17,3 +17,5 @@ vendor/
 # Other dirs and files
 bin/
 coverage.txt
+
+.idea
