@@ -28,7 +28,7 @@ var (
 		"telegram":      {"https://t.me/"},
 		"telegram_news": {"https://t.me/"}, // Read-only announcement channel.
 		"medium":        {""},              // URL contains 'medium.com'.
-		"discord":       {"https://discord.com/"},
+		"discord":       {"https://discord.gg/", "https://discord.com/"},
 		"reddit":        {"https://reddit.com/"},
 		"facebook":      {"https://facebook.com/"},
 		"youtube":       {"https://youtube.com/"},
