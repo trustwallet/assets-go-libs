@@ -51,14 +51,9 @@ func ValidateAssetRequiredKeys(a AssetModel) error {
 }
 
 func ValidateAssetType(assetType string, chain coin.Coin) error {
-	chainFromTypeRaw, err := types.GetChainFromAssetType(assetType)
+	chainFromType, err := types.GetChainFromAssetType(assetType)
 	if err != nil {
 		return fmt.Errorf("failed to get chain from asset type: %w", err)
-	}
-
-	chainFromType := chainFromTypeRaw
-	if chainFromTypeRaw.ID == coin.CRONOS {
-		chainFromType = coin.Cryptoorg()
 	}
 
 	if chainFromType != chain {
