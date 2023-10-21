@@ -139,11 +139,24 @@ func ValidateLinks(links []Link) error {
 				strings.Join(supportedLinkNames(), ", "))
 		}
 
-		prefix := allowedLinkKeys[*l.Name]
-		if prefix != "" {
-			if !strings.HasPrefix(*l.URL, prefix) {
-				return fmt.Errorf("invalid value '%s' for %s link url, allowed only with prefix: %s",
-					*l.URL, *l.Name, prefix)
+		prefixes, exists := allowedLinkKeys[*l.Name]
+		if exists && len(prefixes) > 0 {
+			valid := false
+			for _, prefix := range prefixes {
+				if strings.HasPrefix(*l.URL, prefix) {
+					valid = true
+					break
+				}
+			}
+			if !valid {
+				// Format the prefixes based on their count
+				var prefixMsg string
+				if len(prefixes) == 1 {
+					prefixMsg = fmt.Sprintf("allowed prefix is: %s", prefixes[0])
+				} else {
+					prefixMsg = fmt.Sprintf("allowed prefixes are: %v", prefixes)
+				}
+				return fmt.Errorf("invalid value '%s' for %s link url, %s", *l.URL, *l.Name, prefixMsg)
 			}
 		}
 
