@@ -3,7 +3,7 @@ package assetsmanager
 import (
 	"time"
 
-	"github.com/trustwallet/go-libs/client"
+	"github.com/trustwallet/go-common/client"
 )
 
 type Client struct {
