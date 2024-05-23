@@ -1,6 +1,6 @@
 module github.com/trustwallet/assets-go-libs
 
-go 1.18
+go 1.21
 
 require github.com/trustwallet/go-primitives v0.0.76
 

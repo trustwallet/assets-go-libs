@@ -1,6 +1,7 @@
 package assetsmanager
 
 import (
+	"context"
 	"time"
 
 	"github.com/trustwallet/go-common/client"
@@ -17,7 +18,13 @@ func InitClient(url string, errorHandler client.HttpErrorHandler) Client {
 }
 
 func (c *Client) ValidateAssetInfo(req *AssetValidationReq) (result AssetValidationResp, err error) {
-	err = c.req.Post(&result, "/api/v1/validate/asset_info", req)
+	request := client.NewReqBuilder().
+		Method("POST").
+		PathStatic("/api/v1/validate/asset_info").
+		Body(req).
+		WriteTo(&result).Build()
+
+	_, err = c.req.Execute(context.Background(), request)
 
 	return result, err
 }

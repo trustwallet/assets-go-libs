@@ -1,3 +1,4 @@
+//nolint:dupl // it's ok
 package external
 
 import (
