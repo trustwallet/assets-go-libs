@@ -17,13 +17,13 @@ func InitClient(url string, errorHandler client.HttpErrorHandler) Client {
 }
 
 func (c *Client) ValidateAssetInfo(req *AssetValidationReq) (result AssetValidationResp, err error) {
-	err = c.req.Post(&result, "/v1/validate/asset_info", req)
+	err = c.req.Post(&result, "/api/v1/validate/asset_info", req)
 
 	return result, err
 }
 
 func (c *Client) GetTagValues() (result TagValuesResp, err error) {
-	err = c.req.GetWithCache(&result, "/v1/values/tags", nil, time.Hour)
+	err = c.req.GetWithCache(&result, "/api/v1/values/tags", nil, time.Hour)
 
 	return result, err
 }
