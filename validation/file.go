@@ -66,6 +66,7 @@ func ValidateFileInPR(path string) error {
 		if strings.Index(path, "assets") > 0 ||
 			strings.HasSuffix(path, "allowlist.json") ||
 			strings.HasSuffix(path, "validators/list.json") {
+
 			return nil
 		}
 	}

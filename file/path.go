@@ -146,7 +146,7 @@ func (p Path) defineFileType(path string) (string, *regexp.Regexp) {
 func ReadLocalFileStructure(root string, filesToSkip []string) ([]string, error) {
 	paths := []string{"./"}
 
-	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
+	err := filepath.Walk(root, func(path string, _ os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
