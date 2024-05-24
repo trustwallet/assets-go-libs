@@ -9,7 +9,7 @@ GOFMT_FILES?=$$(find . -name '*.go' | grep -v vendor)
 
 all: fmt lint test
 
-unit-tests:
+test:
 	@echo "  >  Running unit tests"
 	GOBIN=$(GOBIN) go test -cover -race -coverprofile=coverage.txt -covermode=atomic -v ./...
 

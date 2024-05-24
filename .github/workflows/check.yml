@@ -1,32 +1,30 @@
-name: CI
+name: Check
 
 on:
+  push:
+    branches: [ master ]
   pull_request:
-    branches:
-      - main
-
-env:
-  CI_GITHUB_TOKEN: ${{ secrets.CI_GITHUB_TOKEN }}
+    branches: [ master ]
 
 jobs:
-  unit-test:
-    name: Unit Tests
+  check:
+    name: Check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-go@v4
+      - name: Set up Go
+        uses: actions/setup-go@v2
         with:
-          go-version: "1.21"
-      - uses: actions/checkout@v3
-      - run: git config --global url.https://ci:$CI_GITHUB_TOKEN@github.com/.insteadOf https://github.com/
-      - run: make unit-tests
+          go-version: 1.17
+        id: go
 
-  lint:
-    name: Lint
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - run: git config --global url.https://ci:$CI_GITHUB_TOKEN@github.com/.insteadOf https://github.com/
-      - uses: golangci/golangci-lint-action@v3
-        with:
-          version: v1.55.2
-          args: --timeout=5m
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Get dependencies
+        run: go get -v -t -d ./...
+
+      - name: Unit Test
+        run: make test
+
+      - name: Lint
+        run: make lint
