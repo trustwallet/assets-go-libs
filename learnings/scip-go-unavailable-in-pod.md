@@ -1,7 +1,7 @@
 ---
 title: scip-go unavailable in bootstrap pod (Go not in shell PATH)
 date: 2026-07-22
-pr: TBD
+pr: https://github.com/trustwallet/assets-go-libs/pull/122
 area: [tooling, scip, kb-bootstrap]
 files: [.github/workflows/knowledge-sync.yml]
 symptom: "Step 2.5 SCIP indexing silently skipped — no index.scip.json produced, no error except 'go: command not found'"
