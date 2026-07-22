@@ -19,3 +19,6 @@ bin/
 coverage.txt
 
 .idea
+index.scip
+index.scip.json
+knowledge/.relations.json
