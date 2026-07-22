@@ -4,8 +4,12 @@
 
 ## What this repo is
 
-- Stack: Go
-- Knowledge base: 3 categories — ci, code-conventions, patterns
+- **Domain**: Go library for Trust Wallet assets repository automation — validation, path parsing, and file classification for blockchain token/coin metadata additions.
+- **Route here**: `ValidateAsset`, `ValidateCoin`, `ValidateTokenList`, file path type classification (`TypeAssetFolder`, `TypeChainInfoFile`, …), EVM/TRON/Cosmos/Waves address validation, PNG logo dimension/size checks, assets-manager HTTP client, tokenlist cross-validation against `info.json`, validator-list entry validation.
+- **Do not route here**: the `trustwallet/assets` repo itself (the JSON/PNG content); chain/coin definitions (`go-primitives`); HTTP client plumbing (`go-libs`); the assets-manager service implementation; any mobile, extension, or backend feature code.
+- **Consumers**: CI scripts and automation tooling in `trustwallet/assets`; any Trust Wallet service that needs to validate asset or coin metadata before accepting a PR.
+- **Ships**: Go module `github.com/trustwallet/assets-go-libs` — importable packages: `validation`, `validation/info`, `validation/tokenlist`, `validation/list`, `file`, `path`, `http`, `image`, `strings`, `client/assets-manager`. No binary.
+- **Agent map**: validation rules → `knowledge/architecture/validate-asset-explain.md`; file type system → `knowledge/architecture/file-domain.md`; data models → `knowledge/architecture/data/models.md`; add/change a validator → `validation/info/fields_validators.go`; address rules → `validation/address.go`.
 
 ## Repo Manifest (for agents)
 
@@ -21,9 +25,14 @@ For the structured knowledge base, see [knowledge/constitution.md](knowledge/con
 - [code-conventions](knowledge/code-conventions/index.md) — Code conventions, style rules, and decision records
 - [patterns](knowledge/patterns/index.md) — Coding patterns, recipes, and proven approaches
 
+- [architecture](knowledge/architecture/index.md) — Architecture
+- [build](knowledge/build/index.md) — Build
+- [features](knowledge/features/index.md) — Features
+- [security](knowledge/security/index.md) — Security
+
 ## Learnings
 
-This repo may keep a living archive of incident-derived rules in [`learnings/`](learnings/) — each file a postmortem of a real bug or a non-obvious pattern that bit once and would bite again: root cause, the rule that prevents recurrence, and tags for matching. The folder is **optional and may be absent** — create it the first time you have a learning worth saving.
+This repo may keep a living archive of incident-derived rules in ~~[`learnings/`](learnings/)~~ — each file a postmortem of a real bug or a non-obvious pattern that bit once and would bite again: root cause, the rule that prevents recurrence, and tags for matching. The folder is **optional and may be absent** — create it the first time you have a learning worth saving.
 
 **Before** investigating any bug, regression, or "weird behavior", *if a `learnings/` directory exists*:
 

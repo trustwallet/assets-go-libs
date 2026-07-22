@@ -9,3 +9,10 @@ Inline rationale comments (NOTE / WHY / HACK / FIXME / GOTCHA / WARNING / CAVEAT
 ## `validation/image.go`
 
 - **TODO** (L20): Fix all incorrect logos in "assets" and then we can use ValidatePngImageDimension instead.
+
+## See Also
+- [address and file validation](../security/address-and-file-validation.md) <!-- rel:strong -->
+- [validation](../features/validation.md) <!-- rel:strong -->
+- [overview](../build/overview.md) <!-- rel:strong -->
+- [image](../features/image.md) <!-- rel:related -->
+- [go conventions](../code-conventions/go-conventions.md) <!-- rel:related -->

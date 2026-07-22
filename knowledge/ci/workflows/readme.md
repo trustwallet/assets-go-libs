@@ -25,3 +25,6 @@ make
 ## See Also
 - [anti patterns failed approaches](../../code-conventions/code-style/anti-patterns-failed-approaches.md) <!-- rel:strong -->
 - [patterns validated approaches](../../patterns/patterns-validated-approaches.md) <!-- rel:strong -->
+- [overview](../../build/overview.md) <!-- rel:strong -->
+- [validate asset explain](../../architecture/validate-asset-explain.md) <!-- rel:strong -->
+- [go conventions](../../code-conventions/go-conventions.md) <!-- rel:related -->

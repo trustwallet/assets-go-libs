@@ -1,6 +1,32 @@
-# Data Models & Schemas
+---
+category: architecture
+subcategory: data
+confidence: low
+documentType: explanation
+scope: repo
+contentHash: d2fcd33367bb
+tags: [architecture, domain]
+source: architecture/data/models.md
+verified: 2026-07-22
+splitPartIndex: 1
+splitPartTotal: 3
+canonical: true
+---
 
+## Data Models & Schemas
 <!-- sdd-knowledge-generated -->
+
+## Model Semantics
+
+The models in this library represent the Trust Wallet assets repository's JSON file formats. All pointer fields in `AssetModel` and `CoinModel` are optional in JSON but **validated as required** by `ValidateAssetRequiredKeys` / `ValidateCoinRequiredKeys` — the pointer type allows distinguishing "not provided" from "empty string" during validation.
+
+**`AssetModel` vs `AssetValidationReq`**: structurally identical but semantically distinct. `AssetModel` is the domain model for local validation; `AssetValidationReq` is the DTO for the remote assets-manager API. Keep them separate — any future divergence (e.g. server adds a field the local validator ignores) stays isolated.
+
+**`tokenlist.Token.Asset`**: composite ID `<chain_handle>/<token_address>`, parsed by `go-primitives/asset.ParseID`. On EVM chains, the parsed address must pass EIP-55 checksum.
+
+**`validation/list.Model`**: represents a staking validator entry (`validators/list.json`). `Staking.FreeSpace` is the number of open delegation slots; `Payout.PayoutDelay` is in blocks.
+
+**`ValidateAssetID` vs `tokenlist.validateAssetID`**: distinct functions in different packages — see [validation-domain.md](../validation-domain.md).
 
 > Field-level shape of data models extracted via tree-sitter: TS interfaces / type aliases, Zod `z.object` schemas, Go/Rust/Swift structs, Kotlin data classes, and Python dataclasses. Scoped to domain data — UI views/props, view-models, design tokens (theme/style/colors), and constant/identifier namespaces are excluded. Deterministic, no LLM.
 
@@ -137,186 +163,3 @@ _struct · `client/assets-manager/model.go`:34_
 |-------|------|----------|
 | `Name` | `*string` | no |
 | `URL` | `*string` | no |
-
-## Link
-
-_struct · `validation/info/model.go`:43_
-
-| Field | Type | Optional |
-|-------|------|----------|
-| `Name` | `*string` | no |
-| `URL` | `*string` | no |
-
-## Model
-
-_struct · `validation/list/model.go`:4_
-
-| Field | Type | Optional |
-|-------|------|----------|
-| `ID` | `*string` | no |
-| `Name` | `*string` | no |
-| `Description` | `*string` | no |
-| `Website` | `*string` | no |
-| `Staking` | `Staking` | no |
-| `Payout` | `Payout` | no |
-| `Status` | `Status` | no |
-
-## Model
-
-_struct · `validation/tokenlist/model.go`:6_
-
-| Field | Type | Optional |
-|-------|------|----------|
-| `Name` | `string` | no |
-| `LogoURI` | `string` | no |
-| `Timestamp` | `string` | no |
-| `Tokens` | `[]Token` | no |
-| `Version` | `Version` | no |
-
-## Pair
-
-_struct · `validation/tokenlist/model.go`:25_
-
-| Field | Type | Optional |
-|-------|------|----------|
-| `Base` | `string` | no |
-| `LotSize` | `string` | no |
-| `TickSize` | `string` | no |
-
-## Path
-
-_struct · `file/path.go`:78_
-
-| Field | Type | Optional |
-|-------|------|----------|
-| `path` | `string` | no |
-| `chain` | `coin.Coin` | no |
-| `asset` | `string` | no |
-| `fileType` | `string` | no |
-| `regexpMap` | `map[string]*regexp.Regexp` | no |
-
-## Payout
-
-_struct · `validation/list/model.go`:20_
-
-| Field | Type | Optional |
-|-------|------|----------|
-| `Commission` | `float64` | no |
-| `PayoutDelay` | `int` | no |
-| `PayoutPeriod` | `int` | no |
-
-## Service
-
-_struct · `file/service.go`:9_
-
-| Field | Type | Optional |
-|-------|------|----------|
-| `mu` | `*sync.RWMutex` | no |
-| `cache` | `map[string]*AssetFile` | no |
-
-## Staking
-
-_struct · `validation/list/model.go`:14_
-
-| Field | Type | Optional |
-|-------|------|----------|
-| `FreeSpace` | `int` | no |
-| `MinDelegation` | `int` | no |
-| `OpenForDelegation` | `bool` | no |
-
-## Status
-
-_struct · `validation/list/model.go`:26_
-
-| Field | Type | Optional |
-|-------|------|----------|
-| `Disabled` | `bool` | no |
-| `Note` | `string` | no |
-
-## Tag
-
-_struct · `client/assets-manager/model.go`:49_
-
-| Field | Type | Optional |
-|-------|------|----------|
-| `ID` | `string` | no |
-| `Name` | `string` | no |
-| `Description` | `string` | no |
-
-## TagValuesResp
-
-_struct · `client/assets-manager/model.go`:45_
-
-| Field | Type | Optional |
-|-------|------|----------|
-| `Tags` | `[]Tag` | no |
-
-## Token
-
-_struct · `validation/tokenlist/model.go`:14_
-
-| Field | Type | Optional |
-|-------|------|----------|
-| `Asset` | `string` | no |
-| `Type` | `types.TokenType` | no |
-| `Address` | `string` | no |
-| `Name` | `string` | no |
-| `Symbol` | `string` | no |
-| `Decimals` | `uint` | no |
-| `LogoURI` | `string` | no |
-| `Pairs` | `[]Pair` | no |
-
-## TokenInfo
-
-_struct · `validation/info/external/external.go`:18_
-
-| Field | Type | Optional |
-|-------|------|----------|
-| `Symbol` | `string` | no |
-| `Decimals` | `int` | no |
-| `HoldersCount` | `int` | no |
-
-## TokenInfoERC20
-
-_struct · `validation/info/external/erc20.go`:12_
-
-| Field | Type | Optional |
-|-------|------|----------|
-| `Decimals` | `string` | no |
-| `HoldersCount` | `int` | no |
-
-## TokenInfoSPL
-
-_struct · `validation/info/external/spl.go`:11_
-
-| Field | Type | Optional |
-|-------|------|----------|
-| `Data` | `[]Data` | no |
-| `HoldersCount` | `int` | no |
-
-## TRC10TokensResponse
-
-_struct · `validation/info/external/trc10.go`:12_
-
-| Field | Type | Optional |
-|-------|------|----------|
-| `Data` | `[]struct { Symbol string `json:"abbr"` Decimals int `json:"precision"` HoldersCount int `json:"nrOfTokenHolders"` }` | no |
-
-## TRC20TokensResponse
-
-_struct · `validation/info/external/trc20.go`:12_
-
-| Field | Type | Optional |
-|-------|------|----------|
-| `TRC20Tokens` | `[]struct { Symbol string `json:"symbol"` Decimals int `json:"decimals"` HoldersCount int `json:"holders_count"` }` | no |
-
-## Version
-
-_struct · `validation/tokenlist/model.go`:31_
-
-| Field | Type | Optional |
-|-------|------|----------|
-| `Major` | `int` | no |
-| `Minor` | `int` | no |
-| `Patch` | `int` | no |
-

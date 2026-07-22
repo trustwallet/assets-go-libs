@@ -14,8 +14,18 @@
 schemaVersion: 1
 name: assets-go-libs
 summary: |-
-  The library for automation of the asset adding process at assets repo.
-domain: library
+  Go library for Trust Wallet assets repository automation — validation, path parsing, and file classification for blockchain token/coin metadata additions.
+
+  Route here for: ValidateAsset, ValidateCoin, ValidateTokenList, file path type classification (TypeAssetFolder, TypeChainInfoFile, …), EVM/TRON/Cosmos/Waves address validation, PNG logo dimension/size checks, assets-manager HTTP client, tokenlist cross-validation against info.json, validator-list entry validation.
+
+  Do NOT route here for: the trustwallet/assets repo itself (the JSON/PNG content); chain/coin definitions (go-primitives); HTTP client plumbing (go-libs); the assets-manager service implementation; any mobile, extension, or backend feature code.
+
+  Consumers: CI scripts and automation tooling in trustwallet/assets; any Trust Wallet service that needs to validate asset or coin metadata before accepting a PR.
+
+  Ships: Go module github.com/trustwallet/assets-go-libs — importable packages: validation, validation/info, validation/tokenlist, validation/list, file, path, http, image, strings, client/assets-manager. No binary.
+
+  Agent routing: validation rules → knowledge/architecture/validate-asset-explain.md; file type system → knowledge/architecture/file-domain.md; data models → knowledge/architecture/data/models.md; add/change a validator → validation/info/fields_validators.go; address rules → validation/address.go.
+domain: cli-tool
 status: active
 
 # Capabilities this repo is authoritative for — the sharpest routing
@@ -25,12 +35,12 @@ owns: [assets-go-libs, assets, go]
 topics: [anti-pattern, pattern, run]
 
 # Repos/teams that depend on this one (curated — fill in).
-consumers: []
+consumers: [CI scripts and automation tooling in trustwallet/assets, any Trust Wallet service that needs to validate asset or coin metadata before…]
 # Internal repos this one depends on (auto-detected from shared npm scope).
 depends_on: []
 
 # Artifacts this repo ships, and its tech stack (auto-detected).
-ships: []
+ships: ["Go module github.com/trustwallet/assets-go-libs — importable packages:…", validation/info, validation/tokenlist, validation/list, file, path, http, image, strings, client/assets-manager. No binary]
 stack: [Go]
 
 generatedBy: sdd-knowledge
