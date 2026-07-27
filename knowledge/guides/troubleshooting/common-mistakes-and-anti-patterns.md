@@ -26,11 +26,6 @@ After making your changes don't forget to run unit tests, go formatting and lint
 
 ### Code-conventions
 
-**From [Anti-Patterns (failed approaches)](../../code-conventions/anti-patterns-failed-approaches.md):**
-<!-- Add failed approaches here. Each anti-pattern should include:
-- **type**: anti-pattern
-- **discovered**: YYYY-MM-DD
-
 **From [Code Conventions](../../code-conventions/code-conventions.md):**
 **Rule**: wrap failures with a sentinel error using `fmt.Errorf("%w: detail", validation.ErrSomething)`. Never invent new error variables in sub-packages — use the shared sentinels from `validation/errors.go`.
 
